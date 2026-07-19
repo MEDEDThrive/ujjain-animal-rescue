@@ -3,316 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujjain Animal Rescue Helpline</title>
-    <!-- Google Fonts for Clean & Modern Look -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    <title>Ujjain Animal Rescue</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-            color: #2d3748;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
+
+        /* Splash Screen */
+        #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; z-index: 1000; animation: fadeOut 2s forwards 2s; }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* Main App Container */
+        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; }
         
-        header {
-            background-color: #059669; /* Seva Green */
-            color: white;
-            text-align: center;
-            padding: 20px 15px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        /* Header / Founder */
+        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
+        .profile-pic { width: 80px; height: 80px; border-radius: 50%; border: 3px solid white; background: #ddd; margin-bottom: 10px; }
+        
+        /* Big Navigation Cards */
+        .nav-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+        .nav-card { background: var(--white); border: 2px solid var(--primary-red); border-radius: 20px; padding: 30px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.1); }
+        .nav-card i { font-size: 40px; color: var(--primary-red); margin-bottom: 10px; }
+        .nav-card h3 { color: var(--primary-red); margin: 0; font-size: 18px; }
 
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 700;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        header p {
-            margin: 5px 0 0 0;
-            font-size: 13px;
-            color: #d1fae5;
-            font-weight: 400;
-        }
-
-        main {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 15px;
-            flex: 1;
-            box-sizing: border-box;
-            width: 100%;
-        }
-
-        .sla-notice {
-            background-color: #fffbeb;
-            border-left: 4px solid #f59e0b;
-            padding: 12px 15px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            box-sizing: border-box;
-        }
-
-        .sla-notice i {
-            color: #d97706;
-            font-size: 18px;
-            margin-top: 2px;
-        }
-
-        .sla-notice h3 {
-            margin: 0;
-            font-size: 14px;
-            color: #78350f;
-            font-weight: 600;
-        }
-
-        .sla-notice p {
-            margin: 3px 0 0 0;
-            font-size: 12px;
-            color: #b45309;
-            line-height: 1.4;
-        }
-
-        .form-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06);
-            border: 1px solid #e5e7eb;
-            box-sizing: border-box;
-        }
-
-        .form-card h2 {
-            margin: 0 0 18px 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #f3f4f6;
-            padding-bottom: 10px;
-        }
-
-        .form-card h2 i {
-            color: #059669;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #4b5563;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .form-group select,
-        .form-group textarea,
-        .form-group input {
-            width: 100%;
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            color: #1f2937;
-            box-sizing: border-box;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .form-group select:focus,
-        .form-group textarea:focus,
-        .form-group input:focus {
-            outline: none;
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-            background-color: #fff;
-        }
-
-        .fee-container {
-            background-color: #f9fafb;
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border: 1px dashed #e5e7eb;
-        }
-
-        .fee-label {
-            font-size: 13px;
-            color: #4b5563;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .fee-amount {
-            font-size: 16px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .disclaimer {
-            font-size: 11px;
-            color: #6b7280;
-            text-align: center;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            padding: 0 5px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background-color: #059669;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
-            transition: background-color 0.2s, transform 0.1s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-            background-color: #047857;
-        }
-
-        footer {
-            background-color: #111827;
-            color: #9ca3af;
-            text-align: center;
-            padding: 20px 15px;
-            font-size: 12px;
-            margin-top: auto;
-            border-top: 1px solid #1f2937;
-        }
-
-        footer p {
-            margin: 0 0 4px 0;
-        }
-
-        footer .founder {
-            color: #34d399;
-            font-weight: 500;
-        }
+        /* Form Styling */
+        .page { display: none; padding: 20px; }
+        .active { display: block; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 10px 0; box-sizing: border-box; }
+        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Header / Branding -->
-    <header>
-        <h1><i class="fas fa-ambulance" style="color: #fbbf24;"></i> Ujjain Animal Rescue</h1>
-        <p>Bejubano ki seva mein hamesha tatpar</p>
-    </header>
+    <!-- Splash Screen -->
+    <div id="splash">
+        <i class="fas fa-paw" style="font-size: 50px; margin-bottom: 20px;"></i>
+        <h1>Bejuban ki Pukar</h1>
+    </div>
 
-    <!-- Main Content -->
-    <main>
-        
-        <!-- Emergency SLA Notice -->
-        <div class="sla-notice">
-            <i class="fas fa-clock"></i>
-            <div>
-                <h3>2-Hour Rescue Target</h3>
-                <p>Report milte hi 2 ghante ke andar hamari team help ke liye pohochne ka poora prayas karti hai.</p>
+    <div class="app-container">
+        <!-- Founder Profile -->
+        <div class="founder-header">
+            <div class="profile-pic" style="background: url('YOUR_PHOTO_URL') center/cover;"></div>
+            <h2 style="margin: 0;">Raj Malviya</h2>
+            <p style="margin: 0; opacity: 0.9;">Founder, Ujjain Animal Rescue</p>
+        </div>
+
+        <!-- Home Section -->
+        <div id="home" class="page active">
+            <div class="nav-grid">
+                <div class="nav-card" onclick="showPage('rescue-form')">
+                    <i class="fas fa-notes-medical"></i>
+                    <h3>Rescue Request</h3>
+                </div>
+                <div class="nav-card" onclick="showPage('history')">
+                    <i class="fas fa-history"></i>
+                    <h3>Rescue History</h3>
+                </div>
+                <div class="nav-card" onclick="showPage('live-req')">
+                    <i class="fas fa-globe"></i>
+                    <h3>Live Requests</h3>
+                </div>
             </div>
         </div>
 
-        <!-- Rescue Reporting Form -->
-        <div class="form-card">
-            <h2><i class="fas fa-file-medical"></i> Case Report Karein</h2>
-            
-            <form id="rescueForm">
-                <!-- Animal Type -->
-                <div class="form-group">
-                    <label>Pashu ka Prakar (Animal)*</label>
-                    <select required>
-                        <option value="">Chuniye...</option>
-                        <option value="cow">Gai (Cow)</option>
-                        <option value="dog">Kutta (Dog)</option>
-                        <option value="calf">Bachhda (Calf)</option>
-                        <option value="other">Anya (Other)</option>
-                    </select>
-                </div>
-
-                <!-- Condition -->
-                <div class="form-group">
-                    <label>Pashu ki Sthiti (Injury Detail)*</label>
-                    <textarea required rows="3" placeholder="Pashu ko kya dikkat hai? (Jaise- accident, bimari, chot)"></textarea>
-                </div>
-
-                <!-- Location -->
-                <div class="form-group">
-                    <label>Ujjain mein Location / Pata*</label>
-                    <input type="text" required placeholder="Gali, landmark ya area ka naam">
-                </div>
-
-                <!-- Reporter Phone -->
-                <div class="form-group">
-                    <label>Aapka Mobile Number*</label>
-                    <input type="tel" required placeholder="10 Digits ka number">
-                </div>
-
-                <!-- Token Fee & Button -->
-                <div class="fee-container">
-                    <div class="fee-label"><i class="fas fa-receipt" style="color: #9ca3af;"></i> Verification Token Fee:</div>
-                    <div class="fee-amount">₹30</div>
-                </div>
-                
-                <p class="disclaimer">
-                    *Fake reports rokne ke liye ₹30 ka chota sa token shulk liya jata hai. Agar rescue team 2 ghante mein nahi pohochi, toh yeh fee <b>100% Refund</b> kar di jayegi.
-                </p>
-
-                <button type="submit" class="submit-btn">
-                    Pay ₹30 & Submit Report <i class="fas fa-arrow-right" style="font-size: 12px;"></i>
-                </button>
+        <!-- Form Section -->
+        <div id="rescue-form" class="page">
+            <h2 style="color: var(--primary-red);">New Request</h2>
+            <form>
+                <select><option>Pashu ka Prakar</option></select>
+                <input type="file" accept="image/*" placeholder="Ghav/Pashu ki Photo">
+                <input type="text" placeholder="Live Location" id="location-input">
+                <input type="tel" placeholder="Mobile Number">
+                <input type="file" accept="image/*" placeholder="Aapki Photo">
+                <button type="button" class="btn-submit">Pay ₹30 & Submit</button>
             </form>
+            <button onclick="showPage('home')" style="background:none; border:none; color:gray; margin-top:20px;">Back to Home</button>
         </div>
+    </div>
 
-    </main>
-
-    <!-- Footer with Founder Details -->
-    <footer>
-        <p style="color: #f3f4f6; font-weight: 600;">Ujjain Animal Rescue Service</p>
-        <p>Founder: <span class="founder">Raj Malviya</span></p>
-        <p style="font-size: 10px; color: #6b7280; margin-top: 8px;">&copy; 2026 Ujjain Animal Rescue. All Rights Reserved.</p>
-    </footer>
-
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        // Simple location trigger
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                document.getElementById('location-input').value = "Lat: " + pos.coords.latitude.toFixed(4) + ", Long: " + pos.coords.longitude.toFixed(4);
+            });
+        }
+    </script>
 </body>
 </html>
+
