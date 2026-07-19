@@ -4,99 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bejuban ki Pukar - Ujjain</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
-        #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2s forwards; }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; }
-        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; }
-        .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; margin: 0 auto 10px; overflow: hidden; }
-        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
-        .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
-        .nav-card { background: var(--white); border: 2px solid var(--soft-red); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; }
+        :root { --primary-red: #e11d48; }
+        body { font-family: sans-serif; background: #fff1f2; margin: 0; }
+        .app-container { max-width: 500px; margin: 0 auto; background: white; min-height: 100vh; padding-bottom: 20px; }
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
-        input, select { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; cursor: pointer; }
-        .req-card { background: #f0fdf4; padding: 15px; border-radius: 12px; border-left: 5px solid #00a884; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .timer-text { font-weight: bold; color: #00a884; }
+        .req-card { border: 1px solid #ddd; padding: 15px; border-radius: 15px; margin-bottom: 15px; background: #fff; }
+        .req-card img { width: 100px; height: 100px; border-radius: 10px; object-fit: cover; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+        .btn-submit { background: var(--primary-red); color: white; padding: 15px; width: 100%; border: none; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <h1 style="color: white;">Bejuban ki Pukar</h1>
+<div class="app-container">
+    <!-- HOME PAGE -->
+    <div id="home" class="page active">
+        <h2>Bejuban ki Pukar</h2>
+        <button onclick="showPage('rescue-form')">New Rescue Request</button>
+        <button onclick="showPage('live-req')">View Live Requests</button>
     </div>
 
-    <div class="app-container">
-        <div class="founder-header">
-            <div class="profile-pic"><img src="https://via.placeholder.com/150"></div>
-            <h2>Raj Malviya</h2>
-            <p>Founder, Ujjain Animal Rescue</p>
-        </div>
-
-        <div id="home" class="page active">
-            <div class="nav-grid">
-                <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical" style="font-size:38px; color:var(--primary-red);"></i><h3>Rescue Request</h3></div>
-                <div class="nav-card" onclick="showPage('live-req')"><i class="fas fa-broadcast-tower" style="font-size:38px; color:var(--primary-red);"></i><h3>Live Requests</h3></div>
-            </div>
-        </div>
-
-        <div id="rescue-form" class="page">
-            <button onclick="showPage('home')">Back</button>
-            <form id="main-rescue-form">
-                <label>Animal Type*</label>
-                <select id="animal-type"><option>Gai</option><option>Bachhda</option></select>
-                <label>Mobile Number*</label>
-                <input type="tel" id="user-phone" placeholder="10 Digit Number" required>
-                <button type="button" class="btn-submit" onclick="submitAndStore()">Submit Request</button>
-            </form>
-        </div>
-
-        <div id="live-req" class="page">
-            <button onclick="showPage('home')">Back</button>
-            <h2>Live Active Requests</h2>
-            <div id="live-list"></div>
-        </div>
+    <!-- FORM PAGE -->
+    <div id="rescue-form" class="page">
+        <button onclick="showPage('home')">Back</button>
+        <form id="rescue-form-data">
+            <input type="text" id="r-name" placeholder="Aapka Naam" required>
+            <input type="tel" id="r-phone" placeholder="Mobile Number" required>
+            <select id="a-type"><option>Gai</option><option>Bachhda</option></select>
+            <label>Pashu ki Photo:</label>
+            <input type="file" id="a-photo" accept="image/*">
+            <button type="button" class="btn-submit" onclick="saveData()">Submit</button>
+        </form>
     </div>
 
-    <script>
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            if(pageId === 'live-req') renderLiveRequests();
-        }
+    <!-- LIVE REQUESTS PAGE -->
+    <div id="live-req" class="page">
+        <button onclick="showPage('home')">Back</button>
+        <div id="live-list"></div>
+    </div>
+</div>
 
-        function submitAndStore() {
-            const phone = document.getElementById('user-phone').value;
-            if(!/^[6-9]\d{9}$/.test(phone)) { alert("Galat Number"); return; }
-            
-            const newReq = { phone: phone, time: new Date().getTime() };
-            let data = JSON.parse(localStorage.getItem('myRequests') || '[]');
-            data.push(newReq);
-            localStorage.setItem('myRequests', JSON.stringify(data));
-            
-            alert("✅ Request Submitted!");
-            document.getElementById('main-rescue-form').reset();
+<script>
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'live-req') renderData();
+    }
+
+    function saveData() {
+        const file = document.getElementById('a-photo').files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const data = {
+                name: document.getElementById('r-name').value,
+                phone: document.getElementById('r-phone').value,
+                animal: document.getElementById('a-type').value,
+                photo: e.target.result,
+                time: new Date().getTime()
+            };
+            let allReq = JSON.parse(localStorage.getItem('allRequests') || '[]');
+            allReq.push(data);
+            localStorage.setItem('allRequests', JSON.stringify(allReq));
+            alert("Submitted!");
             showPage('home');
-        }
+        };
+        reader.readAsDataURL(file);
+    }
 
-        function renderLiveRequests() {
-            const list = document.getElementById('live-list');
-            const data = JSON.parse(localStorage.getItem('myRequests') || '[]');
-            list.innerHTML = "";
-            data.forEach((req) => {
-                const now = new Date().getTime();
-                const diff = (req.time + 7200000) - now; // 2 ghante
-                if(diff > 0) {
-                    const mins = Math.floor(diff / 60000);
-                    list.innerHTML += `<div class="req-card"><div>Mobile: ${req.phone}</div><div class="timer-text">${mins} mins left</div></div>`;
-                }
-            });
-        }
-    </script>
+    function renderData() {
+        const list = document.getElementById('live-list');
+        const data = JSON.parse(localStorage.getItem('allRequests') || '[]');
+        list.innerHTML = "";
+        data.forEach(req => {
+            const timeLeft = Math.floor(((req.time + 7200000) - new Date().getTime()) / 60000);
+            if(timeLeft > 0) {
+                list.innerHTML += `
+                    <div class="req-card">
+                        <img src="${req.photo}">
+                        <p>Naam: ${req.name}</p>
+                        <p>Pashu: ${req.animal}</p>
+                        <p>Time Left: ${timeLeft} min</p>
+                    </div>`;
+            }
+        });
+    }
+</script>
 </body>
 </html>
