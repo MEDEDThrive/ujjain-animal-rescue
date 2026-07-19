@@ -80,6 +80,19 @@
         .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2); }
         .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 20px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
     </style>
+            /* Professional Custom Popup Modal Styles */
+        #customAlert {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(5px); z-index: 99999 !important; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 330px; border-radius: 18px; 
+            padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); box-sizing: border-box;
+        }
+        .modal-icon { font-size: 38px; color: #e11d48; margin-bottom: 12px; }
+        .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1f2937; }
+        .modal-text { color: #4b5563; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px; }
+        .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); }
 </head>
 <body>
 
@@ -191,15 +204,16 @@
                 <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
         </div>
-            <!-- Naya Custom Alert Box Structure -->
-       <div id="customAlert" class="custom-alert-overlay">
-        <div class="custom-alert-box">
-            <div class="alert-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
-            <h3 id="alertTitle">Alert</h3>
-            <p id="alertMessage">Message details go here.</p>
-            <button class="alert-close-btn" onclick="closeCustomAlert()">OK</button>
+                <!-- New Native Style Floating Alert Modal -->
+    <div id="customAlert">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <div class="modal-title" id="modalTitle">Invalid Input</div>
+            <div class="modal-text" id="errorMsg">Kripya sahi number darj karein.</div>
+            <button class="btn-ok" onclick="document.getElementById('customAlert').style.display='none'">OK</button>
         </div>
-       </div>
+    </div>
+        
         
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
@@ -308,31 +322,36 @@
             document.getElementById('whatsapp-map-preview').style.display = 'none';
             alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
-                // Custom Alert Function trigger logic
-        function showCustomAlert(title, message) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = message;
+                // Professional Engine: Show Custom Popup Window Customizer
+        function showCustomAlert(title, message, isError = true) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('errorMsg').innerText = message;
+            document.getElementById('modalIcon').innerText = isError ? "❌" : "⚠️";
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        function closeCustomAlert() {
-            document.getElementById('customAlert').style.display = 'none';
-        }
-
-        // Updated Validation Event Listener
+        // Hardcore Multi-Filter Verification Logic Block
         document.querySelector('.btn-submit').addEventListener('click', function(e) {
-            const phoneInput = document.querySelector('input[type="tel"]');
-            const phoneNumber = phoneInput.value.trim();
-            const phonePattern = /^[6-9]\d{9}$/;
+            e.preventDefault();
             
-            if (phoneNumber === "") {
-                showCustomAlert("⚠️ Number missing", "Kripya apna mobile number darj khane mein bharein.");
+            const phoneInput = document.querySelector('input[type="tel"]');
+            const val = phoneInput.value.trim();
+            
+            // Core Rules
+            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
+            const isRepeated = /(\d)\1{9}/.test(val);      
+            const isSequential = /1234567890|0123456789/.test(val); 
+            // Strict Repeated format tracking patterns (e.g. 6262626262)
+            const isPatternFraud = /(..)\1{4}/.test(val);
+
+            if (val === "") {
+                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
                 phoneInput.focus();
                 return;
             }
             
-            if (!phonePattern.test(phoneNumber)) {
-                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 ank (digits) ka sahi aur chalu Indian mobile number hi dalein.");
+            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
+                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein. Fake patterns allowed nahi hain.");
                 phoneInput.style.borderColor = "#e11d48";
                 phoneInput.focus();
                 return;
@@ -340,13 +359,18 @@
             
             phoneInput.style.borderColor = "#d1d5db";
             
+            // Location Verification Area
             const latLong = document.getElementById('lat-long-data').value;
             if (!latLong) {
-                showCustomAlert("📍 Location Required", "Kripya pehle upar diye gaye button se apni sateek location share karein!");
+                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
                 return;
             }
-            
-            showCustomAlert("✅ Verification Success", "Mobile number aur location dono sahi hain! Ab aap aage proceed kar rahe hain.");
+
+            // SUCCESS FLOW: Agar sab valid hai toh bina kisi popup ke direct automatic routing execute karega
+            console.log("Validation Successful. Directing forward...");
+            // window.location.href = "YOUR_PAYMENT_GATEWAY_URL_HERE";
+        });
+        
         });
         
     </script>
