@@ -40,14 +40,18 @@
         label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-top: 15px; }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-top: 5px; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-size: 14px; background: #f9fafb; }
         
-        /* Custom Camera Upload Button Styling */
-        .camera-upload-wrapper { position: relative; margin-top: 5px; display: block; }
-        .camera-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
-        .custom-camera-btn { background: #f3f4f6; border: 2px dashed var(--primary-red); color: #1f2937; padding: 14px; border-radius: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; pointer-events: none; transition: 0.2s; }
-        .camera-upload-wrapper input[type="file"]:active + .custom-camera-btn { background: #e5e7eb; }
+        /* Advanced Image Preview Rows */
+        .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
+        .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); display: flex; align-items: center; justify-content: center; background: #f9fafb; overflow: hidden; position: relative; }
+        .image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Camera/Plus Wrapper */
+        .add-photo-btn { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; background: #f3f4f6; cursor: pointer; position: relative; }
+        .add-photo-btn i { font-size: 20px; color: #4b5563; }
+        .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
 
         /* WhatsApp Style Location Button */
-        .location-btn { background-color: #25d366; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
+        .location-btn { background-color: #128c7e; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 8px; box-shadow: 0 4px 10px rgba(18, 140, 126, 0.2); }
         .location-btn.success { background-color: #059669; }
 
         /* Clickable Map Link Display Box */
@@ -60,6 +64,7 @@
 </head>
 <body>
 
+    <!-- Animating Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
@@ -69,6 +74,7 @@
     </div>
 
     <div class="app-container">
+        <!-- Top Profile Card -->
         <div class="founder-header">
             <div class="profile-pic">
                 <img src="raj.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Raj+Malviya&background=ffffff&color=e11d48&size=120'" alt="Raj Malviya">
@@ -77,6 +83,7 @@
             <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300;">Founder, Ujjain Animal Rescue</p>
         </div>
 
+        <!-- Homepage Grid -->
         <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')">
@@ -94,6 +101,7 @@
             </div>
         </div>
 
+        <!-- Form Screen -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
@@ -106,22 +114,25 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <label>Ghav ya Pashu ki Live Photo yha dale *</label>
-                <div class="camera-upload-wrapper">
-                    <input type="file" accept="image/*" capture="camera" onchange="updateBtnText(this, 'cam-btn-1')" required>
-                    <div id="cam-btn-1" class="custom-camera-btn">
-                        <i class="fas fa-camera" style="color: var(--primary-red);"></i>  Open Mobile Camera
+                <!-- Dynamic Photo Grid Section for Animal -->
+                <label>Ghav ya Pashu ki Live Photo (Direct Camera)*</label>
+                <div class="preview-container" id="animal-photos-container">
+                    <div class="add-photo-btn">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this, 'animal-photos-container')">
                     </div>
                 </div>
 
+                <!-- WhatsApp Style Location Area -->
                 <label>Ujjain Exact Location*</label>
                 <button type="button" id="loc-btn" class="location-btn" onclick="getExactLocation()">
-                    <i class="fas fa-location-dot"></i> Share Live Location (WhatsApp Style)
+                    <i class="fas fa-crosshairs"></i> Send your current location
                 </button>
                 
+                <!-- Dynamic Navigation Link Box -->
                 <div id="map-link-container" class="map-link-box">
                     <a id="google-maps-link" href="#" target="_blank">
-                        <i class="fas fa-map-location-dot" style="font-size: 20px;"></i> 🗺️ Tap to View Direction Link
+                        <i class="fas fa-map-location-dot"></i> Tap to View Direction Link
                     </a>
                 </div>
                 <input type="hidden" id="lat-long-data" required>
@@ -129,11 +140,12 @@
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" placeholder="10 Digits ka number" required>
 
+                <!-- Dynamic Photo Grid Section for Reporter -->
                 <label>Rescue Request Dalne Wale ki Live Photo (Direct Camera)*</label>
-                <div class="camera-upload-wrapper">
-                    <input type="file" accept="image/*" capture="camera" onchange="updateBtnText(this, 'cam-btn-2')" required>
-                    <div id="cam-btn-2" class="custom-camera-btn">
-                        <i class="fas fa-camera" style="color: var(--primary-red);"></i> Open Mobile Camera
+                <div class="preview-container" id="reporter-photos-container">
+                    <div class="add-photo-btn">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this, 'reporter-photos-container')">
                     </div>
                 </div>
 
@@ -141,6 +153,7 @@
             </form>
         </div>
         
+        <!-- Other Pages placeholders -->
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
             <h2 style="color: var(--primary-red);">Rescue History</h2>
@@ -161,22 +174,35 @@
             window.scrollTo(0, 0);
         }
 
-        function updateBtnText(inputElement, btnId) {
-            const btn = document.getElementById(btnId);
-            if(inputElement.files && inputElement.files.length > 0) {
-                btn.innerHTML = '<i class="fas fa-check-circle" style="color: #059669;"></i> Live Photo Captured!';
-                btn.style.borderColor = '#059669';
-                btn.style.background = '#ecfdf5';
+        // Handle Dynamic Preview Rows & Add More (+) Functionality
+        function handlePhotoUpload(input, containerId) {
+            const container = document.getElementById(containerId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Create Thumbnail Slot
+                    const slot = document.createElement('div');
+                    slot.className = 'image-preview-slot';
+                    slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    
+                    // Add before the add button
+                    const addButton = container.querySelector('.add-photo-btn');
+                    container.insertBefore(slot, addButton);
+                    
+                    // Modify Add Button icon to a clean '+' icon for extra photos
+                    addButton.querySelector('i').className = 'fas fa-plus';
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
         
-        // Custom Location Tracking with instant Direction link rendering
+        // Strict WhatsApp Style Location Trigger
         function getExactLocation() {
             const btn = document.getElementById('loc-btn');
             const mapBox = document.getElementById('map-link-container');
             const mapLink = document.getElementById('google-maps-link');
             
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating Device...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting Current Spot...';
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -186,45 +212,22 @@
                         
                         document.getElementById('lat-long-data').value = lat + "," + lng;
                         
-                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Found!';
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Current Location Sent!';
                         btn.classList.add('success');
                         
-                        // Active link generation for Google Maps Navigation
+                        // Creates clean mapping directly to user spot coordinates
                         mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-                        mapLink.innerHTML = `<i class="fas fa-map-location-dot"></i> 📍 Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)} (Tap to Navigate)`;
+                        mapLink.innerHTML = `<i class="fas fa-map-location-dot"></i> 📍 Live Location Active (Tap to Navigate)`;
                         mapBox.style.display = 'block';
                     },
                     (err) => {
-                        // Secure flexible option fallback
-                        navigator.geolocation.getCurrentPosition(
-                            (fbPos) => {
-                                const lat = fbPos.coords.latitude;
-                                const lng = fbPos.coords.longitude;
-                                document.getElementById('lat-long-data').value = lat + "," + lng;
-                                btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Found!';
-                                btn.classList.add('success');
-                                mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-                                mapLink.innerHTML = `<i class="fas fa-map-location-dot"></i> 📍 Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)} (Tap to Navigate)`;
-                                mapBox.style.display = 'block';
-                            },
-                            (fbErr) => {
-                                // Manual text generation box for unsecure environments
-                                const mockLat = 23.1815; 
-                                const mockLng = 75.7863;
-                                document.getElementById('lat-long-data').value = mockLat + "," + mockLng;
-                                btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Set (Ujjain Center)';
-                                btn.classList.add('success');
-                                mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${mockLat},${mockLng}`;
-                                mapLink.innerHTML = `<i class="fas fa-map-location-dot"></i> 📍 Ujjain Map Active (Tap to Navigate)`;
-                                mapBox.style.display = 'block';
-                            },
-                            { enableHighAccuracy: false, timeout: 5000 }
-                        );
+                        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Required.';
+                        alert("Kripya mobile screen ke top se Location/GPS icon ko switch ON karein aur Chrome popup aane par 'Allow' par click karein!");
                     },
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
                 );
             } else {
-                alert("Browser doesn't support tracking.");
+                alert("Device doesn't support live tracking.");
             }
         }
     </script>
