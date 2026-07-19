@@ -192,14 +192,14 @@
             </form>
         </div>
             <!-- Naya Custom Alert Box Structure -->
-    <div id="customAlert" class="custom-alert-overlay">
+       <div id="customAlert" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <div class="alert-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
             <h3 id="alertTitle">Alert</h3>
             <p id="alertMessage">Message details go here.</p>
             <button class="alert-close-btn" onclick="closeCustomAlert()">OK</button>
         </div>
-    </div>
+       </div>
         
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
@@ -255,16 +255,16 @@
                     document.getElementById('init-gps-btn').style.display = 'none';
                     document.getElementById('sub-loc-options').style.display = 'flex';
                 },
-                (error) => {
+                 (error) => {
                     // Strict management handling if user explicitly clicks block or system GPS hardware toggle state is dead off
                     alert("Kripya phone ka GPS status bar se ON karein aur browser ko location permission 'Allow' karein!");
                 },
                 { enableHighAccuracy: true, timeout: 7000 }
             );
-        }
+         }
 
         // Step 2 & 3 Process Flow Management
-        function processLocation(type) {
+         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
             const mapLink = document.getElementById('map-redirect-link');
             const titleText = document.getElementById('card-status-title');
