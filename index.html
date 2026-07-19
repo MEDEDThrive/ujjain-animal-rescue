@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujjain Animal Rescue Helpline</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- Header / Branding -->
+    <header class="bg-emerald-600 text-white text-center py-6 px-4 shadow-md sticky top-0 z-50">
+        <h1 class="text-2xl font-bold tracking-wide flex justify-center items-center gap-2">
+            <i class="fas fa-ambulance text-amber-300"></i> Ujjain Animal Rescue
+        </h1>
+        <p class="text-sm text-emerald-100 mt-1">Bejubano ki seva mein hamesha tatpar</p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-md mx-auto px-4 py-6 mb-20">
+        
+        <!-- Emergency SLA Notice -->
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6 shadow-sm">
+            <div class="flex gap-3">
+                <i class="fas fa-clock text-amber-600 text-lg mt-0.5"></i>
+                <div>
+                    <h3 class="font-bold text-amber-900 text-sm">2-Hour Rescue Target</h3>
+                    <p class="text-xs text-amber-700 mt-0.5">Report milte hi 2 ghante ke andar hamari team help ke liye pohochne ka poora prayas karti hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rescue Reporting Form -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <i class="fas fa-file-medical text-emerald-600"></i> Case Report Karein
+            </h2>
+            
+            <form id="rescueForm" class="space-y-4">
+                <!-- Animal Type -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Pashu ka Prakar (Animal)*</label>
+                    <select required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                        <option value="">Chuniye...</option>
+                        <option value="cow">Gai (Cow)</option>
+                        <option value="dog">Kutta (Dog)</option>
+                        <option value="calf">Bachhda (Calf)</option>
+                        <option value="other">Anya (Other)</option>
+                    </select>
+                </div>
+
+                <!-- Condition -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Pashu ki Sthiti (Injury Detail)*</label>
+                    <textarea required rows="3" placeholder="Pashu ko kya dikkat hai? (Jaise- accident, bimari, chot)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Ujjain mein Location / Pata*</label>
+                    <input type="text" required placeholder="Gali, landmark ya area ka naam" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <!-- Reporter Phone -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Aapka Mobile Number*</label>
+                    <input type="tel" required placeholder="10 Digits ka number" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <!-- Token Fee Note & Payment Button -->
+                <div class="pt-2">
+                    <div class="bg-gray-50 rounded-xl p-3 mb-4 text-xs text-gray-600 flex justify-between items-center">
+                        <span class="flex items-center gap-1.5"><i class="fas fa-receipt text-gray-400"></i> Verification Token Fee:</span>
+                        <span class="font-bold text-gray-900 text-sm">₹30</span>
+                    </div>
+                    
+                    <p class="text-[11px] text-gray-500 text-center mb-4">
+                        *Fake reports rokne ke liye ₹30 ka chota sa token shulk liya jata hai. Agar rescue team 2 ghante mein nahi pohochi, toh yeh fee **100% Refund** kar di jayegi.
+                    </p>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition transform active:scale-95 flex justify-center items-center gap-2 text-sm">
+                        Pay ₹30 & Submit Report <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer with Founder Details -->
+    <footer class="bg-gray-900 text-gray-400 text-center py-6 text-xs border-t border-gray-800 absolute bottom-0 w-full">
+        <p class="font-semibold text-gray-200 mb-1">Ujjain Animal Rescue Service</p>
+        <p class="text-gray-500 mb-3">Founder: <span class="text-emerald-400 font-medium">Raj Malviya</span></p>
+        <p class="text-[10px]">&copy; 2026 Ujjain Animal Rescue. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
+
