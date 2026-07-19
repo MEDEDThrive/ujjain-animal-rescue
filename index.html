@@ -191,6 +191,15 @@
                 <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
         </div>
+            <!-- Naya Custom Alert Box Structure -->
+    <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <div class="alert-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 id="alertTitle">Alert</h3>
+            <p id="alertMessage">Message details go here.</p>
+            <button class="alert-close-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
         
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
@@ -299,42 +308,46 @@
             document.getElementById('whatsapp-map-preview').style.display = 'none';
             alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
-        // Form Submission aur Number Validation Logic
-document.querySelector('.btn-submit').addEventListener('click', function(e) {
-    // Apne form ke inputs ko check karne ke liye
-    const phoneInput = document.querySelector('input[type="tel"]');
-    const phoneNumber = phoneInput.value.trim();
-    
-    // Regular Expression: Check karega ki number 6,7,8,9 se shuru ho aur pure 10 digit ka ho
-    const phonePattern = /^[6-9]\d{9}$/;
-    
-    if (phoneNumber === "") {
-        alert("Kripya apna mobile number darj karein!");
-        phoneInput.focus();
-        return;
-    }
-    
-    if (!phonePattern.test(phoneNumber)) {
-        alert("❌ Galat Mobile Number! Kripya 10 digits ka sahi Indian mobile number dalein.");
-        phoneInput.style.borderColor = "red";
-        phoneInput.focus();
-        return;
-    }
-    
-    // Agar number sahi hai toh border normal kar do
-    phoneInput.style.borderColor = "#d1d5db";
-    
-    // Yahan check karenge ki location li hai ya nahi
-    const latLong = document.getElementById('lat-long-data').value;
-    if (!latLong) {
-        alert("❌ Kripya pehle apni location share karein!");
-        return;
-    }
-    
-    // Agar sab sahi hai toh payment/submit process active hoga
-    alert("✅ Mobile Number aur Location sahi hain! Ab aap payment page par ja rahe hain...");
-    // Yahan aap apna payment gateway open kar sakte hain
-});
+                // Custom Alert Function trigger logic
+        function showCustomAlert(title, message) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
+
+        // Updated Validation Event Listener
+        document.querySelector('.btn-submit').addEventListener('click', function(e) {
+            const phoneInput = document.querySelector('input[type="tel"]');
+            const phoneNumber = phoneInput.value.trim();
+            const phonePattern = /^[6-9]\d{9}$/;
+            
+            if (phoneNumber === "") {
+                showCustomAlert("⚠️ Number missing", "Kripya apna mobile number darj khane mein bharein.");
+                phoneInput.focus();
+                return;
+            }
+            
+            if (!phonePattern.test(phoneNumber)) {
+                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 ank (digits) ka sahi aur chalu Indian mobile number hi dalein.");
+                phoneInput.style.borderColor = "#e11d48";
+                phoneInput.focus();
+                return;
+            }
+            
+            phoneInput.style.borderColor = "#d1d5db";
+            
+            const latLong = document.getElementById('lat-long-data').value;
+            if (!latLong) {
+                showCustomAlert("📍 Location Required", "Kripya pehle upar diye gaye button se apni sateek location share karein!");
+                return;
+            }
+            
+            showCustomAlert("✅ Verification Success", "Mobile number aur location dono sahi hain! Ab aap aage proceed kar rahe hain.");
+        });
         
     </script>
 </body>
