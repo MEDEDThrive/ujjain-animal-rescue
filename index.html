@@ -4,45 +4,265 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ujjain Animal Rescue Helpline</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts for Clean & Modern Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            color: #2d3748;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #059669; /* Seva Green */
+            color: white;
+            text-align: center;
+            padding: 20px 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #d1fae5;
+            font-weight: 400;
+        }
+
+        main {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 15px;
+            flex: 1;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .sla-notice {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-sizing: border-box;
+        }
+
+        .sla-notice i {
+            color: #d97706;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .sla-notice h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #78350f;
+            font-weight: 600;
+        }
+
+        .sla-notice p {
+            margin: 3px 0 0 0;
+            font-size: 12px;
+            color: #b45309;
+            line-height: 1.4;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+            box-sizing: border-box;
+        }
+
+        .form-card h2 {
+            margin: 0 0 18px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 10px;
+        }
+
+        .form-card h2 i {
+            color: #059669;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+            background-color: #fff;
+        }
+
+        .fee-container {
+            background-color: #f9fafb;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border: 1px dashed #e5e7eb;
+        }
+
+        .fee-label {
+            font-size: 13px;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fee-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding: 0 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #059669;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+            background-color: #047857;
+        }
+
+        footer {
+            background-color: #111827;
+            color: #9ca3af;
+            text-align: center;
+            padding: 20px 15px;
+            font-size: 12px;
+            margin-top: auto;
+            border-top: 1px solid #1f2937;
+        }
+
+        footer p {
+            margin: 0 0 4px 0;
+        }
+
+        footer .founder {
+            color: #34d399;
+            font-weight: 500;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body>
 
     <!-- Header / Branding -->
-    <header class="bg-emerald-600 text-white text-center py-6 px-4 shadow-md sticky top-0 z-50">
-        <h1 class="text-2xl font-bold tracking-wide flex justify-center items-center gap-2">
-            <i class="fas fa-ambulance text-amber-300"></i> Ujjain Animal Rescue
-        </h1>
-        <p class="text-sm text-emerald-100 mt-1">Bejubano ki seva mein hamesha tatpar</p>
+    <header>
+        <h1><i class="fas fa-ambulance" style="color: #fbbf24;"></i> Ujjain Animal Rescue</h1>
+        <p>Bejubano ki seva mein hamesha tatpar</p>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-md mx-auto px-4 py-6 mb-20">
+    <!-- Main Content -->
+    <main>
         
         <!-- Emergency SLA Notice -->
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6 shadow-sm">
-            <div class="flex gap-3">
-                <i class="fas fa-clock text-amber-600 text-lg mt-0.5"></i>
-                <div>
-                    <h3 class="font-bold text-amber-900 text-sm">2-Hour Rescue Target</h3>
-                    <p class="text-xs text-amber-700 mt-0.5">Report milte hi 2 ghante ke andar hamari team help ke liye pohochne ka poora prayas karti hai.</p>
-                </div>
+        <div class="sla-notice">
+            <i class="fas fa-clock"></i>
+            <div>
+                <h3>2-Hour Rescue Target</h3>
+                <p>Report milte hi 2 ghante ke andar hamari team help ke liye pohochne ka poora prayas karti hai.</p>
             </div>
         </div>
 
         <!-- Rescue Reporting Form -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
-                <i class="fas fa-file-medical text-emerald-600"></i> Case Report Karein
-            </h2>
+        <div class="form-card">
+            <h2><i class="fas fa-file-medical"></i> Case Report Karein</h2>
             
-            <form id="rescueForm" class="space-y-4">
+            <form id="rescueForm">
                 <!-- Animal Type -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Pashu ka Prakar (Animal)*</label>
-                    <select required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                <div class="form-group">
+                    <label>Pashu ka Prakar (Animal)*</label>
+                    <select required>
                         <option value="">Chuniye...</option>
                         <option value="cow">Gai (Cow)</option>
                         <option value="dog">Kutta (Dog)</option>
@@ -52,50 +272,47 @@
                 </div>
 
                 <!-- Condition -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Pashu ki Sthiti (Injury Detail)*</label>
-                    <textarea required rows="3" placeholder="Pashu ko kya dikkat hai? (Jaise- accident, bimari, chot)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500"></textarea>
+                <div class="form-group">
+                    <label>Pashu ki Sthiti (Injury Detail)*</label>
+                    <textarea required rows="3" placeholder="Pashu ko kya dikkat hai? (Jaise- accident, bimari, chot)"></textarea>
                 </div>
 
                 <!-- Location -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Ujjain mein Location / Pata*</label>
-                    <input type="text" required placeholder="Gali, landmark ya area ka naam" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                <div class="form-group">
+                    <label>Ujjain mein Location / Pata*</label>
+                    <input type="text" required placeholder="Gali, landmark ya area ka naam">
                 </div>
 
                 <!-- Reporter Phone -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Aapka Mobile Number*</label>
-                    <input type="tel" required placeholder="10 Digits ka number" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                <div class="form-group">
+                    <label>Aapka Mobile Number*</label>
+                    <input type="tel" required placeholder="10 Digits ka number">
                 </div>
 
-                <!-- Token Fee Note & Payment Button -->
-                <div class="pt-2">
-                    <div class="bg-gray-50 rounded-xl p-3 mb-4 text-xs text-gray-600 flex justify-between items-center">
-                        <span class="flex items-center gap-1.5"><i class="fas fa-receipt text-gray-400"></i> Verification Token Fee:</span>
-                        <span class="font-bold text-gray-900 text-sm">₹30</span>
-                    </div>
-                    
-                    <p class="text-[11px] text-gray-500 text-center mb-4">
-                        *Fake reports rokne ke liye ₹30 ka chota sa token shulk liya jata hai. Agar rescue team 2 ghante mein nahi pohochi, toh yeh fee **100% Refund** kar di jayegi.
-                    </p>
-
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition transform active:scale-95 flex justify-center items-center gap-2 text-sm">
-                        Pay ₹30 & Submit Report <i class="fas fa-arrow-right text-xs"></i>
-                    </button>
+                <!-- Token Fee & Button -->
+                <div class="fee-container">
+                    <div class="fee-label"><i class="fas fa-receipt" style="color: #9ca3af;"></i> Verification Token Fee:</div>
+                    <div class="fee-amount">₹30</div>
                 </div>
+                
+                <p class="disclaimer">
+                    *Fake reports rokne ke liye ₹30 ka chota sa token shulk liya jata hai. Agar rescue team 2 ghante mein nahi pohochi, toh yeh fee <b>100% Refund</b> kar di jayegi.
+                </p>
+
+                <button type="submit" class="submit-btn">
+                    Pay ₹30 & Submit Report <i class="fas fa-arrow-right" style="font-size: 12px;"></i>
+                </button>
             </form>
-        </section>
+        </div>
 
     </main>
 
     <!-- Footer with Founder Details -->
-    <footer class="bg-gray-900 text-gray-400 text-center py-6 text-xs border-t border-gray-800 absolute bottom-0 w-full">
-        <p class="font-semibold text-gray-200 mb-1">Ujjain Animal Rescue Service</p>
-        <p class="text-gray-500 mb-3">Founder: <span class="text-emerald-400 font-medium">Raj Malviya</span></p>
-        <p class="text-[10px]">&copy; 2026 Ujjain Animal Rescue. All Rights Reserved.</p>
+    <footer>
+        <p style="color: #f3f4f6; font-weight: 600;">Ujjain Animal Rescue Service</p>
+        <p>Founder: <span class="founder">Raj Malviya</span></p>
+        <p style="font-size: 10px; color: #6b7280; margin-top: 8px;">&copy; 2026 Ujjain Animal Rescue. All Rights Reserved.</p>
     </footer>
 
 </body>
 </html>
-
