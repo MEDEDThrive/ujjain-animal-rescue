@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; }
+        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
 
         /* Splash Screen Animation */
@@ -50,8 +50,12 @@
         .add-photo-btn i { font-size: 20px; color: #4b5563; }
         .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
 
-        /* WhatsApp Style Location Container */
-        .whatsapp-loc-container { background: #f0f2f5; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+        /* Step 1: Trigger Main Green Button Style */
+        .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2); transition: 0.2s; }
+        .btn-trigger-gps:active { transform: scale(0.98); }
+
+        /* Step 2: Hidden Box for Sub Options */
+        .whatsapp-loc-container { display: none; background: #f0f2f5; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; margin-top: 8px; flex-direction: column; gap: 8px; }
         .loc-option { background: white; border: 1px solid #e1e4e8; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; transition: background 0.2s; }
         .loc-option:active { background: #ebebeb; }
         .loc-option .icon-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
@@ -60,7 +64,7 @@
         .loc-option-text h4 { margin: 0; font-size: 14px; color: #111b21; font-weight: 600; }
         .loc-option-text p { margin: 0; font-size: 11px; color: #667781; }
 
-        /* WhatsApp / Google Map Style Preview Card Box (Dark/Styled Layout) */
+        /* Step 3: WhatsApp/Google Map Style Card Layout */
         .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid #2a3942; }
         .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
         .map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
@@ -134,7 +138,11 @@
                 </div>
 
                 <label>Ujjain Location Selection*</label>
-                <div class="whatsapp-loc-container">
+                <button type="button" id="init-gps-btn" class="btn-trigger-gps" onclick="requestSystemGPS()">
+                    <i class="fas fa-map-marker-alt"></i> Share Request Location
+                </button>
+
+                <div id="sub-loc-options" class="whatsapp-loc-container">
                     <div class="loc-option live" onclick="processLocation('live')">
                         <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
                         <div class="loc-option-text">
@@ -198,7 +206,7 @@
     </div>
 
     <script>
-        let watchId = null; // To store live tracking reference
+        let watchId = null;
 
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -206,7 +214,7 @@
             window.scrollTo(0, 0);
         }
 
-        // Handle Dynamic Preview Rows & Add More (+) Functionality
+        // Dynamic Image Previews Row
         function handlePhotoUpload(input, containerId) {
             const container = document.getElementById(containerId);
             if (input.files && input.files[0]) {
@@ -224,45 +232,55 @@
             }
         }
         
-        // Intelligent WhatsApp Location Switcher
+        // Step 1 Trigger Logic: Forces browser popup check first
+        function requestSystemGPS() {
+            if (!navigator.geolocation) {
+                alert("Aapka device GPS functionality ko support nahi karta hai.");
+                return;
+            }
+
+            // Fire an initial quick high accuracy attempt to trigger the browser allow/deny native popup window
+            navigator.geolocation.getCurrentPosition(
+                (success) => {
+                    // If allowed, hide green trigger button instantly and reveal WhatsApp sub-options container box smoothly
+                    document.getElementById('init-gps-btn').style.display = 'none';
+                    document.getElementById('sub-loc-options').style.display = 'flex';
+                },
+                (error) => {
+                    // Strict management handling if user explicitly clicks block or system GPS hardware toggle state is dead off
+                    alert("Kripya phone ka GPS status bar se ON karein aur browser ko location permission 'Allow' karein!");
+                },
+                { enableHighAccuracy: true, timeout: 7000 }
+            );
+        }
+
+        // Step 2 & 3 Process Flow Management
         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
             const mapLink = document.getElementById('map-redirect-link');
             const titleText = document.getElementById('card-status-title');
             const subtitleText = document.getElementById('card-status-subtitle');
             
-            // Clear any previous live tracker interval before making new requests
             if (watchId) { navigator.geolocation.clearWatch(watchId); }
             
-            subtitleText.innerText = "Fetching accurate GPS coordinates...";
+            subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
             mapCard.style.display = 'block';
             document.getElementById('selected-loc-type').value = type;
-
-            if (!navigator.geolocation) {
-                alert("Device tracking not supported.");
-                return;
-            }
 
             const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
 
             if (type === 'current') {
-                // Method 1: Get Current Location (Fixed Spot only)
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        updateLocationUI(lat, lng, "Current Location Sent", "Fixed spot position lock active", mapLink, titleText, subtitleText);
+                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot position lock active", mapLink, titleText, subtitleText);
                     },
                     (err) => handleLocError(),
                     options
                 );
             } else if (type === 'live') {
-                // Method 2: Share Live Location (Tracks movements in real-time)
                 watchId = navigator.geolocation.watchPosition(
                     (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        updateLocationUI(lat, lng, "🟢 Live Location Sharing", "Tracking device movements in real-time", mapLink, titleText, subtitleText);
+                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time", mapLink, titleText, subtitleText);
                     },
                     (err) => handleLocError(),
                     options
@@ -279,7 +297,7 @@
 
         function handleLocError() {
             document.getElementById('whatsapp-map-preview').style.display = 'none';
-            alert("Kripya mobile settings se 'Location/GPS' aur Browser Permissions ko switch ON karein!");
+            alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
     </script>
 </body>
