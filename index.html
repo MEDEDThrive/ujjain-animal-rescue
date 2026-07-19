@@ -51,7 +51,6 @@
 </head>
 <body>
 
-    <!-- Animating Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
@@ -61,15 +60,12 @@
     </div>
 
     <div class="app-container">
-        <!-- Top Profile Card -->
         <div class="founder-header">
-            <div class="profile-pic" style="background: url(Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg) center/cover;"></div>
-            
+            <div class="profile-pic" style="background: url('raj.jpg') center/cover;"></div>
             <h2 style="margin: 0; font-size: 20px; font-weight: 700;">Raj Malviya</h2>
             <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300;">Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <!-- Homepage Grid -->
         <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')">
@@ -80,7 +76,6 @@
                     <i class="fas fa-history"></i>
                     <h3>Rescue History</h3>
                 </div>
-                <!-- Cow Dressing / Treatment Box -->
                 <div class="nav-card" onclick="showPage('live-req')">
                     <div class="icon-combo">
                         <i class="fas fa-cow"></i>
@@ -91,7 +86,6 @@
             </div>
         </div>
 
-        <!-- Form Screen -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
@@ -104,10 +98,9 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <label>Ghav ya Pashu ki Photo*</label>
-                <input type="file" accept="image/*" required>
+                <label>Ghav ya Pashu ki Live Photo (Direct Camera)*</label>
+                <input type="file" accept="image/*" capture="camera" required>
 
-                <!-- WhatsApp Style Exact Location Button -->
                 <label>Ujjain Exact Location*</label>
                 <button type="button" id="loc-btn" class="location-btn" onclick="getExactLocation()">
                     <i class="fas fa-location-dot"></i> Share Live Location (WhatsApp Style)
@@ -117,21 +110,19 @@
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" placeholder="10 Digits ka number" required>
 
-                <label>Rescue Request Dalne Wale ki Photo*</label>
-                <input type="file" accept="image/*" required>
+                <label>Rescue Request Dalne Wale ki Live Photo (Direct Camera)*</label>
+                <input type="file" accept="image/*" capture="camera" required>
 
                 <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
         </div>
         
-        <!-- Placeholder for History -->
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
             <h2 style="color: var(--primary-red);">Rescue History</h2>
             <p style="color: #6b7280; font-size: 14px;">Purane ilaj aur cases ki details yahan dikhengi.</p>
         </div>
 
-        <!-- Placeholder for Live Requests -->
         <div id="live-req" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
             <h2 style="color: var(--primary-red);">Live Active Requests</h2>
@@ -146,12 +137,13 @@
             window.scrollTo(0, 0);
         }
         
-        // High Accuracy WhatsApp Style Location Function
+        // Dynamic & Flexible Location Function
         function getExactLocation() {
             const btn = document.getElementById('loc-btn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Exact Location...';
             
             if (navigator.geolocation) {
+                // Modified options for faster execution if highAccuracy delays or fails
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         document.getElementById('lat-long-data').value = pos.coords.latitude + "," + pos.coords.longitude;
@@ -159,13 +151,24 @@
                         btn.classList.add('success');
                     },
                     (err) => {
-                        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Denied. Try Again.';
-                        alert("Kripya phone ka GPS on karein aur location permission allow karein!");
+                        // Fallback retry with balanced accuracy
+                        navigator.geolocation.getCurrentPosition(
+                            (fallbackPos) => {
+                                document.getElementById('lat-long-data').value = fallbackPos.coords.latitude + "," + fallbackPos.coords.longitude;
+                                btn.innerHTML = '<i class="fas fa-check-circle"></i> Live Location Shared Successfully!';
+                                btn.classList.add('success');
+                            },
+                            (fallbackErr) => {
+                                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Denied. Try Again.';
+                                alert("Kripya apne mobile ki setting mein jaakar browser (Chrome) ke liye 'Location Permission' allow karein aur GPS On rakhein!");
+                            },
+                            { enableHighAccuracy: false, timeout: 8000 }
+                        );
                     },
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    { enableHighAccuracy: true, timeout: 5000 }
                 );
             } else {
-                alert("Aapka browser location support nahi karta.");
+                alert("Aapka mobile browser location support nahi karta.");
             }
         }
     </script>
