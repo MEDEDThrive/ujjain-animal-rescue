@@ -299,6 +299,43 @@
             document.getElementById('whatsapp-map-preview').style.display = 'none';
             alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
+        // Form Submission aur Number Validation Logic
+document.querySelector('.btn-submit').addEventListener('click', function(e) {
+    // Apne form ke inputs ko check karne ke liye
+    const phoneInput = document.querySelector('input[type="tel"]');
+    const phoneNumber = phoneInput.value.trim();
+    
+    // Regular Expression: Check karega ki number 6,7,8,9 se shuru ho aur pure 10 digit ka ho
+    const phonePattern = /^[6-9]\d{9}$/;
+    
+    if (phoneNumber === "") {
+        alert("Kripya apna mobile number darj karein!");
+        phoneInput.focus();
+        return;
+    }
+    
+    if (!phonePattern.test(phoneNumber)) {
+        alert("❌ Galat Mobile Number! Kripya 10 digits ka sahi Indian mobile number dalein.");
+        phoneInput.style.borderColor = "red";
+        phoneInput.focus();
+        return;
+    }
+    
+    // Agar number sahi hai toh border normal kar do
+    phoneInput.style.borderColor = "#d1d5db";
+    
+    // Yahan check karenge ki location li hai ya nahi
+    const latLong = document.getElementById('lat-long-data').value;
+    if (!latLong) {
+        alert("❌ Kripya pehle apni location share karein!");
+        return;
+    }
+    
+    // Agar sab sahi hai toh payment/submit process active hoga
+    alert("✅ Mobile Number aur Location sahi hain! Ab aap payment page par ja rahe hain...");
+    // Yahan aap apna payment gateway open kar sakte hain
+});
+        
     </script>
 </body>
 </html>
