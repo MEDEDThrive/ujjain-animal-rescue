@@ -22,7 +22,8 @@
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
         
         .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; position: relative; }
-        .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #ddd; margin: 0 auto 10px auto; }
+        .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #e5e7eb; margin: 0 auto 10px auto; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
         
         /* Menu Boxes */
         .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
@@ -45,6 +46,10 @@
         .location-btn { background-color: #25d366; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
         .location-btn.success { background-color: #059669; }
 
+        /* Clickable Map Link Display Box */
+        .map-link-box { display: none; background: #eff6ff; border: 1px dashed #3b82f6; border-radius: 12px; padding: 12px; margin-top: 10px; text-align: center; }
+        .map-link-box a { color: #2563eb; font-weight: 600; text-decoration: none; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
         .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2); }
         .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 20px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
     </style>
@@ -61,7 +66,9 @@
 
     <div class="app-container">
         <div class="founder-header">
-            <div class="profile-pic" style="background: url('raj.jpg') center/cover;"></div>
+            <div class="profile-pic">
+                <img src="raj.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Raj+Malviya&background=e11d48&color=fff&size=120'" alt="Founder">
+            </div>
             <h2 style="margin: 0; font-size: 20px; font-weight: 700;">Raj Malviya</h2>
             <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300;">Founder, Ujjain Animal Rescue</p>
         </div>
@@ -90,7 +97,7 @@
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
             
-            <form>
+            <form id="main-rescue-form">
                 <label>Pashu ka Prakar (Animal)*</label>
                 <select required>
                     <option value="">Chuniye...</option>
@@ -105,6 +112,12 @@
                 <button type="button" id="loc-btn" class="location-btn" onclick="getExactLocation()">
                     <i class="fas fa-location-dot"></i> Share Live Location (WhatsApp Style)
                 </button>
+                
+                <div id="map-link-container" class="map-link-box">
+                    <a id="google-maps-link" href="#" target="_blank">
+                        <i class="fas fa-map-marked-alt"></i> 📍 Tap to Open Route in Google Maps
+                    </a>
+                </div>
                 <input type="hidden" id="lat-long-data" required>
 
                 <label>Aapka Mobile Number*</label>
@@ -137,38 +150,60 @@
             window.scrollTo(0, 0);
         }
         
-        // Dynamic & Flexible Location Function
+        // Advanced High-Accuracy WhatsApp Style Location Script
         function getExactLocation() {
             const btn = document.getElementById('loc-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Exact Location...';
+            const mapBox = document.getElementById('map-link-container');
+            const mapLink = document.getElementById('google-maps-link');
             
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Live GPS...';
+            
+            const geoOptions = {
+                enableHighAccuracy: true,
+                timeout: 12000,
+                maximumAge: 0
+            };
+
             if (navigator.geolocation) {
-                // Modified options for faster execution if highAccuracy delays or fails
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        document.getElementById('lat-long-data').value = pos.coords.latitude + "," + pos.coords.longitude;
-                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Live Location Shared Successfully!';
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        
+                        // Save to hidden field
+                        document.getElementById('lat-long-data').value = lat + "," + lng;
+                        
+                        // Update button style
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Verified!';
                         btn.classList.add('success');
+                        
+                        // Generate Dynamic Google Maps Navigation Link
+                        mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+                        mapBox.style.display = 'block';
                     },
                     (err) => {
-                        // Fallback retry with balanced accuracy
+                        // Dynamic Fallback if high accuracy fails initially
                         navigator.geolocation.getCurrentPosition(
                             (fallbackPos) => {
-                                document.getElementById('lat-long-data').value = fallbackPos.coords.latitude + "," + fallbackPos.coords.longitude;
-                                btn.innerHTML = '<i class="fas fa-check-circle"></i> Live Location Shared Successfully!';
+                                const lat = fallbackPos.coords.latitude;
+                                const lng = fallbackPos.coords.longitude;
+                                document.getElementById('lat-long-data').value = lat + "," + lng;
+                                btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Verified!';
                                 btn.classList.add('success');
+                                mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+                                mapBox.style.display = 'block';
                             },
                             (fallbackErr) => {
-                                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Denied. Try Again.';
-                                alert("Kripya apne mobile ki setting mein jaakar browser (Chrome) ke liye 'Location Permission' allow karein aur GPS On rakhein!");
+                                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Denied.';
+                                alert("Kripya apne mobile status bar se Location/GPS ko ON karein aur Chrome Browser ko permission allow karein!");
                             },
-                            { enableHighAccuracy: false, timeout: 8000 }
+                            { enableHighAccuracy: false, timeout: 6000 }
                         );
                     },
-                    { enableHighAccuracy: true, timeout: 5000 }
+                    geoOptions
                 );
             } else {
-                alert("Aapka mobile browser location support nahi karta.");
+                alert("Aapka device GPS functionality support nahi karta.");
             }
         }
     </script>
