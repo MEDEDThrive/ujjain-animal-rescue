@@ -50,13 +50,28 @@
         .add-photo-btn i { font-size: 20px; color: #4b5563; }
         .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
 
-        /* WhatsApp Style Location Button */
-        .location-btn { background-color: #128c7e; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 8px; box-shadow: 0 4px 10px rgba(18, 140, 126, 0.2); }
-        .location-btn.success { background-color: #059669; }
+        /* WhatsApp Style Location Container */
+        .whatsapp-loc-container { background: #f0f2f5; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .loc-option { background: white; border: 1px solid #e1e4e8; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; transition: background 0.2s; }
+        .loc-option:active { background: #ebebeb; }
+        .loc-option .icon-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .loc-option.live .icon-circle { background-color: #00a884; }
+        .loc-option.current .icon-circle { background-color: #34b7f1; }
+        .loc-option-text h4 { margin: 0; font-size: 14px; color: #111b21; font-weight: 600; }
+        .loc-option-text p { margin: 0; font-size: 11px; color: #667781; }
 
-        /* Clickable Map Link Display Box */
-        .map-link-box { display: none; background: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px; padding: 15px; margin-top: 12px; text-align: center; }
-        .map-link-box a { color: #1d4ed8; font-weight: 700; text-decoration: none; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* WhatsApp / Google Map Style Preview Card Box (Dark/Styled Layout) */
+        .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid #2a3942; }
+        .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+        .map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
+        .map-pin-center { font-size: 34px; color: #ea4335; position: relative; z-index: 2; animation: pinBounce 1.5s infinite alternate; }
+        .map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2a3942; }
+        .map-card-info { display: flex; flex-direction: column; gap: 2px; }
+        .map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .map-card-subtitle { color: #8696a0; font-size: 11px; }
+        .map-card-action-btn { background: #00a884; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+
+        @keyframes pinBounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 
         .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2); }
         .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 20px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
@@ -64,7 +79,6 @@
 </head>
 <body>
 
-    <!-- Animating Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
@@ -74,7 +88,6 @@
     </div>
 
     <div class="app-container">
-        <!-- Top Profile Card -->
         <div class="founder-header">
             <div class="profile-pic">
                 <img src="raj.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Raj+Malviya&background=ffffff&color=e11d48&size=120'" alt="Raj Malviya">
@@ -83,7 +96,6 @@
             <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300;">Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <!-- Homepage Grid -->
         <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')">
@@ -101,7 +113,6 @@
             </div>
         </div>
 
-        <!-- Form Screen -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
@@ -114,7 +125,6 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <!-- Dynamic Photo Grid Section for Animal -->
                 <label>Ghav ya Pashu ki Live Photo (Direct Camera)*</label>
                 <div class="preview-container" id="animal-photos-container">
                     <div class="add-photo-btn">
@@ -123,24 +133,45 @@
                     </div>
                 </div>
 
-                <!-- WhatsApp Style Location Area -->
-                <label>Ujjain Exact Location*</label>
-                <button type="button" id="loc-btn" class="location-btn" onclick="getExactLocation()">
-                    <i class="fas fa-crosshairs"></i> Send your current location
-                </button>
-                
-                <!-- Dynamic Navigation Link Box -->
-                <div id="map-link-container" class="map-link-box">
-                    <a id="google-maps-link" href="#" target="_blank">
-                        <i class="fas fa-map-location-dot"></i> Tap to View Direction Link
-                    </a>
+                <label>Ujjain Location Selection*</label>
+                <div class="whatsapp-loc-container">
+                    <div class="loc-option live" onclick="processLocation('live')">
+                        <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
+                        <div class="loc-option-text">
+                            <h4>Share live location</h4>
+                            <p>Updates dynamically as they move</p>
+                        </div>
+                    </div>
+                    <div class="loc-option current" onclick="processLocation('current')">
+                        <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
+                        <div class="loc-option-text">
+                            <h4>Send your current location</h4>
+                            <p>Accurate fixed spot location</p>
+                        </div>
+                    </div>
                 </div>
+                
+                <div id="whatsapp-map-preview" class="whatsapp-map-card">
+                    <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
+                        <i class="fas fa-map-pin map-pin-center"></i>
+                    </div>
+                    <div class="map-card-details">
+                        <div class="map-card-info">
+                            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
+                            <span class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch rescue team</span>
+                        </div>
+                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">
+                            Open Maps <i class="fas fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
                 <input type="hidden" id="lat-long-data" required>
+                <input type="hidden" id="selected-loc-type">
 
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" placeholder="10 Digits ka number" required>
 
-                <!-- Dynamic Photo Grid Section for Reporter -->
                 <label>Rescue Request Dalne Wale ki Live Photo (Direct Camera)*</label>
                 <div class="preview-container" id="reporter-photos-container">
                     <div class="add-photo-btn">
@@ -153,7 +184,6 @@
             </form>
         </div>
         
-        <!-- Other Pages placeholders -->
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
             <h2 style="color: var(--primary-red);">Rescue History</h2>
@@ -168,6 +198,8 @@
     </div>
 
     <script>
+        let watchId = null; // To store live tracking reference
+
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -180,55 +212,74 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Create Thumbnail Slot
                     const slot = document.createElement('div');
                     slot.className = 'image-preview-slot';
                     slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                     
-                    // Add before the add button
                     const addButton = container.querySelector('.add-photo-btn');
                     container.insertBefore(slot, addButton);
-                    
-                    // Modify Add Button icon to a clean '+' icon for extra photos
                     addButton.querySelector('i').className = 'fas fa-plus';
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
         
-        // Strict WhatsApp Style Location Trigger
-        function getExactLocation() {
-            const btn = document.getElementById('loc-btn');
-            const mapBox = document.getElementById('map-link-container');
-            const mapLink = document.getElementById('google-maps-link');
+        // Intelligent WhatsApp Location Switcher
+        function processLocation(type) {
+            const mapCard = document.getElementById('whatsapp-map-preview');
+            const mapLink = document.getElementById('map-redirect-link');
+            const titleText = document.getElementById('card-status-title');
+            const subtitleText = document.getElementById('card-status-subtitle');
             
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting Current Spot...';
+            // Clear any previous live tracker interval before making new requests
+            if (watchId) { navigator.geolocation.clearWatch(watchId); }
             
-            if (navigator.geolocation) {
+            subtitleText.innerText = "Fetching accurate GPS coordinates...";
+            mapCard.style.display = 'block';
+            document.getElementById('selected-loc-type').value = type;
+
+            if (!navigator.geolocation) {
+                alert("Device tracking not supported.");
+                return;
+            }
+
+            const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+
+            if (type === 'current') {
+                // Method 1: Get Current Location (Fixed Spot only)
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
-                        
-                        document.getElementById('lat-long-data').value = lat + "," + lng;
-                        
-                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Current Location Sent!';
-                        btn.classList.add('success');
-                        
-                        // Creates clean mapping directly to user spot coordinates
-                        mapLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-                        mapLink.innerHTML = `<i class="fas fa-map-location-dot"></i> 📍 Live Location Active (Tap to Navigate)`;
-                        mapBox.style.display = 'block';
+                        updateLocationUI(lat, lng, "Current Location Sent", "Fixed spot position lock active", mapLink, titleText, subtitleText);
                     },
-                    (err) => {
-                        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Required.';
-                        alert("Kripya mobile screen ke top se Location/GPS icon ko switch ON karein aur Chrome popup aane par 'Allow' par click karein!");
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                    (err) => handleLocError(),
+                    options
                 );
-            } else {
-                alert("Device doesn't support live tracking.");
+            } else if (type === 'live') {
+                // Method 2: Share Live Location (Tracks movements in real-time)
+                watchId = navigator.geolocation.watchPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        updateLocationUI(lat, lng, "🟢 Live Location Sharing", "Tracking device movements in real-time", mapLink, titleText, subtitleText);
+                    },
+                    (err) => handleLocError(),
+                    options
+                );
             }
+        }
+
+        function updateLocationUI(lat, lng, title, subtitle, mapLink, titleText, subtitleText) {
+            document.getElementById('lat-long-data').value = lat + "," + lng;
+            titleText.innerText = title;
+            subtitleText.innerText = subtitle;
+            mapLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+
+        function handleLocError() {
+            document.getElementById('whatsapp-map-preview').style.display = 'none';
+            alert("Kripya mobile settings se 'Location/GPS' aur Browser Permissions ko switch ON karein!");
         }
     </script>
 </body>
