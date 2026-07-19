@@ -5,52 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ujjain Animal Rescue</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
 
-        /* Splash Screen */
-        #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; z-index: 1000; animation: fadeOut 2s forwards 2s; }
+        /* Splash Screen Animation */
+        #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; z-index: 1000; animation: fadeOut 0.8s forwards 2.5s; }
+        .ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
+        .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s infinite alternate; }
+        @keyframes drive { 0% { transform: translateX(-20px); } 50% { transform: translateX(20px); } 100% { transform: translateX(-20px); } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* Main App Container */
-        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; }
+        /* Main App Layout */
+        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
         
-        /* Header / Founder */
-        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
-        .profile-pic { width: 80px; height: 80px; border-radius: 50%; border: 3px solid white; background: #ddd; margin-bottom: 10px; }
+        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; position: relative; }
+        .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #ddd; margin: 0 auto 10px auto; }
         
-        /* Big Navigation Cards */
-        .nav-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; }
-        .nav-card { background: var(--white); border: 2px solid var(--primary-red); border-radius: 20px; padding: 30px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.1); }
-        .nav-card i { font-size: 40px; color: var(--primary-red); margin-bottom: 10px; }
-        .nav-card h3 { color: var(--primary-red); margin: 0; font-size: 18px; }
+        /* Menu Boxes */
+        .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
+        .nav-card { background: var(--white); border: 2px solid var(--primary-red); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 16px rgba(225, 29, 72, 0.08); }
+        .nav-card:active { transform: scale(0.97); }
+        .nav-card i { font-size: 38px; color: var(--primary-red); margin-bottom: 12px; }
+        .nav-card .icon-combo { display: inline-block; position: relative; margin-bottom: 12px; }
+        .nav-card .icon-combo .sub-icon { position: absolute; font-size: 16px; top: 18px; right: -8px; background: var(--white); border-radius: 50%; padding: 2px; }
+        .nav-card h3 { color: #1f2937; margin: 0; font-size: 18px; font-weight: 600; }
 
-        /* Form Styling */
+        /* Pages */
         .page { display: none; padding: 20px; }
         .active { display: block; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 10px 0; box-sizing: border-box; }
-        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        /* Modern Form Inputs */
+        label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-top: 15px; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-top: 5px; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-size: 14px; background: #f9fafb; }
+        
+        /* WhatsApp Style Location Button */
+        .location-btn { background-color: #25d366; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
+        .location-btn.success { background-color: #059669; }
+
+        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2); }
+        .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 20px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
+    <!-- Animating Splash Screen -->
     <div id="splash">
-        <i class="fas fa-paw" style="font-size: 50px; margin-bottom: 20px;"></i>
-        <h1>Bejuban ki Pukar</h1>
+        <div class="ambulance-container">
+            <i class="fas fa-cow cow-on-top"></i>
+            <i class="fas fa-ambulance"></i>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 700; letter-spacing: 0.5px; margin: 0;">Bejuban ki Pukar</h1>
     </div>
 
     <div class="app-container">
-        <!-- Founder Profile -->
+        <!-- Top Profile Card -->
         <div class="founder-header">
-            <div class="profile-pic" style="background: url('YOUR_PHOTO_URL') center/cover;"></div>
-            <h2 style="margin: 0;">Raj Malviya</h2>
-            <p style="margin: 0; opacity: 0.9;">Founder, Ujjain Animal Rescue</p>
+            <div class="profile-pic" style="background: url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80') center/cover;"></div>
+            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">Raj Malviya</h2>
+            <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300;">Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <!-- Home Section -->
+        <!-- Homepage Grid -->
         <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')">
@@ -61,25 +79,62 @@
                     <i class="fas fa-history"></i>
                     <h3>Rescue History</h3>
                 </div>
+                <!-- Cow Dressing / Treatment Box -->
                 <div class="nav-card" onclick="showPage('live-req')">
-                    <i class="fas fa-globe"></i>
+                    <div class="icon-combo">
+                        <i class="fas fa-cow"></i>
+                        <i class="fas fa-user-md sub-icon" style="color: var(--primary-red);"></i>
+                    </div>
                     <h3>Live Requests</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Form Section -->
+        <!-- Form Screen -->
         <div id="rescue-form" class="page">
-            <h2 style="color: var(--primary-red);">New Request</h2>
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
+            
             <form>
-                <select><option>Pashu ka Prakar</option></select>
-                <input type="file" accept="image/*" placeholder="Ghav/Pashu ki Photo">
-                <input type="text" placeholder="Live Location" id="location-input">
-                <input type="tel" placeholder="Mobile Number">
-                <input type="file" accept="image/*" placeholder="Aapki Photo">
-                <button type="button" class="btn-submit">Pay ₹30 & Submit</button>
+                <label>Pashu ka Prakar (Animal)*</label>
+                <select required>
+                    <option value="">Chuniye...</option>
+                    <option value="cow">Gai (Cow)</option>
+                    <option value="calf">Bachhda (Calf)</option>
+                </select>
+
+                <label>Ghav ya Pashu ki Photo*</label>
+                <input type="file" accept="image/*" required>
+
+                <!-- WhatsApp Style Exact Location Button -->
+                <label>Ujjain Exact Location*</label>
+                <button type="button" id="loc-btn" class="location-btn" onclick="getExactLocation()">
+                    <i class="fas fa-location-dot"></i> Share Live Location (WhatsApp Style)
+                </button>
+                <input type="hidden" id="lat-long-data" required>
+
+                <label>Aapka Mobile Number*</label>
+                <input type="tel" placeholder="10 Digits ka number" required>
+
+                <label>Rescue Request Dalne Wale ki Photo*</label>
+                <input type="file" accept="image/*" required>
+
+                <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
-            <button onclick="showPage('home')" style="background:none; border:none; color:gray; margin-top:20px;">Back to Home</button>
+        </div>
+        
+        <!-- Placeholder for History -->
+        <div id="history" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h2 style="color: var(--primary-red);">Rescue History</h2>
+            <p style="color: #6b7280; font-size: 14px;">Purane ilaj aur cases ki details yahan dikhengi.</p>
+        </div>
+
+        <!-- Placeholder for Live Requests -->
+        <div id="live-req" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h2 style="color: var(--primary-red);">Live Active Requests</h2>
+            <p style="color: #6b7280; font-size: 14px;">Ujjain ke chal rahe cases ki live list yahan aayegi.</p>
         </div>
     </div>
 
@@ -87,15 +142,31 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
         }
         
-        // Simple location trigger
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('location-input').value = "Lat: " + pos.coords.latitude.toFixed(4) + ", Long: " + pos.coords.longitude.toFixed(4);
-            });
+        // High Accuracy WhatsApp Style Location Function
+        function getExactLocation() {
+            const btn = document.getElementById('loc-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching Exact Location...';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        document.getElementById('lat-long-data').value = pos.coords.latitude + "," + pos.coords.longitude;
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Live Location Shared Successfully!';
+                        btn.classList.add('success');
+                    },
+                    (err) => {
+                        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> GPS Access Denied. Try Again.';
+                        alert("Kripya phone ka GPS on karein aur location permission allow karein!");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                alert("Aapka browser location support nahi karta.");
+            }
         }
     </script>
 </body>
 </html>
-
