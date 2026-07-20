@@ -10,7 +10,6 @@
         :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
 
-        /* Splash Screen Animation */
         #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2.5s forwards; }
         .ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
         .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s ease infinite; }
@@ -19,14 +18,17 @@
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
-        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; }
+        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
         .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #e5e7eb; margin: 0 auto 10px auto; overflow: hidden; }
-        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .founder-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
+        .founder-header p { margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300; }
 
         .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
         .nav-card { background: var(--white); border: 2px solid var(--soft-red); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .nav-card:active { transform: scale(0.97); }
         .nav-card i { font-size: 38px; color: var(--primary-red); margin-bottom: 12px; }
+        .nav-card h3 { color: #1f2937; margin: 0; font-size: 18px; font-weight: 600; }
 
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
@@ -36,29 +38,55 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary-red); outline: none; }
 
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
-        .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); overflow: hidden; }
+        .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
-        .add-photo-btn { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .add-photo-btn { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
         .add-photo-btn i { font-size: 20px; color: #4b5563; }
+        .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
 
-        .btn-trigger-gps, .btn-submit { padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; cursor: pointer; }
-        .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; }
-        .btn-submit { background: var(--primary-red); color: white; border: none; margin-top: 20px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+        .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2); }
+        .btn-trigger-gps:active { transform: scale(0.98); }
 
-        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999999; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
-        .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+        .whatsapp-loc-container { display: none; background: #f0fdf4; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
+        .loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
+        .loc-option:last-child { margin-bottom: 0; }
+        .loc-option:active { background: #f9fafb; }
+        .loc-option .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .loc-option.live .icon-circle { background-color: #00a884; }
+        .loc-option.current .icon-circle { background-color: #3b82f6; }
+        .loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; font-weight: 600; }
+        .loc-option-text p { margin: 2px 0 0 0; font-size: 11px; color: #6b7280; }
+
+        .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
+        .map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 16px 16px; }
+        .map-pin-center { font-size: 34px; color: #ea4335; position: relative; z-index: 2; animation: pinBounce 1.5s infinite; }
+        .map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2c3941; }
+        .map-card-info { display: flex; flex-direction: column; gap: 2px; }
+        .map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .map-card-subtitle { color: #8696a0; font-size: 11px; }
+        .map-card-action-btn { background: #00a884; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        @keyframes pinBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+        .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+
+        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999999 !important; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); box-sizing: border-box; }
+        .modal-icon { font-size: 38px; color: #e11d48; margin-bottom: 12px; }
+        .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1f2937; }
+        .modal-text { color: #4b5563; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px; }
+        .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
             <i class="fas fa-ambulance"></i>
         </div>
-        <h1 style="color: white; font-size: 24px; font-weight: 700;">Bejuban ki Pukar</h1>
+        <h1 style="color: white; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; margin: 0;">Bejuban ki Pukar</h1>
     </div>
 
     <div class="app-container">
@@ -70,7 +98,6 @@
             <p>Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <!-- HOME PAGE -->
         <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
@@ -79,14 +106,13 @@
             </div>
         </div>
 
-        <!-- RESCUE FORM -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
-            <h2 style="color: var(--primary-red); margin: 15px 0 20px;">New Rescue Request</h2>
+            <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
             
             <form id="main-rescue-form">
                 <label>Pashu ka Prakar (Animal)*</label>
-                <select id="animal-type" required>
+                <select required>
                     <option value="">Chuniye...</option>
                     <option value="cow">Gai (Cow)</option>
                     <option value="calf">Bachhda (Calf)</option>
@@ -105,31 +131,39 @@
                     <i class="fas fa-map-marker-alt"></i> Share Request Location
                 </button>
 
-                <div id="sub-loc-options" class="whatsapp-loc-container" style="display:none;">
-                    <!-- loc options same as before -->
-                    <div class="loc-option live" onclick="processLocation('live')"><div class="icon-circle"><i class="fas fa-location-dot"></i></div><div class="loc-option-text"><h4>Share live location</h4><p>Updates dynamically</p></div></div>
-                    <div class="loc-option current" onclick="processLocation('current')"><div class="icon-circle"><i class="fas fa-crosshairs"></i></div><div class="loc-option-text"><h4>Send current location</h4><p>Fixed spot</p></div></div>
-                </div>
-
-                <div id="whatsapp-map-preview" class="whatsapp-map-card" style="display:none;">
-                    <!-- map card same -->
-                    <div class="map-static-visual"><i class="fas fa-map-pin map-pin-center"></i></div>
-                    <div class="map-card-details">
-                        <div class="map-card-info">
-                            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
-                            <span class="map-card-subtitle" id="card-status-subtitle"></span>
-                        </div>
-                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">Open Maps</a>
+                <div id="sub-loc-options" class="whatsapp-loc-container">
+                    <div class="loc-option live" onclick="processLocation('live')">
+                        <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
+                        <div class="loc-option-text"><h4>Share live location</h4><p>Updates dynamically as they move</p></div>
+                    </div>
+                    <div class="loc-option current" onclick="processLocation('current')">
+                        <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
+                        <div class="loc-option-text"><h4>Send your current location</h4><p>Accurate fixed spot location</p></div>
                     </div>
                 </div>
 
-                <input type="hidden" id="lat-long-data">
+                <div id="whatsapp-map-preview" class="whatsapp-map-card">
+                    <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
+                        <i class="fas fa-map-pin map-pin-center"></i>
+                    </div>
+                    <div class="map-card-details">
+                        <div class="map-card-info">
+                            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
+                            <span class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch rescue team</span>
+                        </div>
+                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">
+                            Open Maps <i class="fas fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <input type="hidden" id="lat-long-data" required>
                 <input type="hidden" id="selected-loc-type">
 
                 <label>Aapka Mobile Number*</label>
-                <input type="tel" id="phone" placeholder="10 Digits ka number" required>
+                <input type="tel" placeholder="10 Digits ka number" required>
 
-                <label>Reporter ki Photo*</label>
+                <label>Rescue Request Dalne Wale ki Live Photo*</label>
                 <div class="preview-container" id="reporter-photos-container">
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
@@ -137,31 +171,37 @@
                     </div>
                 </div>
 
-                <button type="button" id="submit-btn" class="btn-submit">Pay ₹30 & Submit Request</button>
+                <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
         </div>
 
-        <!-- Other pages same as before -->
-        <div id="history" class="page">... (same)</div>
-        <div id="live-req" class="page">... (same)</div>
+        <div id="history" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 15px;">Rescue History</h2>
+            <p style="color: #6b7280; font-size: 14px;">Purane ilaj aur cases ki details yahan dikhengi.</p>
+        </div>
+
+        <div id="live-req" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 15px;">Live Active Requests</h2>
+            <p style="color: #6b7280; font-size: 14px;">Ujjain ke chal rahe cases ki live list yahan aayegi.</p>
+        </div>
     </div>
 
-    <!-- Custom Alert -->
     <div id="customAlert">
         <div class="modal-content">
             <div class="modal-icon" id="modalIcon">⚠️</div>
-            <div class="modal-title" id="modalTitle"></div>
-            <div class="modal-text" id="errorMsg"></div>
+            <div class="modal-title" id="modalTitle">Invalid Input</div>
+            <div class="modal-text" id="errorMsg">Kripya sahi number darj karein.</div>
             <button class="btn-ok" onclick="document.getElementById('customAlert').style.display='none'">OK</button>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-        // === तुम्हारा Firebase Config ===
         const firebaseConfig = {
             apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
             authDomain: "ujjainanimalrescue.firebaseapp.com",
@@ -174,86 +214,109 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ============== Existing Functions (shortened for space) ==============
         let watchId = null;
 
-        function showPage(pageId) { /* same as before */ }
-        function handlePhotoUpload(input, containerId) { /* same */ }
-        function requestSystemGPS() { /* same */ }
-        function processLocation(type) { /* same */ }
-        function updateLocationUI(lat, lng, title, subtitle) { /* same */ }
-        function handleLocError() { /* same */ }
-        function showCustomAlert(title, message, isError = true) { /* same */ }
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
 
-        // ==================== FIREBASE SAVE FUNCTION ====================
-        async function saveRescueRequest() {
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Saving...';
-
-            try {
-                const animalType = document.getElementById('animal-type').value;
-                const phone = document.getElementById('phone').value.trim();
-                const location = document.getElementById('lat-long-data').value;
-                const locType = document.getElementById('selected-loc-type').value;
-
-                if (!animalType || !phone || !location) {
-                    throw new Error("कुछ जानकारी missing है");
-                }
-
-                const rescueData = {
-                    animalType: animalType,
-                    phone: phone,
-                    location: location,
-                    locationType: locType,
-                    status: "pending",
-                    timestamp: serverTimestamp(),
-                    createdAt: new Date().toISOString()
+        function handlePhotoUpload(input, containerId) {
+            const container = document.getElementById(containerId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const slot = document.createElement('div');
+                    slot.className = 'image-preview-slot';
+                    slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    const addButton = container.querySelector('.add-photo-btn');
+                    container.insertBefore(slot, addButton);
+                    addButton.querySelector('i').className = 'fas fa-plus';
                 };
-
-                const docRef = await addDoc(collection(db, "rescueRequests"), rescueData);
-                
-                showCustomAlert("✅ Request Submitted!", `Request ID: ${docRef.id}\nTeam soon contact करेगा।`, false);
-                
-                // Reset form after success
-                document.getElementById('main-rescue-form').reset();
-                document.getElementById('whatsapp-map-preview').style.display = 'none';
-                document.getElementById('sub-loc-options').style.display = 'none';
-                document.getElementById('init-gps-btn').style.display = 'block';
-
-            } catch (error) {
-                console.error("Firebase Error:", error);
-                showCustomAlert("❌ Error", "Request save nahi ho pa raha. Baad mein try karein.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Pay ₹30 & Submit Request';
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // Submit Button Listener
-        document.getElementById('submit-btn').addEventListener('click', function(e) {
+        function requestSystemGPS() {
+            if (!navigator.geolocation) return alert("GPS support nahi hai");
+            navigator.geolocation.getCurrentPosition(() => {
+                document.getElementById('init-gps-btn').style.display = 'none';
+                document.getElementById('sub-loc-options').style.display = 'block';
+            }, () => alert("Location permission allow karein"));
+        }
+
+        function processLocation(type) {
+            const mapCard = document.getElementById('whatsapp-map-preview');
+            document.getElementById('selected-loc-type').value = type;
+            mapCard.style.display = 'block';
+
+            if (type === 'current') {
+                navigator.geolocation.getCurrentPosition(pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude));
+            } else if (type === 'live') {
+                watchId = navigator.geolocation.watchPosition(pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude));
+            }
+        }
+
+        function updateLocationUI(lat, lng) {
+            document.getElementById('lat-long-data').value = `\( {lat}, \){lng}`;
+            document.getElementById('card-status-title').innerText = "Location Selected";
+            document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
+        }
+
+        function handleLocError() {
+            document.getElementById('whatsapp-map-preview').style.display = 'none';
+        }
+
+        function showCustomAlert(title, message, isError = true) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('errorMsg').innerText = message;
+            document.getElementById('modalIcon').innerText = isError ? "❌" : "✅";
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        // Firebase Save
+        async function saveRescueRequest() {
+            const btn = document.querySelector('.btn-submit');
+            const originalText = btn.textContent;
+            btn.textContent = "Saving...";
+            btn.disabled = true;
+
+            try {
+                const data = {
+                    animalType: document.querySelector('select').value,
+                    phone: document.querySelector('input[type="tel"]').value,
+                    location: document.getElementById('lat-long-data').value,
+                    locationType: document.getElementById('selected-loc-type').value,
+                    timestamp: serverTimestamp()
+                };
+
+                await addDoc(collection(db, "rescueRequests"), data);
+                showCustomAlert("Success", "Request saved successfully in Firebase!", false);
+            } catch (e) {
+                showCustomAlert("Error", "Failed to save. Check internet.");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Submit Handler
+        document.querySelector('.btn-submit').addEventListener('click', (e) => {
             e.preventDefault();
-            
-            // Your existing validation logic here...
-            const phoneInput = document.getElementById('phone');
-            const val = phoneInput.value.trim();
-            
-            if (val === "" || !/^[6-9]\d{9}$/.test(val)) {
-                showCustomAlert("❌ Galat Number", "Sahi 10 digit mobile number dalein.");
+            // Your original validation code remains here
+            const phone = document.querySelector('input[type="tel"]').value.trim();
+            if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
+                showCustomAlert("Invalid Number", "Sahi number dalein");
                 return;
             }
-
-            const latLong = document.getElementById('lat-long-data').value;
-            if (!latLong) {
-                showCustomAlert("📍 Location Required", "Pehle location share karein!");
+            if (!document.getElementById('lat-long-data').value) {
+                showCustomAlert("Location Missing", "Location share karein");
                 return;
             }
-
-            // Call Firebase save
             saveRescueRequest();
         });
 
-        // Make functions global
         window.showPage = showPage;
         window.handlePhotoUpload = handlePhotoUpload;
         window.requestSystemGPS = requestSystemGPS;
