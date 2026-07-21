@@ -372,6 +372,26 @@
             // window.location.href = "YOUR_PAYMENT_GATEWAY_URL_HERE";
         });
     </script>
+    // ==================== FIREBASE SETUP ====================
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+  authDomain: "ujjainanimalrescue.firebaseapp.com",
+  projectId: "ujjainanimalrescue",
+  storageBucket: "ujjainanimalrescue.firebasestorage.app",
+  messagingSenderId: "686634974496",
+  appId: "1:686634974496:web:8b56642568a257e49fab45"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+
+console.log("✅ Firebase Connected Successfully!");
+</script>
 </body>
 </html>
 .
