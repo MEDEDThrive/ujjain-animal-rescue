@@ -10,6 +10,7 @@
         :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
 
+        /* Splash Screen Animation */
         #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2.5s forwards; }
         .ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
         .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s ease infinite; }
@@ -17,6 +18,7 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
+        /* Main App Layout */
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
         .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
         .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #e5e7eb; margin: 0 auto 10px auto; overflow: hidden; }
@@ -24,19 +26,23 @@
         .founder-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
         .founder-header p { margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300; }
 
+        /* Menu Boxes */
         .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
         .nav-card { background: var(--white); border: 2px solid var(--soft-red); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .nav-card:active { transform: scale(0.97); }
         .nav-card i { font-size: 38px; color: var(--primary-red); margin-bottom: 12px; }
         .nav-card h3 { color: #1f2937; margin: 0; font-size: 18px; font-weight: 600; }
 
+        /* Pages */
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
 
+        /* Modern Form Inputs */
         label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 15px; }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary-red); outline: none; }
 
+        /* Advanced Image Preview Rows */
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
         .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
@@ -44,9 +50,11 @@
         .add-photo-btn i { font-size: 20px; color: #4b5563; }
         .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
 
+        /* Step 1: Trigger Main Green Button Style */
         .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2); }
         .btn-trigger-gps:active { transform: scale(0.98); }
 
+        /* Step 2: Hidden Box for Sub Options */
         .whatsapp-loc-container { display: none; background: #f0fdf4; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
         .loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
         .loc-option:last-child { margin-bottom: 0; }
@@ -57,6 +65,7 @@
         .loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; font-weight: 600; }
         .loc-option-text p { margin: 2px 0 0 0; font-size: 11px; color: #6b7280; }
 
+        /* Step 3: WhatsApp/Google Map Style Card Layout */
         .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
         .map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 16px 16px; }
@@ -71,8 +80,15 @@
         .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
         .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 0; }
 
-        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999999 !important; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); box-sizing: border-box; }
+        /* Professional Custom Popup Modal Styles */
+        #customAlert {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(5px); z-index: 999999 !important; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 330px; border-radius: 18px; 
+            padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); box-sizing: border-box;
+        }
         .modal-icon { font-size: 38px; color: #e11d48; margin-bottom: 12px; }
         .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1f2937; }
         .modal-text { color: #4b5563; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px; }
@@ -81,6 +97,7 @@
 </head>
 <body>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
@@ -90,6 +107,7 @@
     </div>
 
     <div class="app-container">
+        <!-- Founder Profile Header Area -->
         <div class="founder-header">
             <div class="profile-pic">
                 <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" onerror="this.src='https://via.placeholder.com/150'">
@@ -98,14 +116,24 @@
             <p>Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <div id="home" class="page active">
+        <!-- HOME PAGE -->
+         <div id="home" class="page active">
             <div class="nav-grid">
-                <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
-                <div class="nav-card" onclick="showPage('history')"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
-                <div class="nav-card" onclick="showPage('live-req')"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
+                <div class="nav-card" onclick="showPage('rescue-form')">
+                    <i class="fas fa-notes-medical"></i>
+                    <h3>Rescue Request</h3>
+                </div>
+                <div class="nav-card" onclick="showPage('history')">
+                    <i class="fas fa-history"></i>
+                    <h3>Rescue History</h3>
+                </div>
+                <div class="nav-card" onclick="showPage('live-req')">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <h3>Live Requests</h3>
+                </div>
             </div>
-        </div>
-
+         </div>
+        <!-- RESCUE REQUEST FORM PAGE -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
@@ -118,7 +146,7 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <label>Ghav ya Pashu ki Live Photo*</label>
+                <label>Ghav ya Pashu ki Live Photo (जिससे पशु की हालत का पता लगाया जा सके)*</label>
                 <div class="preview-container" id="animal-photos-container">
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
@@ -131,17 +159,25 @@
                     <i class="fas fa-map-marker-alt"></i> Share Request Location
                 </button>
 
+                <!-- Step 2 Layout Wrapper Options -->
                 <div id="sub-loc-options" class="whatsapp-loc-container">
                     <div class="loc-option live" onclick="processLocation('live')">
                         <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
-                        <div class="loc-option-text"><h4>Share live location</h4><p>Updates dynamically as they move</p></div>
+                        <div class="loc-option-text">
+                            <h4>Share live location</h4>
+                            <p>Updates dynamically as they move</p>
+                        </div>
                     </div>
                     <div class="loc-option current" onclick="processLocation('current')">
                         <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
-                        <div class="loc-option-text"><h4>Send your current location</h4><p>Accurate fixed spot location</p></div>
+                        <div class="loc-option-text">
+                            <h4>Send your current location</h4>
+                            <p>Accurate fixed spot location</p>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Step 3 Layout WhatsApp Live Preview Card -->
                 <div id="whatsapp-map-preview" class="whatsapp-map-card">
                     <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
                         <i class="fas fa-map-pin map-pin-center"></i>
@@ -163,7 +199,7 @@
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" placeholder="10 Digits ka number" required>
 
-                <label>Rescue Request Dalne Wale ki Live Photo*</label>
+                <label>Rescue Request Dalne Wale ki Live Photo Daliye (ताकी आपका नाम और फोटो हमेशा रेस्क्यू हिस्टर में दिखे )*</label>
                 <div class="preview-container" id="reporter-photos-container">
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
@@ -175,12 +211,14 @@
             </form>
         </div>
 
+        <!-- RESCUE HISTORY PAGE -->
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Rescue History</h2>
             <p style="color: #6b7280; font-size: 14px;">Purane ilaj aur cases ki details yahan dikhengi.</p>
         </div>
 
+        <!-- LIVE REQUESTS PAGE -->
         <div id="live-req" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Live Active Requests</h2>
@@ -188,6 +226,7 @@
         </div>
     </div>
 
+    <!-- Professional Native Style Floating Alert Modal -->
     <div id="customAlert">
         <div class="modal-content">
             <div class="modal-icon" id="modalIcon">⚠️</div>
@@ -197,23 +236,7 @@
         </div>
     </div>
 
-    <!-- Firebase Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-            authDomain: "ujjainanimalrescue.firebaseapp.com",
-            projectId: "ujjainanimalrescue",
-            storageBucket: "ujjainanimalrescue.firebasestorage.app",
-            messagingSenderId: "686634974496",
-            appId: "1:686634974496:web:8b56642568a257e49fab45"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
+    <script>
         let watchId = null;
 
         function showPage(pageId) {
@@ -230,100 +253,125 @@
                     const slot = document.createElement('div');
                     slot.className = 'image-preview-slot';
                     slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    
                     const addButton = container.querySelector('.add-photo-btn');
                     container.insertBefore(slot, addButton);
                     addButton.querySelector('i').className = 'fas fa-plus';
-                };
+                }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         function requestSystemGPS() {
-            if (!navigator.geolocation) return alert("GPS support nahi hai");
-            navigator.geolocation.getCurrentPosition(() => {
-                document.getElementById('init-gps-btn').style.display = 'none';
-                document.getElementById('sub-loc-options').style.display = 'block';
-            }, () => alert("Location permission allow karein"));
+            if (!navigator.geolocation) {
+                alert("Aapka device GPS functionality ko support nahi karta hai.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (success) => {
+                    document.getElementById('init-gps-btn').style.display = 'none';
+                    document.getElementById('sub-loc-options').style.display = 'block';
+                },
+                (error) => {
+                    alert("Kripya phone ka GPS status bar se ON karein aur browser ko location permission 'Allow' karein.");
+                },
+                { enableHighAccuracy: true, timeout: 7000 }
+            );
         }
 
         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
-            document.getElementById('selected-loc-type').value = type;
+            const mapLink = document.getElementById('map-redirect-link');
+            const titleText = document.getElementById('card-status-title');
+            const subtitleText = document.getElementById('card-status-subtitle');
+
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+
+            subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
             mapCard.style.display = 'block';
+            document.getElementById('selected-loc-type').value = type;
+
+            const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
 
             if (type === 'current') {
-                navigator.geolocation.getCurrentPosition(pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude));
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified");
+                    },
+                    (err) => { handleLocError(); },
+                    options
+                );
             } else if (type === 'live') {
-                watchId = navigator.geolocation.watchPosition(pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude));
+                watchId = navigator.geolocation.watchPosition(
+                    (pos) => {
+                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time");
+                    },
+                    (err) => { handleLocError(); },
+                    options
+                );
             }
         }
 
-        function updateLocationUI(lat, lng) {
-            document.getElementById('lat-long-data').value = `\( {lat}, \){lng}`;
-            document.getElementById('card-status-title').innerText = "Location Selected";
-            document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
+        function updateLocationUI(lat, lng, title, subtitle) {
+            document.getElementById('lat-long-data').value = lat + "," + lng;
+            document.getElementById('card-status-title').innerText = title;
+            document.getElementById('card-status-subtitle').innerText = subtitle;
+            document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=${lat},${lng}`;
         }
 
         function handleLocError() {
             document.getElementById('whatsapp-map-preview').style.display = 'none';
+            alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
 
+        // Engine: Show Custom Popup Window Customizer
         function showCustomAlert(title, message, isError = true) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('errorMsg').innerText = message;
-            document.getElementById('modalIcon').innerText = isError ? "❌" : "✅";
+            document.getElementById('modalIcon').innerText = isError ? "❌" : "⚠️";
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        // Firebase Save
-        async function saveRescueRequest() {
-            const btn = document.querySelector('.btn-submit');
-            const originalText = btn.textContent;
-            btn.textContent = "Saving...";
-            btn.disabled = true;
-
-            try {
-                const data = {
-                    animalType: document.querySelector('select').value,
-                    phone: document.querySelector('input[type="tel"]').value,
-                    location: document.getElementById('lat-long-data').value,
-                    locationType: document.getElementById('selected-loc-type').value,
-                    timestamp: serverTimestamp()
-                };
-
-                await addDoc(collection(db, "rescueRequests"), data);
-                showCustomAlert("Success", "Request saved successfully in Firebase!", false);
-            } catch (e) {
-                showCustomAlert("Error", "Failed to save. Check internet.");
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        // Submit Handler
-        document.querySelector('.btn-submit').addEventListener('click', (e) => {
+        // Hardcore Multi-Filter Verification Logic Block
+        document.querySelector('.btn-submit').addEventListener('click', function(e) {
             e.preventDefault();
-            // Your original validation code remains here
-            const phone = document.querySelector('input[type="tel"]').value.trim();
-            if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
-                showCustomAlert("Invalid Number", "Sahi number dalein");
-                return;
-            }
-            if (!document.getElementById('lat-long-data').value) {
-                showCustomAlert("Location Missing", "Location share karein");
-                return;
-            }
-            saveRescueRequest();
-        });
+            
+            const phoneInput = document.querySelector('input[type="tel"]');
+            const val = phoneInput.value.trim();
+            
+            // Core Rules for genuine Indian Numbers
+            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
+            const isRepeated = /(\d)\1{9}/.test(val);      
+            const isSequential = /1234567890|0123456789/.test(val); 
+            const isPatternFraud = /(..)\1{4}/.test(val);
 
-        window.showPage = showPage;
-        window.handlePhotoUpload = handlePhotoUpload;
-        window.requestSystemGPS = requestSystemGPS;
-        window.processLocation = processLocation;
-        window.updateLocationUI = updateLocationUI;
-        window.handleLocError = handleLocError;
-        window.showCustomAlert = showCustomAlert;
+            if (val === "") {
+                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
+                phoneInput.focus();
+                return;
+            }
+            
+            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
+                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein. Ek bhi digit galat hone par accept nahi hoga.");
+                phoneInput.style.borderColor = "#e11d48";
+                phoneInput.focus();
+                return;
+            }
+            
+            phoneInput.style.borderColor = "#d1d5db";
+            
+            // Location Verification Area
+            const latLong = document.getElementById('lat-long-data').value;
+            if (!latLong) {
+                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
+                return;
+            }
+
+            // SUCCESS FLOW: Agar sab sahi hai toh koi success popup nahi aayega, seedha gateway trigger hoga
+            console.log("Validation Passed! Proceeding forward safely...");
+            // window.location.href = "YOUR_PAYMENT_GATEWAY_URL_HERE";
+        });
     </script>
 </body>
 </html>
+.
