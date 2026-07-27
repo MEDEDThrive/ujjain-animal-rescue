@@ -18,6 +18,10 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
+        /* Loading Overlay */
+        #loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999999; flex-direction: column; justify-content: center; align-items: center; }
+        .loader-cow { font-size: 50px; color: var(--primary-red); animation: drive 1.5s infinite; margin-bottom: 10px; }
+
         /* Main App Layout */
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
         .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
@@ -41,6 +45,11 @@
         label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 15px; }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary-red); outline: none; }
+
+        /* List Items for Live Requests */
+        .request-item { background: #fff5f5; border: 1px solid #fee2e2; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .request-item h4 { margin: 0 0 5px 0; color: var(--primary-red); }
+        .request-item p { margin: 2px 0; font-size: 13px; color: #4b5563; }
 
         /* Advanced Image Preview Rows */
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
@@ -106,6 +115,12 @@
         <h1 style="color: white; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; margin: 0;">Bejuban ki Pukar</h1>
     </div>
 
+    <!-- Loader Animation -->
+    <div id="loading-overlay">
+        <i class="fas fa-cow loader-cow"></i>
+        <p style="font-weight: 600; color: #e11d48;">Sending Request...</p>
+    </div>
+
     <div class="app-container">
         <!-- Founder Profile Header Area -->
         <div class="founder-header">
@@ -139,6 +154,9 @@
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
             
             <form id="main-rescue-form">
+                <label>Aapka Naam*</label>
+                <input type="text" id="reporter-name" placeholder="Apna pura naam likhein" required>
+
                 <label>Pashu ka Prakar (Animal)*</label>
                 <select required id="animal-type">
                     <option value="">Chuniye...</option>
@@ -159,7 +177,6 @@
                     <i class="fas fa-map-marker-alt"></i> Share Request Location
                 </button>
 
-                <!-- Step 2 Layout Wrapper Options -->
                 <div id="sub-loc-options" class="whatsapp-loc-container">
                     <div class="loc-option live" onclick="processLocation('live')">
                         <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
@@ -177,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- Step 3 Layout WhatsApp Live Preview Card -->
                 <div id="whatsapp-map-preview" class="whatsapp-map-card">
                     <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
                         <i class="fas fa-map-pin map-pin-center"></i>
@@ -199,14 +215,6 @@
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" id="user-phone" placeholder="10 Digits ka number" required>
 
-                <label>Rescue Request Dalne Wale ki Live Photo Daliye (ताकी आपका नाम और फोटो हमेशा रेस्क्यू हिस्टर में दिखे )*</label>
-                <div class="preview-container" id="reporter-photos-container">
-                    <div class="add-photo-btn">
-                        <i class="fas fa-camera"></i>
-                        <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this, 'reporter-photos-container')">
-                    </div>
-                </div>
-
                 <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
             </form>
         </div>
@@ -222,7 +230,9 @@
         <div id="live-req" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Live Active Requests</h2>
-            <p style="color: #6b7280; font-size: 14px;">Ujjain ke chal rahe cases ki live list yahan aayegi.</p>
+            <div id="live-list-container">
+                <p style="color: #6b7280; font-size: 14px;">Loading live data...</p>
+            </div>
         </div>
     </div>
 
@@ -253,10 +263,8 @@
                     const slot = document.createElement('div');
                     slot.className = 'image-preview-slot';
                     slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    
                     const addButton = container.querySelector('.add-photo-btn');
                     container.insertBefore(slot, addButton);
-                    addButton.querySelector('i').className = 'fas fa-plus';
                 }
                 reader.readAsDataURL(input.files[0]);
             }
@@ -272,9 +280,7 @@
                     document.getElementById('init-gps-btn').style.display = 'none';
                     document.getElementById('sub-loc-options').style.display = 'block';
                 },
-                (error) => {
-                    alert("Kripya phone ka GPS status bar se ON karein aur browser ko location permission 'Allow' karein.");
-                },
+                (error) => { alert("Kripya browser ko location permission 'Allow' karein."); },
                 { enableHighAccuracy: true, timeout: 7000 }
             );
         }
@@ -282,29 +288,22 @@
         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
             const subtitleText = document.getElementById('card-status-subtitle');
-
             if (watchId) navigator.geolocation.clearWatch(watchId);
-
             subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
             mapCard.style.display = 'block';
             document.getElementById('selected-loc-type').value = type;
-
             const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
-
+            
             if (type === 'current') {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified");
-                    },
-                    (err) => { handleLocError(); },
+                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified"),
+                    (err) => handleLocError(),
                     options
                 );
             } else if (type === 'live') {
                 watchId = navigator.geolocation.watchPosition(
-                    (pos) => {
-                        updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time");
-                    },
-                    (err) => { handleLocError(); },
+                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time"),
+                    (err) => handleLocError(),
                     options
                 );
             }
@@ -319,66 +318,45 @@
 
         function handleLocError() {
             document.getElementById('whatsapp-map-preview').style.display = 'none';
-            alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
+            alert("Sateek data nahi mil pa raha hai!");
         }
 
-        // --- Corrected and Single Defined Alert Logic ---
         function showCustomAlert(title, message, isError = true) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('errorMsg').innerText = message;
-            document.getElementById('modalIcon').innerText= message;
             document.getElementById('modalIcon').innerText = isError ? "❌" : "⚠️";
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        // Hardcore Multi-Filter Verification Logic Block
         document.querySelector('.btn-submit').addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const phoneInput = document.getElementById('user-phone');
-            const val = phoneInput.value.trim();
-            
-            // Core Rules for genuine Indian Numbers
-            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
-            const isRepeated = /(\d)\1{9}/.test(val);      
-            const isSequential = /1234567890|0123456789/.test(val); 
-            const isPatternFraud = /(..)\1{4}/.test(val);
-
-            if (val === "") {
-                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
-                phoneInput.focus();
-                return;
-            }
-            
-            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
-                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein. Ek bhi digit galat hone par accept nahi hoga.");
-                phoneInput.style.borderColor = "#e11d48";
-                phoneInput.focus();
-                return;
-            }
-            
-            phoneInput.style.borderColor = "#d1d5db";
-            
-            // Location Verification Area
+            const name = document.getElementById('reporter-name').value.trim();
+            const phone = document.getElementById('user-phone').value.trim();
             const latLong = document.getElementById('lat-long-data').value;
-            if (!latLong) {
-                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
+
+            if (name === "" || phone === "" || !latLong) {
+                showCustomAlert("⚠️ Form Incomplete", "Kripya Naam, Number aur Location sahi bharein.", false);
                 return;
             }
 
-            // FIREBASE SAVING LOGIC
+            // Show Loader
+            document.getElementById('loading-overlay').style.display = 'flex';
+
             const db = firebase.firestore();
             db.collection("rescue_requests").add({
-                phone: val,
+                name: name,
+                phone: phone,
                 location: latLong,
                 animal: document.getElementById('animal-type').value,
-                timestamp: new Date()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
-                alert("Request successfully submitted!");
-                location.reload();
+                document.getElementById('loading-overlay').style.display = 'none';
+                showCustomAlert("✅ Success", "Request submit ho gayi hai!", false);
+                document.getElementById('main-rescue-form').reset();
             })
             .catch((error) => {
+                document.getElementById('loading-overlay').style.display = 'none';
                 alert("Error: " + error.message);
             });
         });
@@ -398,6 +376,23 @@
           appId: "1:686634974496:web:8b56642568a257e49fab45"
         };
         firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Live Listener to fetch data
+        db.collection("rescue_requests").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            const container = document.getElementById('live-list-container');
+            container.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                container.innerHTML += `
+                    <div class="request-item">
+                        <h4>${data.name} (${data.animal})</h4>
+                        <p>Phone: ${data.phone}</p>
+                        <p>Loc: ${data.location}</p>
+                    </div>
+                `;
+            });
+        });
         console.log("✅ Firebase Connected Successfully!");
     </script>
 </body>
