@@ -371,26 +371,55 @@
             console.log("Validation Passed! Proceeding forward safely...");
             // window.location.href = "YOUR_PAYMENT_GATEWAY_URL_HERE";
         });
+        <!-- Firebase SDKs -->
+    <script type="module">
+      // 1. Firebase App और Firestore को इंपोर्ट करें
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+      // 2. आपका कॉन्फ़िगरेशन (जो आपके पास पहले से है)
+      const firebaseConfig = {
+        apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+        authDomain: "ujjainanimalrescue.firebaseapp.com",
+        projectId: "ujjainanimalrescue",
+        storageBucket: "ujjainanimalrescue.firebasestorage.app",
+        messagingSenderId: "686634974496",
+        appId: "1:686634974496:web:8b56642568a257e49fab45"
+      };
+
+      // 3. इनिशियलाइज़ करें
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // 4. सबमिट बटन का इवेंट
+      document.querySelector('.btn-submit').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const animalType = document.querySelector('select').value;
+        const phone = document.querySelector('input[type="tel"]').value;
+        const locationData = document.getElementById('lat-long-data').value;
+
+        if (!phone || !locationData) {
+            alert("कृपया मोबाइल नंबर और लोकेशन दोनों भरें!");
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "rescue_requests"), {
+                animal: animalType,
+                mobile: phone,
+                location: locationData,
+                status: "pending",
+                createdAt: new Date()
+            });
+            alert("रेस्क्यू रिक्वेस्ट सफलतापूर्वक दर्ज हो गई है!");
+            document.getElementById('main-rescue-form').reset();
+        } catch (e) {
+            console.error("Error: ", e);
+            alert("डेटा भेजने में समस्या आई।");
+        }
+      });
     </script>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-
-<script>
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-  authDomain: "ujjainanimalrescue.firebaseapp.com",
-  projectId: "ujjainanimalrescue",
-  storageBucket: "ujjainanimalrescue.firebasestorage.app",
-  messagingSenderId: "686634974496",
-  appId: "1:686634974496:web:8b56642568a257e49fab45"
-};
-
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-
-console.log("✅ Firebase Connected Successfully!");
-</script>
 </body>
 </html>
 .
