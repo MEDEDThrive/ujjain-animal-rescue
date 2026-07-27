@@ -333,44 +333,6 @@
         }
 
         // Hardcore Multi-Filter Verification Logic Block
-        document.querySelector('.btn-submit').addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const phoneInput = document.querySelector('input[type="tel"]');
-            const val = phoneInput.value.trim();
-            
-            // Core Rules for genuine Indian Numbers
-            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
-            const isRepeated = /(\d)\1{9}/.test(val);      
-            const isSequential = /1234567890|0123456789/.test(val); 
-            const isPatternFraud = /(..)\1{4}/.test(val);
-
-            if (val === "") {
-                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
-                phoneInput.focus();
-                return;
-            }
-            
-            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
-                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein. Ek bhi digit galat hone par accept nahi hoga.");
-                phoneInput.style.borderColor = "#e11d48";
-                phoneInput.focus();
-                return;
-            }
-            
-            phoneInput.style.borderColor = "#d1d5db";
-            
-            // Location Verification Area
-            const latLong = document.getElementById('lat-long-data').value;
-            if (!latLong) {
-                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
-                return;
-            }
-
-            // SUCCESS FLOW: Agar sab sahi hai toh koi success popup nahi aayega, seedha gateway trigger hoga
-            console.log("Validation Passed! Proceeding forward safely...");
-            // window.location.href = "YOUR_PAYMENT_GATEWAY_URL_HERE";
-        });
         <!-- Firebase SDKs -->
     <script type="module">
       // 1. Firebase App और Firestore को इंपोर्ट करें
@@ -419,7 +381,7 @@
             alert("डेटा भेजने में समस्या आई।");
         }
       });
-    </script>
+</script>
 </body>
 </html>
 .
