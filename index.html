@@ -140,7 +140,7 @@
             
             <form id="main-rescue-form">
                 <label>Pashu ka Prakar (Animal)*</label>
-                <select required>
+                <select required id="animal-type">
                     <option value="">Chuniye...</option>
                     <option value="cow">Gai (Cow)</option>
                     <option value="calf">Bachhda (Calf)</option>
@@ -197,7 +197,7 @@
                 <input type="hidden" id="selected-loc-type">
 
                 <label>Aapka Mobile Number*</label>
-                <input type="tel" placeholder="10 Digits ka number" required>
+                <input type="tel" id="user-phone" placeholder="10 Digits ka number" required>
 
                 <label>Rescue Request Dalne Wale ki Live Photo Daliye (ताकी आपका नाम और फोटो हमेशा रेस्क्यू हिस्टर में दिखे )*</label>
                 <div class="preview-container" id="reporter-photos-container">
@@ -281,8 +281,6 @@
 
         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
-            const mapLink = document.getElementById('map-redirect-link');
-            const titleText = document.getElementById('card-status-title');
             const subtitleText = document.getElementById('card-status-subtitle');
 
             if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -324,67 +322,83 @@
             alert("Sateek data nahi mil pa raha hai. Kripya device options check karein!");
         }
 
-        // Engine: Show Custom Popup Window Customizer
+        // --- Corrected and Single Defined Alert Logic ---
         function showCustomAlert(title, message, isError = true) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('errorMsg').innerText = message;
+            document.getElementById('modalIcon').innerText= message;
             document.getElementById('modalIcon').innerText = isError ? "❌" : "⚠️";
             document.getElementById('customAlert').style.display = 'flex';
         }
 
         // Hardcore Multi-Filter Verification Logic Block
-        <!-- 1. Normal Script for Navigation (Buttons) -->
-<script>
-  function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-  }
-</script>
+        document.querySelector('.btn-submit').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const phoneInput = document.getElementById('user-phone');
+            const val = phoneInput.value.trim();
+            
+            // Core Rules for genuine Indian Numbers
+            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
+            const isRepeated = /(\d)\1{9}/.test(val);      
+            const isSequential = /1234567890|0123456789/.test(val); 
+            const isPatternFraud = /(..)\1{4}/.test(val);
 
-<!-- 2. Module Script for Firebase (Database) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+            if (val === "") {
+                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
+                phoneInput.focus();
+                return;
+            }
+            
+            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
+                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein. Ek bhi digit galat hone par accept nahi hoga.");
+                phoneInput.style.borderColor = "#e11d48";
+                phoneInput.focus();
+                return;
+            }
+            
+            phoneInput.style.borderColor = "#d1d5db";
+            
+            // Location Verification Area
+            const latLong = document.getElementById('lat-long-data').value;
+            if (!latLong) {
+                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
+                return;
+            }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-    authDomain: "ujjainanimalrescue.firebaseapp.com",
-    projectId: "ujjainanimalrescue",
-    storageBucket: "ujjainanimalrescue.firebasestorage.app",
-    messagingSenderId: "686634974496",
-    appId: "1:686634974496:web:8b56642568a257e49fab45"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  document.querySelector('.btn-submit').addEventListener('click', async (e) => {
-    e.preventDefault();
-    const animalType = document.querySelector('select').value;
-    const phone = document.querySelector('input[type="tel"]').value;
-    const locationData = document.getElementById('lat-long-data').value;
-
-    if (!phone || !locationData) {
-        alert("Please fill all details!");
-        return;
-    }
-
-    try {
-        await addDoc(collection(db, "rescue_requests"), {
-            animal: animalType,
-            mobile: phone,
-            location: locationData,
-            status: "pending",
-            createdAt: new Date()
+            // FIREBASE SAVING LOGIC
+            const db = firebase.firestore();
+            db.collection("rescue_requests").add({
+                phone: val,
+                location: latLong,
+                animal: document.getElementById('animal-type').value,
+                timestamp: new Date()
+            })
+            .then(() => {
+                alert("Request successfully submitted!");
+                location.reload();
+            })
+            .catch((error) => {
+                alert("Error: " + error.message);
+            });
         });
-        alert("Request submitted successfully!");
-        document.getElementById('main-rescue-form').reset();
-    } catch (e) {
-        console.error("Error: ", e);
-        alert("Error: Data not sent.");
-    }
-  });
-</script>
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+          authDomain: "ujjainanimalrescue.firebaseapp.com",
+          projectId: "ujjainanimalrescue",
+          storageBucket: "ujjainanimalrescue.firebasestorage.app",
+          messagingSenderId: "686634974496",
+          appId: "1:686634974496:web:8b56642568a257e49fab45"
+        };
+        firebase.initializeApp(firebaseConfig);
+        console.log("✅ Firebase Connected Successfully!");
+    </script>
 </body>
 </html>
-.
