@@ -333,54 +333,57 @@
         }
 
         // Hardcore Multi-Filter Verification Logic Block
-        <!-- Firebase SDKs -->
-    <script type="module">
-      // 1. Firebase App और Firestore को इंपोर्ट करें
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        <!-- 1. Normal Script for Navigation (Buttons) -->
+<script>
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+</script>
 
-      // 2. आपका कॉन्फ़िगरेशन (जो आपके पास पहले से है)
-      const firebaseConfig = {
-        apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-        authDomain: "ujjainanimalrescue.firebaseapp.com",
-        projectId: "ujjainanimalrescue",
-        storageBucket: "ujjainanimalrescue.firebasestorage.app",
-        messagingSenderId: "686634974496",
-        appId: "1:686634974496:web:8b56642568a257e49fab45"
-      };
+<!-- 2. Module Script for Firebase (Database) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-      // 3. इनिशियलाइज़ करें
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+    authDomain: "ujjainanimalrescue.firebaseapp.com",
+    projectId: "ujjainanimalrescue",
+    storageBucket: "ujjainanimalrescue.firebasestorage.app",
+    messagingSenderId: "686634974496",
+    appId: "1:686634974496:web:8b56642568a257e49fab45"
+  };
 
-      // 4. सबमिट बटन का इवेंट
-      document.querySelector('.btn-submit').addEventListener('click', async (e) => {
-        e.preventDefault();
-        
-        const animalType = document.querySelector('select').value;
-        const phone = document.querySelector('input[type="tel"]').value;
-        const locationData = document.getElementById('lat-long-data').value;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        if (!phone || !locationData) {
-            alert("कृपया मोबाइल नंबर और लोकेशन दोनों भरें!");
-            return;
-        }
+  document.querySelector('.btn-submit').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const animalType = document.querySelector('select').value;
+    const phone = document.querySelector('input[type="tel"]').value;
+    const locationData = document.getElementById('lat-long-data').value;
 
-        try {
-            await addDoc(collection(db, "rescue_requests"), {
-                animal: animalType,
-                mobile: phone,
-                location: locationData,
-                status: "pending",
-                createdAt: new Date()
-            });
-            alert("रेस्क्यू रिक्वेस्ट सफलतापूर्वक दर्ज हो गई है!");
-            document.getElementById('main-rescue-form').reset();
-        } catch (e) {
-            console.error("Error: ", e);
-            alert("डेटा भेजने में समस्या आई।");
-        }
-      });
+    if (!phone || !locationData) {
+        alert("Please fill all details!");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "rescue_requests"), {
+            animal: animalType,
+            mobile: phone,
+            location: locationData,
+            status: "pending",
+            createdAt: new Date()
+        });
+        alert("Request submitted successfully!");
+        document.getElementById('main-rescue-form').reset();
+    } catch (e) {
+        console.error("Error: ", e);
+        alert("Error: Data not sent.");
+    }
+  });
 </script>
 </body>
 </html>
