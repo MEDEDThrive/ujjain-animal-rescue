@@ -165,7 +165,7 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <label>Ghav ya Pashu ki Live Photo (जिससे पशु की हालत का पता लगाया जा सके)*</label>
+                <label>Ghav ya Pashu ki Live Photo (Preview only - Free version)</label>
                 <div class="preview-container" id="animal-photos-container">
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
@@ -216,7 +216,7 @@
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" id="user-phone" placeholder="10 Digits ka number" required>
 
-                <button type="button" class="btn-submit">Pay ₹30 & Submit Request</button>
+                <button type="button" class="btn-submit">Submit Request (Free)</button>
             </form>
         </div>
 
@@ -247,10 +247,9 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (sirf Firestore - Storage nahi) -->
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage-compat.js"></script>
 
     <script>
         // ========== FIREBASE CONFIG ==========
@@ -266,13 +265,12 @@
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
-        console.log("✅ Firebase Connected Successfully!");
+        console.log("✅ Firebase Connected Successfully! (Free Version)");
 
         // ========== GLOBAL VARIABLES ==========
         let watchId = null;
-        let selectedPhotos = [];   // Photos ko yahan store karenge
+        let selectedPhotos = [];
 
         // ========== PAGE NAVIGATION ==========
         function showPage(pageId) {
@@ -281,12 +279,12 @@
             window.scrollTo(0, 0);
         }
 
-        // ========== PHOTO UPLOAD (Preview + Store File) ==========
+        // ========== PHOTO UPLOAD (sirf Preview) ==========
         function handlePhotoUpload(input, containerId) {
             const container = document.getElementById(containerId);
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                selectedPhotos.push(file);   // File ko array mein save kiya
+                selectedPhotos.push(file);
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -300,7 +298,7 @@
             }
         }
 
-        // ========== GPS FUNCTIONS (Purane wale bilkul same) ==========
+        // ========== GPS FUNCTIONS ==========
         function requestSystemGPS() {
             if (!navigator.geolocation) {
                 showCustomAlert("GPS Support Nahi", "Aapka device GPS functionality ko support nahi karta hai.", true);
@@ -327,7 +325,7 @@
             document.getElementById('selected-loc-type').value = type;
             const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
             
-         if (type === 'current') {
+            if (type === 'current') {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified"),
                     (err) => handleLocError(),
@@ -362,7 +360,7 @@
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        // ========== MAIN SUBMIT LOGIC (Naya kaam) ==========
+        // ========== MAIN SUBMIT LOGIC (Free Version - No Photo Upload) ==========
         document.querySelector('.btn-submit').addEventListener('click', async function(e) {
             e.preventDefault();
 
@@ -373,25 +371,20 @@
             const latLong = document.getElementById('lat-long-data').value;
             const locType = document.getElementById('selected-loc-type').value;
 
-            // 1. Name check
+            // Validations
             if (name === "") {
                 showCustomAlert("Naam Missing", "Kripya apna pura naam darj karein.", false);
                 return;
             }
-
-            // 2. Animal type check
             if (animalType === "") {
                 showCustomAlert("Animal Type", "Kripya pashu ka prakar chunein.", false);
                 return;
             }
-
-            // 3. Photo check
             if (selectedPhotos.length === 0) {
-                showCustomAlert("Photo Required", "Kripya kam se kam 1 photo upload karein.", false);
+                showCustomAlert("Photo Required", "Kripya kam se kam 1 photo select karein (preview ke liye).", false);
                 return;
             }
 
-            // 4. Mobile Number Validation (purana strong check)
             const isLengthValid = /^[6-9]\d{9}$/.test(val); 
             const isRepeated = /(\d)\1{9}/.test(val);      
             const isSequential = /1234567890|0123456789/.test(val); 
@@ -402,51 +395,38 @@
                 phoneInput.focus();
                 return;
             }
-            
             if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
                 showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein.", true);
                 phoneInput.style.borderColor = "#e11d48";
                 phoneInput.focus();
                 return;
             }
-            
             phoneInput.style.borderColor = "#d1d5db";
 
-            // 5. Location check
             if (!latLong) {
                 showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
                 return;
             }
 
-            // ========== AB SAB SAHI HAI → SUBMIT START ==========
+            // ========== SUBMIT START ==========
             document.getElementById('loading-overlay').style.display = 'flex';
 
             try {
-                // Step A: Photos upload karo
-                const photoURLs = [];
-                for (let i = 0; i < selectedPhotos.length; i++) {
-                    const file = selectedPhotos[i];
-                    const fileName = `rescue_photos/\( {Date.now()}_ \){i}_${file.name}`;
-                    const storageRef = storage.ref(fileName);
-                    await storageRef.put(file);
-                    const url = await storageRef.getDownloadURL();
-                    photoURLs.push(url);
-                }
-
-                // Step B: Firestore mein data save karo
+                // Sirf text data save kar rahe hain (Free)
                 await db.collection("rescue_requests").add({
                     reporterName: name,
                     animalType: animalType,
                     phone: val,
                     location: latLong,
                     locationType: locType || "current",
-                    photos: photoURLs,
-                    status: "pending",          // pending / accepted / completed
+                    photoCount: selectedPhotos.length,   // kitni photos select ki thi
+                    photosUploaded: false,               // free version mein false
+                    status: "pending",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    paymentStatus: "pending"    // baad mein payment ke liye
+                    paymentStatus: "pending"
                 });
 
-                // Step C: Success
+                // Success
                 document.getElementById('loading-overlay').style.display = 'none';
                 showCustomAlert("Request Sent!", "Aapki rescue request successfully bhej di gayi hai. Team jald contact karegi.", false);
 
