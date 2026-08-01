@@ -46,10 +46,15 @@
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary-red); outline: none; }
 
-        /* List Items for Live Requests */
-        .request-item { background: #fff5f5; border: 1px solid #fee2e2; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .request-item h4 { margin: 0 0 5px 0; color: var(--primary-red); }
-        .request-item p { margin: 2px 0; font-size: 13px; color: #4b5563; }
+        /* List Items for Live Requests & History */
+        .request-item { background: #fff5f5; border: 1px solid #fee2e2; padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        .request-item h4 { margin: 0 0 6px 0; color: var(--primary-red); font-size: 16px; }
+        .request-item p { margin: 3px 0; font-size: 13px; color: #4b5563; }
+        .request-item .status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+        .status.pending { background: #fef3c7; color: #d97706; }
+        .status.accepted { background: #d1fae5; color: #059669; }
+        .status.completed { background: #e0e7ff; color: #4f46e5; }
+        .map-link { color: #00a884; font-weight: 600; text-decoration: none; font-size: 13px; }
 
         /* Advanced Image Preview Rows */
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
@@ -138,11 +143,11 @@
                     <i class="fas fa-notes-medical"></i>
                     <h3>Rescue Request</h3>
                 </div>
-                <div class="nav-card" onclick="showPage('history')">
+                <div class="nav-card" onclick="showPage('history'); loadHistory()">
                     <i class="fas fa-history"></i>
                     <h3>Rescue History</h3>
                 </div>
-                <div class="nav-card" onclick="showPage('live-req')">
+                <div class="nav-card" onclick="showPage('live-req'); loadLiveRequests()">
                     <i class="fas fa-broadcast-tower"></i>
                     <h3>Live Requests</h3>
                 </div>
@@ -224,7 +229,9 @@
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Rescue History</h2>
-            <p style="color: #6b7280; font-size: 14px;">Purane ilaj aur cases ki details yahan dikhengi.</p>
+            <div id="history-list-container">
+                <p style="color: #6b7280; font-size: 14px;">Loading history...</p>
+            </div>
         </div>
 
         <!-- LIVE REQUESTS PAGE -->
@@ -247,7 +254,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs (sirf Firestore - Storage nahi) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
@@ -262,24 +269,29 @@
             appId: "1:686634974496:web:8b56642568a257e49fab45"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
         console.log("✅ Firebase Connected Successfully! (Free Version)");
 
         // ========== GLOBAL VARIABLES ==========
         let watchId = null;
         let selectedPhotos = [];
+        let liveUnsubscribe = null;   // real-time listener ko band karne ke liye
 
         // ========== PAGE NAVIGATION ==========
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
+
+            // Live page se bahar jaane pe listener band kar do
+            if (pageId !== 'live-req' && liveUnsubscribe) {
+                liveUnsubscribe();
+                liveUnsubscribe = null;
+            }
         }
 
-        // ========== PHOTO UPLOAD (sirf Preview) ==========
+        // ========== PHOTO UPLOAD (Preview only) ==========
         function handlePhotoUpload(input, containerId) {
             const container = document.getElementById(containerId);
             if (input.files && input.files[0]) {
@@ -360,7 +372,93 @@
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        // ========== MAIN SUBMIT LOGIC (Free Version - No Photo Upload) ==========
+        // ========== TIME FORMAT ==========
+        function formatTime(timestamp) {
+            if (!timestamp) return "Abhi abhi";
+            const date = timestamp.toDate();
+            return date.toLocaleString('hi-IN', {
+                day: '2-digit', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        // ========== LIVE REQUESTS (Real-time) ==========
+        function loadLiveRequests() {
+            const container = document.getElementById('live-list-container');
+            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading live data...</p>';
+
+            // Pehle se koi listener ho to band kar do
+            if (liveUnsubscribe) liveUnsubscribe();
+
+            liveUnsubscribe = db.collection("rescue_requests")
+                .where("status", "==", "pending")
+                .orderBy("createdAt", "desc")
+                .onSnapshot((snapshot) => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Abhi koi live request nahi hai.</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        html += `
+                            <div class="request-item">
+                                <h4>${data.animalType === 'cow' ? '🐄 Gai' : '🐮 Bachhda'} - ${data.reporterName}</h4>
+                                <p><strong>Mobile:</strong> ${data.phone}</p>
+                                <p><strong>Time:</strong> ${formatTime(data.createdAt)}</p>
+                                <p><a href="${mapUrl}" target="_blank" class="map-link">📍 Location Dekho</a></p>
+                                <span class="status pending">Pending</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }, (error) => {
+                    console.error(error);
+                    container.innerHTML = '<p style="color:#e11d48;">Error loading data. Rules check karein.</p>';
+                });
+        }
+
+        // ========== HISTORY PAGE ==========
+        function loadHistory() {
+            const container = document.getElementById('history-list-container');
+            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading history...</p>';
+
+            db.collection("rescue_requests")
+                .orderBy("createdAt", "desc")
+                .limit(50)
+                .get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Abhi koi history nahi hai.</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        const statusClass = data.status || 'pending';
+                        html += `
+                            <div class="request-item">
+                                <h4>${data.animalType === 'cow' ? '🐄 Gai' : '🐮 Bachhda'} - ${data.reporterName}</h4>
+                                <p><strong>Mobile:</strong> ${data.phone}</p>
+                                <p><strong>Time:</strong> ${formatTime(data.createdAt)}</p>
+                                <p><a href="${mapUrl}" target="_blank" class="map-link">📍 Location Dekho</a></p>
+                                <span class="status \( {statusClass}"> \){statusClass}</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch((error) => {
+                    console.error(error);
+                    container.innerHTML = '<p style="color:#e11d48;">Error loading history.</p>';
+                });
+        }
+
+        // ========== MAIN SUBMIT LOGIC ==========
         document.querySelector('.btn-submit').addEventListener('click', async function(e) {
             e.preventDefault();
 
@@ -371,7 +469,6 @@
             const latLong = document.getElementById('lat-long-data').value;
             const locType = document.getElementById('selected-loc-type').value;
 
-            // Validations
             if (name === "") {
                 showCustomAlert("Naam Missing", "Kripya apna pura naam darj karein.", false);
                 return;
@@ -408,25 +505,22 @@
                 return;
             }
 
-            // ========== SUBMIT START ==========
             document.getElementById('loading-overlay').style.display = 'flex';
 
             try {
-                // Sirf text data save kar rahe hain (Free)
                 await db.collection("rescue_requests").add({
                     reporterName: name,
                     animalType: animalType,
                     phone: val,
                     location: latLong,
                     locationType: locType || "current",
-                    photoCount: selectedPhotos.length,   // kitni photos select ki thi
-                    photosUploaded: false,               // free version mein false
+                    photoCount: selectedPhotos.length,
+                    photosUploaded: false,
                     status: "pending",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     paymentStatus: "pending"
                 });
 
-                // Success
                 document.getElementById('loading-overlay').style.display = 'none';
                 showCustomAlert("Request Sent!", "Aapki rescue request successfully bhej di gayi hai. Team jald contact karegi.", false);
 
