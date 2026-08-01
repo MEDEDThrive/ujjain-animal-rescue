@@ -7,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; }
+        :root { --primary-red: #e11d48; --soft-red: #fef2f2; --white: #ffffff; --green-whatsapp: #00a884; --maroon: #7f1d1d; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--soft-red); margin: 0; padding: 0; }
 
-        /* Splash Screen Animation */
+        /* Splash Screen */
         #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2.5s forwards; }
         .ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
         .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s ease infinite; }
@@ -18,116 +18,148 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* Loading Overlay */
         #loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999999; flex-direction: column; justify-content: center; align-items: center; }
         .loader-cow { font-size: 50px; color: var(--primary-red); animation: drive 1.5s infinite; margin-bottom: 10px; }
 
-        /* Main App Layout */
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 30px; position: relative; }
-        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
+        .founder-header { background: var(--primary-red); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; }
         .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #e5e7eb; margin: 0 auto 10px auto; overflow: hidden; }
-        .profile-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
         .founder-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
-        .founder-header p { margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; font-weight: 300; }
+        .founder-header p { margin: 3px 0 0 0; opacity: 0.9; font-size: 13px; }
 
-        /* Menu Boxes */
         .nav-grid { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
         .nav-card { background: var(--white); border: 2px solid var(--soft-red); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .nav-card:active { transform: scale(0.97); }
         .nav-card i { font-size: 38px; color: var(--primary-red); margin-bottom: 12px; }
         .nav-card h3 { color: #1f2937; margin: 0; font-size: 18px; font-weight: 600; }
 
-        /* Pages */
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
 
-        /* Modern Form Inputs */
         label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 15px; }
-        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-red); outline: none; }
+        input, select { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--primary-red); outline: none; }
 
-        /* List Items for Live Requests & History */
-        .request-item { background: #fff5f5; border: 1px solid #fee2e2; padding: 15px; border-radius: 12px; margin-bottom: 12px; }
-        .request-item h4 { margin: 0 0 6px 0; color: var(--primary-red); font-size: 16px; }
-        .request-item p { margin: 3px 0; font-size: 13px; color: #4b5563; }
-        .request-item .status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 6px; }
-        .status.pending { background: #fef3c7; color: #d97706; }
-        .status.accepted { background: #d1fae5; color: #059669; }
-        .status.completed { background: #e0e7ff; color: #4f46e5; }
-        .map-link { color: #00a884; font-weight: 600; text-decoration: none; font-size: 13px; }
+        /* ===== NEW ID CARD STYLE ===== */
+        .id-card {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 40%, #fef2f2 40%, #ffffff 100%);
+            border-radius: 16px;
+            padding: 0;
+            margin-bottom: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(127, 29, 29, 0.15);
+            border: 1px solid #fecaca;
+        }
+        .id-card-header {
+            background: #7f1d1d;
+            color: #fef3c7;
+            text-align: center;
+            padding: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .id-card-body {
+            padding: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .id-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #7f1d1d;
+            flex-shrink: 0;
+            border: 2px solid #fef3c7;
+        }
+        .id-details { flex: 1; }
+        .id-details h3 { margin: 0 0 6px 0; font-size: 16px; color: #1f2937; }
+        .id-details p { margin: 3px 0; font-size: 13px; color: #4b5563; }
+        .id-details .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
+        .countdown {
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        .countdown.urgent { background: #fee2e2; color: #b91c1c; }
+        .card-actions { padding: 0 16px 16px 16px; }
+        .btn-complete {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-complete:active { transform: scale(0.98); }
 
-        /* Advanced Image Preview Rows */
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
-        .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .image-preview-slot { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed var(--primary-red); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
         .add-photo-btn { width: 65px; height: 65px; border-radius: 12px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
         .add-photo-btn i { font-size: 20px; color: #4b5563; }
-        .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; }
+        .add-photo-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
-        /* Step 1: Trigger Main Green Button Style */
-        .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2); }
-        .btn-trigger-gps:active { transform: scale(0.98); }
-
-        /* Step 2: Hidden Box for Sub Options */
+        .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .whatsapp-loc-container { display: none; background: #f0fdf4; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-        .loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
-        .loc-option:last-child { margin-bottom: 0; }
-        .loc-option:active { background: #f9fafb; }
+        .loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; }
         .loc-option .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
         .loc-option.live .icon-circle { background-color: #00a884; }
         .loc-option.current .icon-circle { background-color: #3b82f6; }
-        .loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; font-weight: 600; }
+        .loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; }
         .loc-option-text p { margin: 2px 0 0 0; font-size: 11px; color: #6b7280; }
 
-        /* Step 3: WhatsApp/Google Map Style Card Layout */
-        .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; }
         .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
-        .map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 16px 16px; }
-        .map-pin-center { font-size: 34px; color: #ea4335; position: relative; z-index: 2; animation: pinBounce 1.5s infinite; }
-        .map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2c3941; }
-        .map-card-info { display: flex; flex-direction: column; gap: 2px; }
-        .map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .map-card-subtitle { color: #8696a0; font-size: 11px; }
-        .map-card-action-btn { background: #00a884; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .map-pin-center { font-size: 34px; color: #ea4335; animation: pinBounce 1.5s infinite; }
         @keyframes pinBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
+        .map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; }
+        .map-card-subtitle { color: #8696a0; font-size: 11px; }
+        .map-card-action-btn { background: #00a884; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; }
 
-        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+        .btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; }
         .back-btn { background: none; border: none; color: #6b7280; font-weight: 600; margin-top: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 0; }
 
-        /* Professional Custom Popup Modal Styles */
-        #customAlert {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px); z-index: 999999 !important; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 330px; border-radius: 18px; 
-            padding: 24px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); box-sizing: border-box;
-        }
-        .modal-icon { font-size: 38px; color: #e11d48; margin-bottom: 12px; }
-        .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1f2937; }
-        .modal-text { color: #4b5563; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px; }
-        .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); }
+        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999999; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; }
+        .modal-icon { font-size: 38px; margin-bottom: 12px; }
+        .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+        .modal-text { color: #4b5563; font-size: 13.5px; margin-bottom: 20px; }
+        .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
     <div id="splash">
         <div class="ambulance-container">
             <i class="fas fa-cow cow-on-top"></i>
             <i class="fas fa-ambulance"></i>
         </div>
-        <h1 style="color: white; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; margin: 0;">Bejuban ki Pukar</h1>
+        <h1 style="color: white; font-size: 24px; font-weight: 700; margin: 0;">Bejuban ki Pukar</h1>
     </div>
 
-    <!-- Loader Animation -->
     <div id="loading-overlay">
         <i class="fas fa-cow loader-cow"></i>
         <p style="font-weight: 600; color: #e11d48;">Sending Request...</p>
     </div>
 
     <div class="app-container">
-        <!-- Founder Profile Header Area -->
         <div class="founder-header">
             <div class="profile-pic">
                 <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" onerror="this.src='https://via.placeholder.com/150'">
@@ -136,8 +168,7 @@
             <p>Founder, Ujjain Animal Rescue</p>
         </div>
 
-        <!-- HOME PAGE -->
-         <div id="home" class="page active">
+        <div id="home" class="page active">
             <div class="nav-grid">
                 <div class="nav-card" onclick="showPage('rescue-form')">
                     <i class="fas fa-notes-medical"></i>
@@ -152,9 +183,8 @@
                     <h3>Live Requests</h3>
                 </div>
             </div>
-         </div>
+        </div>
 
-        <!-- RESCUE REQUEST FORM PAGE -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px; font-size: 22px;">New Rescue Request</h2>
@@ -170,7 +200,7 @@
                     <option value="calf">Bachhda (Calf)</option>
                 </select>
 
-                <label>Ghav ya Pashu ki Live Photo (Preview only - Free version)</label>
+                <label>Ghav ya Pashu ki Live Photo (Preview only)</label>
                 <div class="preview-container" id="animal-photos-container">
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
@@ -201,50 +231,45 @@
                 </div>
 
                 <div id="whatsapp-map-preview" class="whatsapp-map-card">
-                    <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
+                    <div class="map-static-visual">
                         <i class="fas fa-map-pin map-pin-center"></i>
                     </div>
                     <div class="map-card-details">
-                        <div class="map-card-info">
-                            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
-                            <span class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch rescue team</span>
+                        <div>
+                            <div class="map-card-title" id="card-status-title">📍 Location Selected</div>
+                            <div class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch</div>
                         </div>
-                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">
-                            Open Maps <i class="fas fa-arrow-up-right-from-square"></i>
-                        </a>
+                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">Open Maps</a>
                     </div>
                 </div>
 
-                <input type="hidden" id="lat-long-data" required>
+                <input type="hidden" id="lat-long-data">
                 <input type="hidden" id="selected-loc-type">
 
                 <label>Aapka Mobile Number*</label>
                 <input type="tel" id="user-phone" placeholder="10 Digits ka number" required>
 
-                <button type="button" class="btn-submit">Submit Request (Free)</button>
+                <button type="button" class="btn-submit">Submit Request</button>
             </form>
         </div>
 
-        <!-- RESCUE HISTORY PAGE -->
         <div id="history" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Rescue History</h2>
             <div id="history-list-container">
-                <p style="color: #6b7280; font-size: 14px;">Loading history...</p>
+                <p style="color:#6b7280;font-size:14px;">Loading history...</p>
             </div>
         </div>
 
-        <!-- LIVE REQUESTS PAGE -->
         <div id="live-req" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color: var(--primary-red); margin-top: 15px;">Live Active Requests</h2>
             <div id="live-list-container">
-                <p style="color: #6b7280; font-size: 14px;">Loading live data...</p>
+                <p style="color:#6b7280;font-size:14px;">Loading live data...</p>
             </div>
         </div>
     </div>
 
-    <!-- Professional Native Style Floating Alert Modal -->
     <div id="customAlert">
         <div class="modal-content">
             <div class="modal-icon" id="modalIcon">⚠️</div>
@@ -254,12 +279,10 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // ========== FIREBASE CONFIG ==========
         const firebaseConfig = {
             apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
             authDomain: "ujjainanimalrescue.firebaseapp.com",
@@ -271,83 +294,72 @@
 
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        console.log("✅ Firebase Connected Successfully! (Free Version)");
 
-        // ========== GLOBAL VARIABLES ==========
         let watchId = null;
         let selectedPhotos = [];
-        let liveUnsubscribe = null;   // real-time listener ko band karne ke liye
+        let liveUnsubscribe = null;
+        let countdownIntervals = {};
 
-        // ========== PAGE NAVIGATION ==========
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
-
-            // Live page se bahar jaane pe listener band kar do
             if (pageId !== 'live-req' && liveUnsubscribe) {
                 liveUnsubscribe();
                 liveUnsubscribe = null;
+                // Clear all countdowns
+                Object.values(countdownIntervals).forEach(clearInterval);
+                countdownIntervals = {};
             }
         }
 
-        // ========== PHOTO UPLOAD (Preview only) ==========
         function handlePhotoUpload(input, containerId) {
             const container = document.getElementById(containerId);
             if (input.files && input.files[0]) {
-                const file = input.files[0];
-                selectedPhotos.push(file);
-
+                selectedPhotos.push(input.files[0]);
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const slot = document.createElement('div');
                     slot.className = 'image-preview-slot';
-                    slot.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    const addButton = container.querySelector('.add-photo-btn');
-                    container.insertBefore(slot, addButton);
+                    slot.innerHTML = `<img src="${e.target.result}">`;
+                    container.insertBefore(slot, container.querySelector('.add-photo-btn'));
                 }
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // ========== GPS FUNCTIONS ==========
         function requestSystemGPS() {
             if (!navigator.geolocation) {
-                showCustomAlert("GPS Support Nahi", "Aapka device GPS functionality ko support nahi karta hai.", true);
+                showCustomAlert("GPS Support Nahi", "Device GPS support nahi karta.", true);
                 return;
             }
             navigator.geolocation.getCurrentPosition(
-                (success) => {
+                () => {
                     document.getElementById('init-gps-btn').style.display = 'none';
                     document.getElementById('sub-loc-options').style.display = 'block';
                 },
-                (error) => { 
-                    showCustomAlert("Location Permission", "Kripya browser ko location permission 'Allow' karein.", true); 
-                },
+                () => showCustomAlert("Location Permission", "Location permission Allow karein.", true),
                 { enableHighAccuracy: true, timeout: 7000 }
             );
         }
 
         function processLocation(type) {
             const mapCard = document.getElementById('whatsapp-map-preview');
-            const subtitleText = document.getElementById('card-status-subtitle');
             if (watchId) navigator.geolocation.clearWatch(watchId);
-            subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
+            document.getElementById('card-status-subtitle').innerText = "Coordinates fetch ho rahe hain...";
             mapCard.style.display = 'block';
             document.getElementById('selected-loc-type').value = type;
             const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
-            
+
             if (type === 'current') {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified"),
-                    (err) => handleLocError(),
-                    options
+                    pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed location verified"),
+                    handleLocError, options
                 );
-            } else if (type === 'live') {
+            } else {
                 watchId = navigator.geolocation.watchPosition(
-                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time"),
-                    (err) => handleLocError(),
-                    options
+                    pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location", "Tracking in real-time"),
+                    handleLocError, options
                 );
             }
         }
@@ -361,10 +373,9 @@
 
         function handleLocError() {
             document.getElementById('whatsapp-map-preview').style.display = 'none';
-            showCustomAlert("Location Error", "Sateek data nahi mil pa raha hai. Kripya device options check karein!", true);
+            showCustomAlert("Location Error", "Sateek location nahi mil payi.", true);
         }
 
-        // ========== CUSTOM ALERT ==========
         function showCustomAlert(title, message, isError = true) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('errorMsg').innerText = message;
@@ -372,93 +383,158 @@
             document.getElementById('customAlert').style.display = 'flex';
         }
 
-        // ========== TIME FORMAT ==========
         function formatTime(timestamp) {
-            if (!timestamp) return "Abhi abhi";
-            const date = timestamp.toDate();
-            return date.toLocaleString('hi-IN', {
-                day: '2-digit', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
+            if (!timestamp) return "Abhi";
+            return timestamp.toDate().toLocaleString('hi-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
         }
 
-        // ========== LIVE REQUESTS (Real-time) ==========
+        // ========== 2 HOUR COUNTDOWN ==========
+        function startCountdown(docId, createdAt, elementId) {
+            if (countdownIntervals[docId]) clearInterval(countdownIntervals[docId]);
+
+            const endTime = createdAt.toDate().getTime() + (2 * 60 * 60 * 1000); // 2 hours
+
+            countdownIntervals[docId] = setInterval(() => {
+                const now = Date.now();
+                const diff = endTime - now;
+                const el = document.getElementById(elementId);
+                if (!el) {
+                    clearInterval(countdownIntervals[docId]);
+                    return;
+                }
+
+                if (diff <= 0) {
+                    el.innerHTML = "⏰ Time Over";
+                    el.classList.add('urgent');
+                    clearInterval(countdownIntervals[docId]);
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                el.innerHTML = `⏳ ${hours}h ${mins}m ${secs}s left`;
+                if (diff < 30 * 60 * 1000) el.classList.add('urgent'); // last 30 min red
+            }, 1000);
+        }
+
+        // ========== LIVE REQUESTS ==========
         function loadLiveRequests() {
             const container = document.getElementById('live-list-container');
-            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading live data...</p>';
+            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading...</p>';
 
-            // Pehle se koi listener ho to band kar do
             if (liveUnsubscribe) liveUnsubscribe();
 
             liveUnsubscribe = db.collection("rescue_requests")
                 .where("status", "==", "pending")
                 .orderBy("createdAt", "desc")
-                .onSnapshot((snapshot) => {
+                .onSnapshot(snapshot => {
                     if (snapshot.empty) {
-                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Abhi koi live request nahi hai.</p>';
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;text-align:center;margin-top:40px;">Abhi koi Live Request nahi hai</p>';
                         return;
                     }
 
                     let html = '';
-                    snapshot.forEach((doc) => {
+                    snapshot.forEach(doc => {
                         const data = doc.data();
                         const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        const countdownId = `cd-${doc.id}`;
+
                         html += `
-                            <div class="request-item">
-                                <h4>${data.animalType === 'cow' ? '🐄 Gai' : '🐮 Bachhda'} - ${data.reporterName}</h4>
-                                <p><strong>Mobile:</strong> ${data.phone}</p>
-                                <p><strong>Time:</strong> ${formatTime(data.createdAt)}</p>
-                                <p><a href="${mapUrl}" target="_blank" class="map-link">📍 Location Dekho</a></p>
-                                <span class="status pending">Pending</span>
+                            <div class="id-card">
+                                <div class="id-card-header">गो सेवक • LIVE REQUEST</div>
+                                <div class="id-card-body">
+                                    <div class="id-photo">${data.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                                    <div class="id-details">
+                                        <h3>${data.reporterName}</h3>
+                                        <p><i class="fas fa-phone"></i> ${data.phone}</p>
+                                        <p><i class="fas fa-clock"></i> ${formatTime(data.createdAt)}</p>
+                                        <p><a href="${mapUrl}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Location Dekho</a></p>
+                                        <div class="countdown" id="${countdownId}">Loading...</div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn-complete" onclick="markCompleted('${doc.id}')">
+                                        <i class="fas fa-check-circle"></i> Rescue Complete
+                                    </button>
+                                </div>
                             </div>
                         `;
                     });
                     container.innerHTML = html;
-                }, (error) => {
-                    console.error(error);
-                    container.innerHTML = '<p style="color:#e11d48;">Error loading data. Rules check karein.</p>';
+
+                    // Start countdowns
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.createdAt) {
+                            startCountdown(doc.id, data.createdAt, `cd-${doc.id}`);
+                        }
+                    });
+                }, err => {
+                    console.error(err);
+                    container.innerHTML = `<p style="color:#e11d48;padding:20px;">Error: ${err.message}<br><br>Agar index chahiye to console mein jo link aaye uspe click karke index bana lo.</p>`;
                 });
         }
 
-        // ========== HISTORY PAGE ==========
+        // ========== MARK AS COMPLETED ==========
+        async function markCompleted(docId) {
+            if (!confirm("Kya aap is rescue ko Complete mark karna chahte ho?")) return;
+
+            try {
+                await db.collection("rescue_requests").doc(docId).update({
+                    status: "completed",
+                    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showCustomAlert("Success", "Rescue Complete mark ho gaya! Ab yeh History mein chala gaya.", false);
+            } catch (err) {
+                showCustomAlert("Error", err.message, true);
+            }
+        }
+
+        // ========== HISTORY (sirf completed) ==========
         function loadHistory() {
             const container = document.getElementById('history-list-container');
             container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading history...</p>';
 
             db.collection("rescue_requests")
+                .where("status", "==", "completed")
                 .orderBy("createdAt", "desc")
-                .limit(50)
+                .limit(30)
                 .get()
-                .then((snapshot) => {
+                .then(snapshot => {
                     if (snapshot.empty) {
-                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Abhi koi history nahi hai.</p>';
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;text-align:center;margin-top:40px;">Abhi koi completed rescue nahi hai</p>';
                         return;
                     }
 
                     let html = '';
-                    snapshot.forEach((doc) => {
+                    snapshot.forEach(doc => {
                         const data = doc.data();
                         const mapUrl = `https://www.google.com/maps?q=${data.location}`;
-                        const statusClass = data.status || 'pending';
                         html += `
-                            <div class="request-item">
-                                <h4>${data.animalType === 'cow' ? '🐄 Gai' : '🐮 Bachhda'} - ${data.reporterName}</h4>
-                                <p><strong>Mobile:</strong> ${data.phone}</p>
-                                <p><strong>Time:</strong> ${formatTime(data.createdAt)}</p>
-                                <p><a href="${mapUrl}" target="_blank" class="map-link">📍 Location Dekho</a></p>
-                                <span class="status \( {statusClass}"> \){statusClass}</span>
+                            <div class="id-card">
+                                <div class="id-card-header">गो सेवक • COMPLETED</div>
+                                <div class="id-card-body">
+                                    <div class="id-photo">${data.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                                    <div class="id-details">
+                                        <h3>${data.reporterName}</h3>
+                                        <p><i class="fas fa-phone"></i> ${data.phone}</p>
+                                        <p><i class="fas fa-clock"></i> ${formatTime(data.createdAt)}</p>
+                                        <p><a href="${mapUrl}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Location Dekho</a></p>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     });
                     container.innerHTML = html;
                 })
-                .catch((error) => {
-                    console.error(error);
-                    container.innerHTML = '<p style="color:#e11d48;">Error loading history.</p>';
+                .catch(err => {
+                    console.error(err);
+                    container.innerHTML = `<p style="color:#e11d48;">Error: ${err.message}</p>`;
                 });
         }
 
-        // ========== MAIN SUBMIT LOGIC ==========
+        // ========== SUBMIT ==========
         document.querySelector('.btn-submit').addEventListener('click', async function(e) {
             e.preventDefault();
 
@@ -467,43 +543,17 @@
             const phoneInput = document.getElementById('user-phone');
             const val = phoneInput.value.trim();
             const latLong = document.getElementById('lat-long-data').value;
-            const locType = document.getElementById('selected-loc-type').value;
 
-            if (name === "") {
-                showCustomAlert("Naam Missing", "Kripya apna pura naam darj karein.", false);
-                return;
-            }
-            if (animalType === "") {
-                showCustomAlert("Animal Type", "Kripya pashu ka prakar chunein.", false);
-                return;
-            }
-            if (selectedPhotos.length === 0) {
-                showCustomAlert("Photo Required", "Kripya kam se kam 1 photo select karein (preview ke liye).", false);
-                return;
-            }
+            if (!name) return showCustomAlert("Naam Missing", "Apna naam likhein.", false);
+            if (!animalType) return showCustomAlert("Animal Type", "Pashu ka prakar chunein.", false);
+            if (selectedPhotos.length === 0) return showCustomAlert("Photo Required", "Kam se kam 1 photo select karein.", false);
 
-            const isLengthValid = /^[6-9]\d{9}$/.test(val); 
-            const isRepeated = /(\d)\1{9}/.test(val);      
-            const isSequential = /1234567890|0123456789/.test(val); 
-            const isPatternFraud = /(..)\1{4}/.test(val);
-
-            if (val === "") {
-                showCustomAlert("⚠️ Number Missing", "Kripya apna mobile number box mein darj karein.", false);
-                phoneInput.focus();
+            const isLengthValid = /^[6-9]\d{9}$/.test(val);
+            if (!val || !isLengthValid) {
+                showCustomAlert("Galat Number", "Sahi 10 digit Indian number dalein.", true);
                 return;
             }
-            if (!isLengthValid || isRepeated || isSequential || isPatternFraud) {
-                showCustomAlert("❌ Galat Mobile Number", "Kripya 10 digits ka asli aur active Indian mobile number dalein.", true);
-                phoneInput.style.borderColor = "#e11d48";
-                phoneInput.focus();
-                return;
-            }
-            phoneInput.style.borderColor = "#d1d5db";
-
-            if (!latLong) {
-                showCustomAlert("📍 Location Required", "Kripya pehle hare rang ke button par touch karke apni sateek location share karein!", false);
-                return;
-            }
+            if (!latLong) return showCustomAlert("Location Required", "Pehle location share karein.", false);
 
             document.getElementById('loading-overlay').style.display = 'flex';
 
@@ -513,39 +563,32 @@
                     animalType: animalType,
                     phone: val,
                     location: latLong,
-                    locationType: locType || "current",
+                    locationType: document.getElementById('selected-loc-type').value || "current",
                     photoCount: selectedPhotos.length,
-                    photosUploaded: false,
                     status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    paymentStatus: "pending"
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 document.getElementById('loading-overlay').style.display = 'none';
-                showCustomAlert("Request Sent!", "Aapki rescue request successfully bhej di gayi hai. Team jald contact karegi.", false);
+                showCustomAlert("Request Sent!", "Request successfully bhej di gayi hai.", false);
 
-                // Form reset
+                // Reset form
                 document.getElementById('main-rescue-form').reset();
                 selectedPhotos = [];
                 document.getElementById('animal-photos-container').innerHTML = `
                     <div class="add-photo-btn">
                         <i class="fas fa-camera"></i>
                         <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this, 'animal-photos-container')">
-                    </div>
-                `;
+                    </div>`;
                 document.getElementById('init-gps-btn').style.display = 'block';
                 document.getElementById('sub-loc-options').style.display = 'none';
                 document.getElementById('whatsapp-map-preview').style.display = 'none';
                 document.getElementById('lat-long-data').value = "";
-                if (watchId) {
-                    navigator.geolocation.clearWatch(watchId);
-                    watchId = null;
-                }
+                if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
 
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
                 document.getElementById('loading-overlay').style.display = 'none';
-                showCustomAlert("Error", "Kuch galat ho gaya. Kripya phir se try karein.\n" + error.message, true);
+                showCustomAlert("Error", err.message, true);
             }
         });
     </script>
