@@ -117,17 +117,24 @@
 
         .btn-trigger-gps { background-color: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .whatsapp-loc-container { display: none; background: #f0fdf4; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-        .loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; }
-        .loc-option .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
-        .loc-option.live .icon-circle { background-color: #00a884; }
-        .loc-option.current .icon-circle { background-color: #3b82f6; }
-        .loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; }
-        .loc-option-text p { margin: 2px 0 0 0; font-size: 11px; color: #6b7280; }
+.loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; }
+.loc-option:last-child { margin-bottom: 0; }
+.loc-option .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+.loc-option.live .icon-circle { background-color: #00a884; }
+.loc-option.current .icon-circle { background-color: #3b82f6; }
+.loc-option-text h4 { margin: 0; font-size: 14px; color: #111827; font-weight: 600; }
+.loc-option-text p { margin: 2px 0 0 0; font-size: 11px; color: #6b7280; }
 
-        .whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; }
-        .map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
-        .map-pin-center { font-size: 34px; color: #ea4335; animation: pinBounce 1.5s infinite; }
-        @keyframes pinBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+.map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
+.map-static-visual::before { content: ''; position: absolute; inset: 0; opacity: 0.15; background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 16px 16px; }
+.map-pin-center { font-size: 34px; color: #ea4335; position: relative; z-index: 2; animation: pinBounce 1.5s infinite; }
+.map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2c3941; }
+.map-card-info { display: flex; flex-direction: column; gap: 2px; }
+.map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; }
+.map-card-subtitle { color: #8696a0; font-size: 11px; }
+.map-card-action-btn { background: #00a884; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+@keyframes pinBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
         .map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; }
         .map-card-subtitle { color: #8696a0; font-size: 11px; }
@@ -209,23 +216,44 @@
                 </div>
 
                 <label>Ujjain Location Selection*</label>
-                <button type="button" id="init-gps-btn" class="btn-trigger-gps" onclick="requestSystemGPS()">
-                    <i class="fas fa-map-marker-alt"></i> Share Request Location
-                </button>
+<button type="button" id="init-gps-btn" class="btn-trigger-gps" onclick="requestSystemGPS()">
+    <i class="fas fa-map-marker-alt"></i> Share Request Location
+</button>
 
-                <div id="sub-loc-options" class="whatsapp-loc-container">
-                    <div class="loc-option live" onclick="processLocation('live')">
-                        <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
-                        <div class="loc-option-text">
-                            <h4>Share live location</h4>
-                            <p>Updates dynamically as they move</p>
-                        </div>
-                    </div>
-                    <div class="loc-option current" onclick="processLocation('current')">
-                        <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
-                        <div class="loc-option-text">
-                            <h4>Send your current location</h4>
-                            <p>Accurate fixed spot location</p>
+<div id="sub-loc-options" class="whatsapp-loc-container">
+    <div class="loc-option live" onclick="processLocation('live')">
+        <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
+        <div class="loc-option-text">
+            <h4>Share live location</h4>
+            <p>Updates dynamically as they move</p>
+        </div>
+    </div>
+    <div class="loc-option current" onclick="processLocation('current')">
+        <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
+        <div class="loc-option-text">
+            <h4>Send your current location</h4>
+            <p>Accurate fixed spot location</p>
+        </div>
+    </div>
+</div>
+
+<div id="whatsapp-map-preview" class="whatsapp-map-card">
+    <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
+        <i class="fas fa-map-pin map-pin-center"></i>
+    </div>
+    <div class="map-card-details">
+        <div class="map-card-info">
+            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
+            <span class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch rescue team</span>
+        </div>
+        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">
+            Open Maps <i class="fas fa-arrow-up-right-from-square"></i>
+        </a>
+    </div>
+</div>
+
+<input type="hidden" id="lat-long-data">
+<input type="hidden" id="selected-loc-type">
                         </div>
                     </div>
                 </div>
@@ -329,52 +357,60 @@
         }
 
         function requestSystemGPS() {
-            if (!navigator.geolocation) {
-                showCustomAlert("GPS Support Nahi", "Device GPS support nahi karta.", true);
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                () => {
-                    document.getElementById('init-gps-btn').style.display = 'none';
-                    document.getElementById('sub-loc-options').style.display = 'block';
-                },
-                () => showCustomAlert("Location Permission", "Location permission Allow karein.", true),
-                { enableHighAccuracy: true, timeout: 7000 }
-            );
-        }
+    if (!navigator.geolocation) {
+        showCustomAlert("GPS Support Nahi", "Aapka device GPS support nahi karta.", true);
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (success) => {
+            document.getElementById('init-gps-btn').style.display = 'none';
+            document.getElementById('sub-loc-options').style.display = 'block';
+        },
+        (error) => {
+            showCustomAlert("Location Permission", "Kripya browser ko location permission 'Allow' karein.", true);
+        },
+        { enableHighAccuracy: true, timeout: 7000 }
+    );
+}
 
-        function processLocation(type) {
-            const mapCard = document.getElementById('whatsapp-map-preview');
-            if (watchId) navigator.geolocation.clearWatch(watchId);
-            document.getElementById('card-status-subtitle').innerText = "Coordinates fetch ho rahe hain...";
-            mapCard.style.display = 'block';
-            document.getElementById('selected-loc-type').value = type;
-            const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+function processLocation(type) {
+    const mapCard = document.getElementById('whatsapp-map-preview');
+    const subtitleText = document.getElementById('card-status-subtitle');
+    
+    if (watchId) navigator.geolocation.clearWatch(watchId);
+    
+    subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
+    mapCard.style.display = 'block';
+    document.getElementById('selected-loc-type').value = type;
+    
+    const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+    
+    if (type === 'current') {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified"),
+            (err) => handleLocError(),
+            options
+        );
+    } else if (type === 'live') {
+        watchId = navigator.geolocation.watchPosition(
+            (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time"),
+            (err) => handleLocError(),
+            options
+        );
+    }
+}
 
-            if (type === 'current') {
-                navigator.geolocation.getCurrentPosition(
-                    pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed location verified"),
-                    handleLocError, options
-                );
-            } else {
-                watchId = navigator.geolocation.watchPosition(
-                    pos => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location", "Tracking in real-time"),
-                    handleLocError, options
-                );
-            }
-        }
+function updateLocationUI(lat, lng, title, subtitle) {
+    document.getElementById('lat-long-data').value = lat + "," + lng;
+    document.getElementById('card-status-title').innerText = title;
+    document.getElementById('card-status-subtitle').innerText = subtitle;
+    document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
+}
 
-        function updateLocationUI(lat, lng, title, subtitle) {
-            document.getElementById('lat-long-data').value = lat + "," + lng;
-            document.getElementById('card-status-title').innerText = title;
-            document.getElementById('card-status-subtitle').innerText = subtitle;
-            document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
-        }
-
-        function handleLocError() {
-            document.getElementById('whatsapp-map-preview').style.display = 'none';
-            showCustomAlert("Location Error", "Sateek location nahi mil payi.", true);
-        }
+function handleLocError() {
+    document.getElementById('whatsapp-map-preview').style.display = 'none';
+    showCustomAlert("Location Error", "Sateek data nahi mil pa raha hai. Kripya device options check karein!", true);
+}
 
         function showCustomAlert(title, message, isError = true) {
             document.getElementById('modalTitle').innerText = title;
