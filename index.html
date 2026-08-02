@@ -266,3 +266,560 @@
                 </div>
             </div>
         </div>
+<!-- RESCUE FORM -->
+        <div id="rescue-form" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 12px; font-size: 22px;">New Rescue Request</h2>
+            
+            <form id="main-rescue-form">
+                <label>Aapka Naam*</label>
+                <input type="text" id="reporter-name" placeholder="Apna pura naam likhein" required>
+
+                <label>Pashu ka Prakar (Animal)*</label>
+                <select required id="animal-type">
+                    <option value="">Chuniye...</option>
+                    <option value="cow">Gai (Cow)</option>
+                    <option value="calf">Bachhda (Calf)</option>
+                </select>
+
+                <label>Ghav ya Pashu ki Live Photo</label>
+                <div class="preview-container" id="animal-photos-container">
+                    <div class="add-photo-btn">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)">
+                    </div>
+                </div>
+
+                <label>Ujjain Location Selection*</label>
+                <button type="button" id="init-gps-btn" class="btn-trigger-gps" onclick="requestSystemGPS()">
+                    <i class="fas fa-map-marker-alt"></i> Share Request Location
+                </button>
+
+                <div id="sub-loc-options" class="whatsapp-loc-container">
+                    <div class="loc-option live" onclick="processLocation('live')">
+                        <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
+                        <div class="loc-option-text">
+                            <h4>Share live location</h4>
+                            <p>Updates dynamically as they move</p>
+                        </div>
+                    </div>
+                    <div class="loc-option current" onclick="processLocation('current')">
+                        <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
+                        <div class="loc-option-text">
+                            <h4>Send your current location</h4>
+                            <p>Accurate fixed spot location</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="whatsapp-map-preview" class="whatsapp-map-card">
+                    <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
+                        <i class="fas fa-map-pin map-pin-center"></i>
+                    </div>
+                    <div class="map-card-details">
+                        <div class="map-card-info">
+                            <span class="map-card-title" id="card-status-title">📍 Location Selected</span>
+                            <span class="map-card-subtitle" id="card-status-subtitle">Ready to dispatch rescue team</span>
+                        </div>
+                        <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">
+                            Open Maps <i class="fas fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <input type="hidden" id="lat-long-data">
+                <input type="hidden" id="selected-loc-type">
+
+                <label>Aapka Mobile Number*</label>
+                <input type="tel" id="user-phone" placeholder="10 Digits ka number" required>
+
+                <button type="button" class="btn-submit">Submit Request</button>
+            </form>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="history" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 12px;">Rescue History</h2>
+            <div id="history-list-container">
+                <p style="color:#6b7280;font-size:14px;">Loading history...</p>
+            </div>
+        </div>
+
+        <!-- LIVE REQUESTS -->
+        <div id="live-req" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 12px;">Live Active Requests</h2>
+            <div id="live-list-container">
+                <p style="color:#6b7280;font-size:14px;">Loading live data...</p>
+            </div>
+        </div>
+
+        <!-- ADMIN LOGIN -->
+        <div id="admin-login" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 12px;">Admin Login</h2>
+            
+            <div class="admin-login-box">
+                <label>Password</label>
+                <input type="password" id="admin-password" placeholder="Admin password dalein">
+                <button class="btn-submit" onclick="adminLogin()" style="margin-top:10px;">Login</button>
+                <p style="font-size:12px; color:#6b7280; margin-top:15px; text-align:center;">
+                    Sirf Founder ke liye
+                </p>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="admin-panel" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2 style="color: var(--primary-red); margin-top: 12px;">Admin Panel</h2>
+            
+            <div class="admin-stats" id="admin-stats">
+                <div class="stat-box">
+                    <h3 id="stat-pending">0</h3>
+                    <p>Pending</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="stat-completed">0</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+
+            <h3 style="margin:20px 0 10px; color:#1f2937;">Live Requests (Admin)</h3>
+            <div id="admin-live-container">
+                <p style="color:#6b7280;font-size:14px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert -->
+    <div id="customAlert">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <div class="modal-title" id="modalTitle">Invalid Input</div>
+            <div class="modal-text" id="errorMsg">Kripya sahi number darj karein.</div>
+            <button class="btn-ok" onclick="document.getElementById('customAlert').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+            authDomain: "ujjainanimalrescue.firebaseapp.com",
+            projectId: "ujjainanimalrescue",
+            storageBucket: "ujjainanimalrescue.firebasestorage.app",
+            messagingSenderId: "686634974496",
+            appId: "1:686634974496:web:8b56642568a257e49fab45"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ========== SETTINGS ==========
+        const ADMIN_PASSWORD = "raj@123";           // Yahan apna password change kar lena
+        const FOUNDER_WHATSAPP = "919876543210";    // Yahan apna WhatsApp number dalna (91 ke saath)
+
+        let watchId = null;
+        let selectedPhotos = [];
+        let liveUnsubscribe = null;
+        let adminLiveUnsubscribe = null;
+        let countdownIntervals = {};
+        let isAdminLoggedIn = false;
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+
+            if (pageId !== 'live-req' && liveUnsubscribe) {
+                liveUnsubscribe();
+                liveUnsubscribe = null;
+                Object.values(countdownIntervals).forEach(clearInterval);
+                countdownIntervals = {};
+            }
+            if (pageId !== 'admin-panel' && adminLiveUnsubscribe) {
+                adminLiveUnsubscribe();
+                adminLiveUnsubscribe = null;
+            }
+        }
+
+        // ========== PHOTO UPLOAD + DELETE ==========
+        function handlePhotoUpload(input) {
+            const container = document.getElementById('animal-photos-container');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                selectedPhotos.push(file);
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const slot = document.createElement('div');
+                    slot.className = 'image-preview-slot';
+                    slot.innerHTML = `
+                        <img src="${e.target.result}">
+                        <div class="remove-photo" onclick="removePhoto(this, ${selectedPhotos.length - 1})">×</div>
+                    `;
+                    container.insertBefore(slot, container.querySelector('.add-photo-btn'));
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removePhoto(el, index) {
+            selectedPhotos.splice(index, 1);
+            el.parentElement.remove();
+            // Re-index remaining remove buttons
+            const slots = document.querySelectorAll('.image-preview-slot');
+            slots.forEach((slot, i) => {
+                const btn = slot.querySelector('.remove-photo');
+                if (btn) btn.setAttribute('onclick', `removePhoto(this, ${i})`);
+            });
+        }
+
+        // ========== LOCATION ==========
+        function requestSystemGPS() {
+            if (!navigator.geolocation) {
+                showCustomAlert("GPS Support Nahi", "Aapka device GPS support nahi karta.", true);
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                () => {
+                    document.getElementById('init-gps-btn').style.display = 'none';
+                    document.getElementById('sub-loc-options').style.display = 'block';
+                },
+                () => showCustomAlert("Location Permission", "Kripya browser ko location permission Allow karein.", true),
+                { enableHighAccuracy: true, timeout: 7000 }
+            );
+        }
+
+        function processLocation(type) {
+            const mapCard = document.getElementById('whatsapp-map-preview');
+            const subtitleText = document.getElementById('card-status-subtitle');
+
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+
+            subtitleText.innerText = "Sateek GPS coordinates fetch ho rahe hain...";
+            mapCard.style.display = 'block';
+            document.getElementById('selected-loc-type').value = type;
+
+            const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+
+            if (type === 'current') {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "Current Location Sent", "Fixed spot location verified"),
+                    handleLocError, options
+                );
+            } else if (type === 'live') {
+                watchId = navigator.geolocation.watchPosition(
+                    (pos) => updateLocationUI(pos.coords.latitude, pos.coords.longitude, "🟢 Live Location Sharing", "Tracking device movements in real-time"),
+                    handleLocError, options
+                );
+            }
+        }
+
+        function updateLocationUI(lat, lng, title, subtitle) {
+            document.getElementById('lat-long-data').value = lat + "," + lng;
+            document.getElementById('card-status-title').innerText = title;
+            document.getElementById('card-status-subtitle').innerText = subtitle;
+            document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
+        }
+
+        function handleLocError() {
+            document.getElementById('whatsapp-map-preview').style.display = 'none';
+            showCustomAlert("Location Error", "Sateek data nahi mil pa raha hai.", true);
+        }
+
+        function showCustomAlert(title, message, isError = true) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('errorMsg').innerText = message;
+            document.getElementById('modalIcon').innerText = isError ? "❌" : "✅";
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return "Abhi";
+            return timestamp.toDate().toLocaleString('hi-IN', { 
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+            });
+        }
+
+        // ========== COUNTDOWN ==========
+        function startCountdown(docId, createdAt, elementId) {
+            if (countdownIntervals[docId]) clearInterval(countdownIntervals[docId]);
+            const endTime = createdAt.toDate().getTime() + (2 * 60 * 60 * 1000);
+
+            countdownIntervals[docId] = setInterval(() => {
+                const now = Date.now();
+                const diff = endTime - now;
+                const el = document.getElementById(elementId);
+                if (!el) { clearInterval(countdownIntervals[docId]); return; }
+
+                if (diff <= 0) {
+                    el.innerHTML = "⏰ Time Over";
+                    el.classList.add('urgent');
+                    clearInterval(countdownIntervals[docId]);
+                    return;
+                }
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                el.innerHTML = `⏳ ${hours}h ${mins}m ${secs}s left`;
+                if (diff < 30 * 60 * 1000) el.classList.add('urgent');
+            }, 1000);
+        }
+
+        // ========== LIVE REQUESTS (User) ==========
+        function loadLiveRequests() {
+            const container = document.getElementById('live-list-container');
+            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading...</p>';
+
+            if (liveUnsubscribe) { liveUnsubscribe(); liveUnsubscribe = null; }
+            Object.values(countdownIntervals).forEach(clearInterval);
+            countdownIntervals = {};
+
+            liveUnsubscribe = db.collection("rescue_requests")
+                .where("status", "==", "pending")
+                .orderBy("createdAt", "desc")
+                .onSnapshot((snapshot) => {
+                    container.innerHTML = '';
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;text-align:center;margin-top:50px;">Abhi koi Live Request nahi hai</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    const addedIds = new Set();
+                    snapshot.forEach((doc) => {
+                        if (addedIds.has(doc.id)) return;
+                        addedIds.add(doc.id);
+                        const data = doc.data();
+                        const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        const countdownId = `cd-${doc.id}`;
+
+                        html += `
+                            <div class="id-card" id="card-${doc.id}">
+                                <div class="id-card-header">गो सेवक • LIVE REQUEST</div>
+                                <div class="id-card-body">
+                                    <div class="id-photo">${data.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                                    <div class="id-details">
+                                        <h3>${data.reporterName}</h3>
+                                        <p><i class="fas fa-phone"></i> ${data.phone}</p>
+                                        <p><i class="fas fa-clock"></i> ${formatTime(data.createdAt)}</p>
+                                        <p><a href="${mapUrl}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Location Dekho</a></p>
+                                        <div class="countdown" id="${countdownId}">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+
+                    snapshot.forEach((doc) => {
+                        if (doc.data().createdAt) startCountdown(doc.id, doc.data().createdAt, `cd-${doc.id}`);
+                    });
+                }, (err) => {
+                    container.innerHTML = `<p style="color:#e11d48;padding:15px;">Error: ${err.message}</p>`;
+                });
+        }
+
+        // ========== HISTORY ==========
+        function loadHistory() {
+            const container = document.getElementById('history-list-container');
+            container.innerHTML = '<p style="color:#6b7280;font-size:14px;">Loading history...</p>';
+
+            db.collection("rescue_requests")
+                .where("status", "==", "completed")
+                .orderBy("createdAt", "desc")
+                .limit(30)
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color:#6b7280;font-size:14px;text-align:center;margin-top:50px;">Abhi koi completed rescue nahi hai</p>';
+                        return;
+                    }
+                    let html = '';
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        html += `
+                            <div class="id-card">
+                                <div class="id-card-header">गो सेवक • COMPLETED</div>
+                                <div class="id-card-body">
+                                    <div class="id-photo">${data.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                                    <div class="id-details">
+                                        <h3>${data.reporterName}</h3>
+                                        <p><i class="fas fa-phone"></i> ${data.phone}</p>
+                                        <p><i class="fas fa-clock"></i> ${formatTime(data.createdAt)}</p>
+                                        <p><a href="${mapUrl}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Location Dekho</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(err => {
+                    container.innerHTML = `<p style="color:#e11d48;">Error: ${err.message}</p>`;
+                });
+        }
+
+        // ========== ADMIN LOGIN ==========
+        function adminLogin() {
+            const pass = document.getElementById('admin-password').value;
+            if (pass === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                showPage('admin-panel');
+                loadAdminPanel();
+            } else {
+                showCustomAlert("Galat Password", "Password galat hai. Sirf Founder login kar sakte hain.", true);
+            }
+        }
+
+        // ========== ADMIN PANEL ==========
+        function loadAdminPanel() {
+            // Stats
+            db.collection("rescue_requests").where("status", "==", "pending").get().then(snap => {
+                document.getElementById('stat-pending').innerText = snap.size;
+            });
+            db.collection("rescue_requests").where("status", "==", "completed").get().then(snap => {
+                document.getElementById('stat-completed').innerText = snap.size;
+            });
+
+            // Live Requests for Admin (with Complete + Delete)
+            const container = document.getElementById('admin-live-container');
+            if (adminLiveUnsubscribe) adminLiveUnsubscribe();
+
+            adminLiveUnsubscribe = db.collection("rescue_requests")
+                .where("status", "==", "pending")
+                .orderBy("createdAt", "desc")
+                .onSnapshot((snapshot) => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color:#6b7280;text-align:center;">Koi pending request nahi hai</p>';
+                        return;
+                    }
+                    let html = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const mapUrl = `https://www.google.com/maps?q=${data.location}`;
+                        html += `
+                            <div class="id-card">
+                                <div class="id-card-header">ADMIN • LIVE</div>
+                                <div class="id-card-body">
+                                    <div class="id-photo">${data.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                                    <div class="id-details">
+                                        <h3>${data.reporterName}</h3>
+                                        <p><i class="fas fa-phone"></i> ${data.phone}</p>
+                                        <p><i class="fas fa-clock"></i> ${formatTime(data.createdAt)}</p>
+                                        <p><a href="${mapUrl}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Location</a></p>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn-complete" onclick="markCompleted('${doc.id}')">
+                                        <i class="fas fa-check"></i> Complete
+                                    </button>
+                                    <button class="btn-delete" onclick="deleteRequest('${doc.id}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                });
+        }
+
+        // ========== MARK COMPLETED ==========
+        async function markCompleted(docId) {
+            if (!confirm("Rescue Complete mark karein?")) return;
+            try {
+                await db.collection("rescue_requests").doc(docId).update({
+                    status: "completed",
+                    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showCustomAlert("Success", "Request Complete ho gayi!", false);
+                if (isAdminLoggedIn) loadAdminPanel();
+            } catch (err) {
+                showCustomAlert("Error", err.message, true);
+            }
+        }
+
+        // ========== DELETE REQUEST (Admin only) ==========
+        async function deleteRequest(docId) {
+            if (!confirm("Kya aap is request ko permanently delete karna chahte ho?")) return;
+            try {
+                await db.collection("rescue_requests").doc(docId).delete();
+                showCustomAlert("Deleted", "Request delete ho gayi.", false);
+                if (isAdminLoggedIn) loadAdminPanel();
+            } catch (err) {
+                showCustomAlert("Error", err.message, true);
+            }
+        }
+
+        // ========== SUBMIT ==========
+        document.querySelector('.btn-submit').addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('reporter-name').value.trim();
+            const animalType = document.getElementById('animal-type').value;
+            const phoneInput = document.getElementById('user-phone');
+            const val = phoneInput.value.trim();
+            const latLong = document.getElementById('lat-long-data').value;
+
+            if (!name) return showCustomAlert("Naam Missing", "Apna naam likhein.", false);
+            if (!animalType) return showCustomAlert("Animal Type", "Pashu ka prakar chunein.", false);
+            if (selectedPhotos.length === 0) return showCustomAlert("Photo Required", "Kam se kam 1 photo select karein.", false);
+
+            const isLengthValid = /^[6-9]\d{9}$/.test(val);
+            if (!val || !isLengthValid) {
+                showCustomAlert("Galat Number", "Sahi 10 digit Indian number dalein.", true);
+                return;
+            }
+            if (!latLong) return showCustomAlert("Location Required", "Pehle location share karein.", false);
+
+            document.getElementById('loading-overlay').style.display = 'flex';
+
+            try {
+                await db.collection("rescue_requests").add({
+                    reporterName: name,
+                    animalType: animalType,
+                    phone: val,
+                    location: latLong,
+                    locationType: document.getElementById('selected-loc-type').value || "current",
+                    photoCount: selectedPhotos.length,
+                    status: "pending",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                document.getElementById('loading-overlay').style.display = 'none';
+                showCustomAlert("Request Sent!", "Request successfully bhej di gayi hai.", false);
+
+                // WhatsApp open (optional)
+                const msg = `New Rescue Request%0A%0AName: ${name}%0AAnimal: ${animalType}%0APhone: \( {val}%0ALocation: https://www.google.com/maps?q= \){latLong}`;
+                // Uncomment below line if you want auto WhatsApp open
+                // window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, '_blank');
+
+                // Reset form
+                document.getElementById('main-rescue-form').reset();
+                selectedPhotos = [];
+                document.getElementById('animal-photos-container').innerHTML = `
+                    <div class="add-photo-btn">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)">
+                    </div>`;
+                document.getElementById('init-gps-btn').style.display = 'block';
+                document.getElementById('sub-loc-options').style.display = 'none';
+                document.getElementById('whatsapp-map-preview').style.display = 'none';
+                document.getElementById('lat-long-data').value = "";
+                if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+
+            } catch (err) {
+                document.getElementById('loading-overlay').style.display = 'none';
+                showCustomAlert("Error", err.message, true);
+            }
+        });
+    </script>
+</body>
+</html>
