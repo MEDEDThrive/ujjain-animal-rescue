@@ -38,12 +38,13 @@
         .page.active { display: block; }
 
         label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 14px; }
-        input, select { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 14px; font-size: 14px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 14px; font-size: 14px; box-sizing: border-box; }
 
         .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #fff5f5 38%, #fff 100%); border-radius: 16px; margin-bottom: 18px; overflow: hidden; border: 1px solid #fecaca; }
         .id-card-header { background: #7f1d1d; color: #fef3c7; text-align: center; padding: 11px; font-size: 14px; font-weight: 700; }
         .id-card-body { padding: 16px; display: flex; gap: 14px; }
-        .id-photo { width: 70px; height: 70px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 2px solid #fef3c7; }
+        .id-photo { width: 70px; height: 70px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 2px solid #fef3c7; overflow: hidden; }
+        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
         .id-details h3 { margin: 0 0 5px; font-size: 16px; }
         .id-details p { margin: 3px 0; font-size: 13px; color: #4b5563; }
         .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
@@ -53,6 +54,7 @@
         .card-actions { padding: 0 16px 16px; display: flex; gap: 10px; }
         .btn-complete { background: #059669; color: white; border: none; padding: 11px; flex: 1; border-radius: 10px; font-weight: 600; cursor: pointer; }
         .btn-delete { background: #dc2626; color: white; border: none; padding: 11px; border-radius: 10px; width: 48px; cursor: pointer; }
+        .btn-whatsapp { background: #00a884; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 6px; }
 
         .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
         .image-preview-slot { width: 70px; height: 70px; border-radius: 12px; border: 2px solid var(--primary-red); overflow: hidden; position: relative; }
@@ -88,6 +90,8 @@
         #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999999; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; }
         .btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+
+        .team-join-btn { background: #7f1d1d; color: #fef3c7; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -118,10 +122,11 @@
                 <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
                 <div class="nav-card" onclick="showPage('history');loadHistory()"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
                 <div class="nav-card" onclick="showPage('live-req');loadLiveRequests()"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
+                <div class="nav-card" onclick="showPage('team');loadTeam()"><i class="fas fa-users"></i><h3>Our Team</h3></div>
                 <div class="nav-card admin-card" id="admin-nav-card" onclick="showPage('admin-panel');loadAdminPanel()"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
             </div>
         </div>
-        <!-- RESCUE FORM -->
+<!-- RESCUE FORM -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color:var(--primary-red);margin-top:12px;font-size:22px;">New Rescue Request</h2>
@@ -198,6 +203,55 @@
             <div id="live-list-container"><p style="color:#6b7280">Loading...</p></div>
         </div>
 
+        <!-- OUR TEAM -->
+        <div id="team" class="page">
+            <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h2 style="color:var(--primary-red);margin-top:12px;">Our Team</h2>
+            
+            <div id="team-list-container">
+                <!-- Ankit Thakur Card -->
+                <div class="id-card">
+                    <div class="id-card-header">गौ सेवक</div>
+                    <div class="id-card-body">
+                        <div class="id-photo">
+                            <img src="ankit.jpg" onerror="this.src='https://via.placeholder.com/70'">
+                        </div>
+                        <div class="id-details">
+                            <h3>Ankit Thakur</h3>
+                            <p><i class="fas fa-phone"></i> +918319229059</p>
+                            <p><i class="fas fa-map-marker-alt"></i> Ujjain</p>
+                            <a href="https://wa.me/918319229059" target="_blank" class="btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="team-join-btn" onclick="showPage('join-team')">
+                <i class="fas fa-user-plus"></i> हमसे जुड़ें
+            </button>
+        </div>
+
+        <!-- JOIN TEAM FORM -->
+        <div id="join-team" class="page">
+            <button class="back-btn" onclick="showPage('team')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h2 style="color:var(--primary-red);margin-top:12px;">हमसे जुड़ें</h2>
+            
+            <form id="join-form">
+                <label>Aapka Naam*</label>
+                <input type="text" id="join-name" placeholder="Pura naam" required>
+
+                <label>Mobile Number*</label>
+                <input type="tel" id="join-phone" placeholder="10 Digits" required>
+
+                <label>Address*</label>
+                <textarea id="join-address" rows="3" placeholder="Aapka address" required></textarea>
+
+                <button type="button" class="btn-submit" onclick="submitJoinRequest()">Request Bhejein</button>
+            </form>
+        </div>
+
         <!-- ADMIN LOGIN -->
         <div id="admin-login" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
@@ -213,12 +267,18 @@
         <div id="admin-panel" class="page">
             <button class="back-btn" onclick="logoutAdmin()"><i class="fas fa-arrow-left"></i> Logout</button>
             <h2 style="color:var(--primary-red);margin-top:12px;">Admin Panel</h2>
+            
             <div class="admin-stats">
                 <div class="stat-box"><h3 id="stat-pending">0</h3><p>Pending</p></div>
                 <div class="stat-box"><h3 id="stat-completed">0</h3><p>Completed</p></div>
             </div>
+
             <h3 style="margin:20px 0 10px;font-size:16px">Live Requests</h3>
             <div id="admin-live-container"><p style="color:#6b7280">Loading...</p></div>
+
+            <h3 style="margin:25px 0 10px;font-size:16px">Members Request</h3>
+            <div id="admin-members-container"><p style="color:#6b7280">Loading...</p></div>
+
             <h3 style="margin:25px 0 10px;font-size:16px">History</h3>
             <div id="admin-history-container"><p style="color:#6b7280">Loading...</p></div>
         </div>
@@ -248,7 +308,6 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ========== AAPKA NUMBER ==========
         const FOUNDER_WHATSAPP = "916263895427";
         const ADMIN_PASSWORD = "raj@123";
 
@@ -418,6 +477,32 @@
                 });
         }
 
+        function loadTeam() {
+            // Abhi static Ankit Thakur dikh raha hai
+            // Baad mein accepted members bhi yahan load kar sakte hain
+        }
+
+        function submitJoinRequest() {
+            const name = document.getElementById('join-name').value.trim();
+            const phone = document.getElementById('join-phone').value.trim();
+            const address = document.getElementById('join-address').value.trim();
+
+            if (!name || !phone || !address) return showCustomAlert("Error","Sab fields bharo",false);
+            if (!/^[6-9]\d{9}$/.test(phone)) return showCustomAlert("Error","Sahi number dalein",true);
+
+            db.collection("join_requests").add({
+                name: name,
+                phone: phone,
+                address: address,
+                status: "pending",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                showCustomAlert("Success","Request bhej di gayi. Admin approve karega.",false);
+                document.getElementById('join-form').reset();
+                showPage('team');
+            }).catch(err => showCustomAlert("Error",err.message,true));
+        }
+
         function adminLogin() {
             if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
                 isAdminLoggedIn = true;
@@ -437,6 +522,7 @@
             db.collection("rescue_requests").where("status","==","pending").get().then(s => document.getElementById('stat-pending').innerText = s.size);
             db.collection("rescue_requests").where("status","==","completed").get().then(s => document.getElementById('stat-completed').innerText = s.size);
 
+            // Live Requests
             const liveBox = document.getElementById('admin-live-container');
             if (adminLiveUnsub) adminLiveUnsub();
             adminLiveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
@@ -468,7 +554,37 @@
                     liveBox.innerHTML = html;
                 });
 
-            // History with delete
+            // Members Request
+            const memBox = document.getElementById('admin-members-container');
+            db.collection("join_requests").where("status","==","pending").orderBy("createdAt","desc").get()
+                .then(snap => {
+                    if (snap.empty) {
+                        memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `<div class="id-card">
+                            <div class="id-card-header">MEMBER REQUEST</div>
+                            <div class="id-card-body">
+                                <div class="id-photo">👤</div>
+                                <div class="id-details">
+                                    <h3>${d.name}</h3>
+                                    <p>${d.phone}</p>
+                                    <p>${d.address}</p>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-complete" onclick="acceptMember('\( {doc.id}',' \){d.name}','\( {d.phone}',' \){d.address}')">Accept</button>
+                                <button class="btn-delete" onclick="declineMember('${doc.id}')"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>`;
+                    });
+                    memBox.innerHTML = html;
+                });
+
+            // History
             const histBox = document.getElementById('admin-history-container');
             db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(15).get()
                 .then(snap => {
@@ -493,6 +609,27 @@
                 });
         }
 
+        async function acceptMember(id, name, phone, address) {
+            if (!confirm("Is member ko Accept karein?")) return;
+            await db.collection("team_members").add({
+                name: name,
+                phone: phone,
+                address: address,
+                role: "गौ सेवक",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await db.collection("join_requests").doc(id).update({status: "accepted"});
+            showCustomAlert("Accepted","Member add ho gaya",false);
+            loadAdminPanel();
+        }
+
+        async function declineMember(id) {
+            if (!confirm("Decline karein?")) return;
+            await db.collection("join_requests").doc(id).update({status: "declined"});
+            showCustomAlert("Declined","Request decline ho gayi",false);
+            loadAdminPanel();
+        }
+
         async function markCompleted(id) {
             if (!confirm("Complete mark karein?")) return;
             await db.collection("rescue_requests").doc(id).update({status:"completed", completedAt: firebase.firestore.FieldValue.serverTimestamp()});
@@ -507,7 +644,7 @@
             if (isAdminLoggedIn) loadAdminPanel();
         }
 
-        // ========== SUBMIT + WHATSAPP AUTO OPEN ==========
+        // SUBMIT + WHATSAPP
         document.querySelector('.btn-submit').addEventListener('click', async function(e) {
             e.preventDefault();
             const name = document.getElementById('reporter-name').value.trim();
@@ -538,11 +675,11 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 showCustomAlert("Success","Request bhej di gayi!",false);
 
-                // ===== WHATSAPP AUTO OPEN =====
-                const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal === 'cow' ? 'Gai' : 'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}%0A%0AUjjain Animal Rescue`;
+                // WhatsApp to Founder
+                const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal==='cow'?'Gai':'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
                 window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, '_blank');
 
-                // Reset form
+                // Reset
                 document.getElementById('main-rescue-form').reset();
                 selectedPhotos = [];
                 document.getElementById('animal-photos-container').innerHTML = `<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>`;
@@ -558,7 +695,7 @@
             }
         });
 
-        // Secret Admin: Profile pe 5 baar click
+        // Secret Admin
         let clicks = 0;
         document.getElementById('founder-header').addEventListener('click', () => {
             clicks++;
