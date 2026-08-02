@@ -122,11 +122,11 @@
                 <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
                 <div class="nav-card" onclick="showPage('history');loadHistory()"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
                 <div class="nav-card" onclick="showPage('live-req');loadLiveRequests()"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
-                <div class="nav-card" onclick="showPage('team');loadTeam()"><i class="fas fa-users"></i><h3>Our Team</h3></div>
+                <div class="nav-card" onclick="showPage('team')"><i class="fas fa-users"></i><h3>Our Team</h3></div>
                 <div class="nav-card admin-card" id="admin-nav-card" onclick="showPage('admin-panel');loadAdminPanel()"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
             </div>
         </div>
-<!-- RESCUE FORM -->
+        <!-- RESCUE FORM -->
         <div id="rescue-form" class="page">
             <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2 style="color:var(--primary-red);margin-top:12px;font-size:22px;">New Rescue Request</h2>
@@ -209,12 +209,12 @@
             <h2 style="color:var(--primary-red);margin-top:12px;">Our Team</h2>
             
             <div id="team-list-container">
-                <!-- Ankit Thakur Card -->
+                <!-- Ankit Thakur -->
                 <div class="id-card">
                     <div class="id-card-header">गौ सेवक</div>
                     <div class="id-card-body">
                         <div class="id-photo">
-                            <img src="IMG-20260802-WA0035.jpg" onerror="this.src='https://via.placeholder.com/70'">
+                            <img src="ankit.jpg" onerror="this.src='https://via.placeholder.com/70'">
                         </div>
                         <div class="id-details">
                             <h3>Ankit Thakur</h3>
@@ -226,27 +226,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Aashis pal Card -->
+                <!-- Aashish Pal -->
                 <div class="id-card">
                     <div class="id-card-header">गौ सेवक</div>
                     <div class="id-card-body">
                         <div class="id-photo">
-                            <img src="IMG-20260802-WA0037.jpg" onerror="this.src='https://via.placeholder.com/70'">
+                            <img src="aashish.jpg" onerror="this.src='https://via.placeholder.com/70'">
                         </div>
                         <div class="id-details">
-                            <h3>Aashis pal</h3>
+                            <h3>Aashish Pal</h3>
                             <p><i class="fas fa-phone"></i> +919977926920</p>
                             <p><i class="fas fa-map-marker-alt"></i> Ujjain</p>
-                            <a href="https://wa.me/918319229059" target="_blank" class="btn-whatsapp">
+                            <a href="https://wa.me/919977926920" target="_blank" class="btn-whatsapp">
                                 <i class="fab fa-whatsapp"></i> WhatsApp
-                               </a>
+                            </a>
                         </div>
                     </div>
                 </div>
-        </div>
-                                
+            </div>
+
             <button class="team-join-btn" onclick="showPage('join-team')">
                 <i class="fas fa-user-plus"></i> हमसे जुड़ें
             </button>
@@ -496,11 +495,6 @@
                 });
         }
 
-        function loadTeam() {
-            // Abhi static Ankit Thakur dikh raha hai
-            // Baad mein accepted members bhi yahan load kar sakte hain
-        }
-
         function submitJoinRequest() {
             const name = document.getElementById('join-name').value.trim();
             const phone = document.getElementById('join-phone').value.trim();
@@ -573,17 +567,28 @@
                     liveBox.innerHTML = html;
                 });
 
-            // Members Request
+            // ========== MEMBERS REQUEST (Fixed - no index needed) ==========
             const memBox = document.getElementById('admin-members-container');
-            db.collection("join_requests").where("status","==","pending").orderBy("createdAt","desc").get()
+            db.collection("join_requests").get()
                 .then(snap => {
-                    if (snap.empty) {
+                    let pending = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        if (d.status === "pending") {
+                            pending.push({id: doc.id, ...d});
+                        }
+                    });
+
+                    if (pending.length === 0) {
                         memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
                         return;
                     }
+
+                    // Sort by newest first
+                    pending.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
                     let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
+                    pending.forEach(d => {
                         html += `<div class="id-card">
                             <div class="id-card-header">MEMBER REQUEST</div>
                             <div class="id-card-body">
@@ -595,12 +600,15 @@
                                 </div>
                             </div>
                             <div class="card-actions">
-                                <button class="btn-complete" onclick="acceptMember('\( {doc.id}',' \){d.name}','\( {d.phone}',' \){d.address}')">Accept</button>
-                                <button class="btn-delete" onclick="declineMember('${doc.id}')"><i class="fas fa-times"></i></button>
+                                <button class="btn-complete" onclick="acceptMember('\( {d.id}',' \){d.name}','\( {d.phone}',' \){d.address}')">Accept</button>
+                                <button class="btn-delete" onclick="declineMember('${d.id}')"><i class="fas fa-times"></i></button>
                             </div>
                         </div>`;
                     });
                     memBox.innerHTML = html;
+                })
+                .catch(err => {
+                    memBox.innerHTML = `<p style="color:#e11d48">Error: ${err.message}</p>`;
                 });
 
             // History
@@ -694,11 +702,9 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 showCustomAlert("Success","Request bhej di gayi!",false);
 
-                // WhatsApp to Founder
                 const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal==='cow'?'Gai':'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
                 window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, '_blank');
 
-                // Reset
                 document.getElementById('main-rescue-form').reset();
                 selectedPhotos = [];
                 document.getElementById('animal-photos-container').innerHTML = `<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>`;
