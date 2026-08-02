@@ -699,54 +699,158 @@
             showPage('home');
         }
 
-        // ========== ADMIN PANEL ==========
-        function loadAdminPanel() {
-            // Stats
-            db.collection("rescue_requests").where("status","==","pending").get().then(s => {
-                document.getElementById('stat-pending').innerText = s.size;
-            });
-            db.collection("rescue_requests").where("status","==","completed").get().then(s => {
-                document.getElementById('stat-completed').innerText = s.size;
-            });
+        // ========== ADMIN PANEL (with Strong Alert) ==========
+let previousPendingCount = 0;
 
-            // Live for Admin
-            const liveBox = document.getElementById('admin-live-container');
-            if (adminLiveUnsub) adminLiveUnsub();
+function loadAdminPanel() {
+    // Stats
+    db.collection("rescue_requests").where("status","==","pending").get().then(s => {
+        document.getElementById('stat-pending').innerText = s.size;
+        previousPendingCount = s.size;
+    });
+    db.collection("rescue_requests").where("status","==","completed").get().then(s => {
+        document.getElementById('stat-completed').innerText = s.size;
+    });
 
-            adminLiveUnsub = db.collection("rescue_requests")
-                .where("status","==","pending")
-                .orderBy("createdAt","desc")
-                .onSnapshot(snap => {
-                    if (snap.empty) {
-                        liveBox.innerHTML = '<p style="color:#6b7280;text-align:center;">Koi pending request nahi</p>';
-                        return;
-                    }
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const mapUrl = `https://www.google.com/maps?q=${d.location}`;
-                        html += `
-                            <div class="id-card">
-                                <div class="id-card-header">ADMIN • LIVE</div>
-                                <div class="id-card-body">
-                                    <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-                                    <div class="id-details">
-                                        <h3>${d.reporterName}</h3>
-                                        <p><i class="fas fa-phone"></i> ${d.phone}</p>
-                                        <p><i class="fas fa-clock"></i> ${formatTime(d.createdAt)}</p>
-                                        <p><a href="${mapUrl}" target="_blank" class="map-link">Location</a></p>
-                                        ${d.photoCount > 0 ? `<div class="photo-badge">📷 ${d.photoCount} Photo</div>` : ''}
-                                    </div>
-                                </div>
-                                <div class="card-actions">
-                                    <button class="btn-complete" onclick="markCompleted('${doc.id}')">Complete</button>
-                                    <button class="btn-delete" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i></button>
-                                </div>
+    // Live for Admin
+    const liveBox = document.getElementById('admin-live-container');
+    if (adminLiveUnsub) adminLiveUnsub();
+
+    adminLiveUnsub = db.collection("rescue_requests")
+        .where("status","==","pending")
+        .orderBy("createdAt","desc")
+        .onSnapshot(snap => {
+            const currentCount = snap.size;
+
+            // ===== STRONG ALERT (nayi request aayi ho to) =====
+            if (currentCount > previousPendingCount && previousPendingCount !== 0) {
+                playStrongAlert();
+            }
+            previousPendingCount = currentCount;
+
+            // Stats update
+            document.getElementById('stat-pending').innerText = currentCount;
+
+            if (snap.empty) {
+                liveBox.innerHTML = '<p style="color:#6b7280;text-align:center;">Koi pending request nahi</p>';
+                return;
+            }
+
+            let html = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                const mapUrl = `https://www.google.com/maps?q=${d.location}`;
+                html += `
+                    <div class="id-card">
+                        <div class="id-card-header">ADMIN • LIVE</div>
+                        <div class="id-card-body">
+                            <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                            <div class="id-details">
+                                <h3>${d.reporterName}</h3>
+                                <p><i class="fas fa-phone"></i> ${d.phone}</p>
+                                <p><i class="fas fa-clock"></i> ${formatTime(d.createdAt)}</p>
+                                <p><a href="${mapUrl}" target="_blank" class="map-link">Location</a></p>
+                                ${d.photoCount > 0 ? `<div class="photo-badge">📷 ${d.photoCount} Photo</div>` : ''}
                             </div>
-                        `;
-                    });
-                    liveBox.innerHTML = html;
-                });
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-complete" onclick="markCompleted('${doc.id}')">Complete</button>
+                            <button class="btn-delete" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            liveBox.innerHTML = html;
+        });
+
+    // History for Admin (with Delete)
+    const histBox = document.getElementById('admin-history-container');
+    db.collection("rescue_requests")
+        .where("status","==","completed")
+        .orderBy("createdAt","desc")
+        .limit(20)
+        .get()
+        .then(snap => {
+            if (snap.empty) {
+                histBox.innerHTML = '<p style="color:#6b7280;text-align:center;">Koi history nahi</p>';
+                return;
+            }
+            let html = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                html += `
+                    <div class="id-card">
+                        <div class="id-card-header">COMPLETED</div>
+                        <div class="id-card-body">
+                            <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
+                            <div class="id-details">
+                                <h3>${d.reporterName}</h3>
+                                <p>${d.phone} • ${formatTime(d.createdAt)}</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-delete" style="width:100%" onclick="deleteRequest('${doc.id}')">
+                                <i class="fas fa-trash"></i> Delete this Request
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            histBox.innerHTML = html;
+        });
+}
+
+// ========== STRONG ALERT SOUND + VISUAL ==========
+function playStrongAlert() {
+    // 1. Strong Beep Sound
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+    audio.volume = 1.0;
+    audio.play().catch(() => {
+        // Agar autoplay block ho to silent fail
+    });
+
+    // 2. Screen Flash (Red)
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed; inset: 0; background: rgba(220, 38, 38, 0.45);
+        z-index: 9999998; pointer-events: none;
+        animation: flashAnim 0.8s ease;
+    `;
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 800);
+
+    // 3. Top Message
+    const msg = document.createElement('div');
+    msg.innerHTML = "🚨 New Rescue Request Aayi Hai!";
+    msg.style.cssText = `
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: #dc2626; color: white; padding: 14px 22px;
+        border-radius: 30px; font-weight: 700; font-size: 15px;
+        z-index: 9999999; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        animation: slideDown 0.4s ease;
+    `;
+    document.body.appendChild(msg);
+    setTimeout(() => {
+        msg.style.opacity = '0';
+        msg.style.transition = '0.5s';
+        setTimeout(() => msg.remove(), 500);
+    }, 4000);
+}
+
+// Flash animation CSS (ek baar add karna hai)
+const style = document.createElement('style');
+style.innerHTML = `
+    @keyframes flashAnim {
+        0% { opacity: 0; }
+        30% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    @keyframes slideDown {
+        from { top: -60px; opacity: 0; }
+        to { top: 20px; opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
 
             // History for Admin (with Delete)
             const histBox = document.getElementById('admin-history-container');
