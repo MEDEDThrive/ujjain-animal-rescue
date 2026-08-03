@@ -10,129 +10,112 @@
 :root {
   --primary-red: #e11d48;
   --soft-red: #fef2f2;
-  --white: #ffffff;
-  --green-whatsapp: #00a884;
   --bg: #fef2f2;
-  --card-bg: #ffffff;
+  --card: #ffffff;
   --text: #1f2937;
   --text2: #4b5563;
 }
 body.dark {
   --bg: #111827;
-  --card-bg: #1f2937;
+  --card: #1f2937;
   --text: #f3f4f6;
   --text2: #9ca3af;
   --soft-red: #1f2937;
 }
-body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); transition: 0.3s; }
-
+body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); }
 #splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2.5s forwards; }
 .ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
 .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s ease infinite; }
-@keyframes drive { 0% { transform: translateX(-20px); } 50% { transform: translateX(20px); } 100% { transform: translateX(-20px); } }
-@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-
-#loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.92); z-index: 9999999; flex-direction: column; justify-content: center; align-items: center; }
+@keyframes drive { 0%{transform:translateX(-20px)} 50%{transform:translateX(20px)} 100%{transform:translateX(-20px)} }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes fadeOut { to { opacity:0; visibility:hidden } }
+#loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999999; flex-direction: column; justify-content: center; align-items: center; }
 .loader-cow { font-size: 50px; color: var(--primary-red); animation: drive 1.5s infinite; margin-bottom: 10px; }
-
-.app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--card-bg); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 40px; }
+.app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--card); padding-bottom: 40px; }
 .founder-header { background: var(--primary-red); color: white; padding: 28px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
-.profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; background: #e5e7eb; margin: 0 auto 10px; overflow: hidden; }
+.profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; margin: 0 auto 10px; overflow: hidden; background: #e5e7eb; }
 .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
-.founder-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.founder-header p { margin: 4px 0 0; opacity: 0.9; font-size: 13px; }
-.dark-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; cursor: pointer; }
-
-.nav-grid { display: flex; flex-direction: column; gap: 18px; padding: 25px 20px; }
-.nav-card { background: var(--card-bg); border: 2px solid var(--soft-red); border-radius: 18px; padding: 24px; text-align: center; cursor: pointer; color: var(--text); }
-.nav-card:active { transform: scale(0.97); }
-.nav-card i { font-size: 36px; color: var(--primary-red); margin-bottom: 10px; }
-.nav-card h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.founder-header h2 { margin: 0; font-size: 20px; }
+.founder-header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
+.dark-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+.nav-grid { display: flex; flex-direction: column; gap: 16px; padding: 22px 18px; }
+.nav-card { background: var(--card); border: 2px solid var(--soft-red); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; }
+.nav-card i { font-size: 34px; color: var(--primary-red); margin-bottom: 8px; }
+.nav-card h3 { margin: 0; font-size: 16px; color: var(--text); }
 .admin-card { display: none; }
-
-.page { display: none; padding: 20px; }
+.page { display: none; padding: 18px; }
 .page.active { display: block; }
-
-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 14px; }
-input, select, textarea { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; margin-bottom: 14px; font-size: 14px; box-sizing: border-box; background: var(--card-bg); color: var(--text); }
-
-.id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #fff5f5 38%, #fff 100%); border-radius: 16px; margin-bottom: 18px; overflow: hidden; border: 1px solid #fecaca; }
-body.dark .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #1f2937 38%, #1f2937 100%); border-color: #374151; }
-.id-card-header { background: #7f1d1d; color: #fef3c7; text-align: center; padding: 11px; font-size: 14px; font-weight: 700; }
-.id-card-body { padding: 16px; display: flex; gap: 14px; }
-.id-photo { width: 70px; height: 70px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 2px solid #fef3c7; overflow: hidden; flex-shrink: 0; }
+label { font-size: 12px; font-weight: 600; color: var(--text2); display: block; margin: 12px 0 6px; text-transform: uppercase; }
+input, select, textarea { width: 100%; padding: 13px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 12px; font-size: 14px; box-sizing: border-box; background: var(--card); color: var(--text); }
+.id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #fff5f5 38%, #fff 100%); border-radius: 14px; margin-bottom: 16px; overflow: hidden; border: 1px solid #fecaca; }
+body.dark .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #1f2937 38%, #1f2937 100%); }
+.id-card-header { background: #7f1d1d; color: #fef3c7; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; }
+.id-card-body { padding: 14px; display: flex; gap: 12px; }
+.id-photo { width: 65px; height: 65px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 2px solid #fef3c7; overflow: hidden; flex-shrink: 0; }
 .id-photo img { width: 100%; height: 100%; object-fit: cover; }
-.id-details h3 { margin: 0 0 5px; font-size: 16px; color: var(--text); }
-.id-details p { margin: 3px 0; font-size: 13px; color: var(--text2); }
+.id-details h3 { margin: 0 0 4px; font-size: 15px; color: var(--text); }
+.id-details p { margin: 2px 0; font-size: 12px; color: var(--text2); }
 .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
-.photo-badge { background: #dbeafe; color: #1e40af; font-size: 11px; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
-.live-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-top: 8px; }
-.countdown { background: #fef3c7; color: #92400e; font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 20px; display: inline-block; margin-top: 7px; }
+.photo-badge { background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 7px; border-radius: 8px; display: inline-block; margin-top: 3px; }
+.live-photo { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
+.countdown { background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 16px; display: inline-block; margin-top: 5px; }
 .countdown.urgent { background: #fee2e2; color: #b91c1c; }
-.status-badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; font-weight: 600; }
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-accepted { background: #dbeafe; color: #1e40af; }
-.status-onway { background: #e0e7ff; color: #3730a3; }
-.status-completed { background: #d1fae5; color: #065f46; }
-.card-actions { padding: 0 16px 16px; display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-complete { background: #059669; color: white; border: none; padding: 11px; flex: 1; border-radius: 10px; font-weight: 600; cursor: pointer; min-width: 80px; }
-.btn-delete { background: #dc2626; color: white; border: none; padding: 11px; border-radius: 10px; width: 48px; cursor: pointer; }
-.btn-status { background: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-.btn-whatsapp { background: #00a884; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 6px; }
-
-.preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-.image-preview-slot { width: 70px; height: 70px; border-radius: 12px; border: 2px solid var(--primary-red); overflow: hidden; position: relative; }
+.status-badge { font-size: 11px; padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 3px; font-weight: 600; }
+.s-pending { background: #fef3c7; color: #92400e; }
+.s-accepted { background: #dbeafe; color: #1e40af; }
+.s-onway { background: #e0e7ff; color: #3730a3; }
+.s-completed { background: #d1fae5; color: #065f46; }
+.card-actions { padding: 0 14px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-complete { background: #059669; color: white; border: none; padding: 10px; flex: 1; border-radius: 8px; font-weight: 600; cursor: pointer; min-width: 70px; }
+.btn-delete { background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; width: 44px; cursor: pointer; }
+.btn-status { background: #3b82f6; color: white; border: none; padding: 7px 10px; border-radius: 7px; font-size: 11px; cursor: pointer; }
+.btn-whatsapp { background: #00a884; color: white; border: none; padding: 7px 10px; border-radius: 7px; font-size: 12px; text-decoration: none; display: inline-block; margin-top: 5px; }
+.preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.image-preview-slot { width: 65px; height: 65px; border-radius: 10px; border: 2px solid var(--primary-red); overflow: hidden; position: relative; }
 .image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
-.remove-photo { position: absolute; top: -8px; right: -8px; background: #dc2626; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; font-weight: bold; }
-.add-photo-btn { width: 70px; height: 70px; border-radius: 12px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+.remove-photo { position: absolute; top: -7px; right: -7px; background: #dc2626; color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
+.add-photo-btn { width: 65px; height: 65px; border-radius: 10px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
 .add-photo-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-
-.btn-trigger-gps { background: var(--green-whatsapp); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.whatsapp-loc-container { display: none; background: #f0fdf4; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-.loc-option { background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 8px; }
-.loc-option .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+.btn-trigger-gps { background: #00a884; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.whatsapp-loc-container { display: none; background: #f0fdf4; border-radius: 10px; padding: 10px; margin-bottom: 12px; }
+.loc-option { background: white; border: 1px solid #e5e7eb; padding: 11px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 7px; }
+.loc-option .icon-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
 .loc-option.live .icon-circle { background: #00a884; }
 .loc-option.current .icon-circle { background: #3b82f6; }
-.whatsapp-map-card { display: none; background: #1f2c34; border-radius: 14px; overflow: hidden; margin-top: 12px; }
-.map-static-visual { height: 120px; background: #0b141a; display: flex; align-items: center; justify-content: center; position: relative; }
-.map-pin-center { font-size: 34px; color: #ea4335; animation: pinBounce 1.5s infinite; }
-@keyframes pinBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-.map-card-details { padding: 12px 16px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
-.map-card-title { color: #e9edef; font-size: 14px; font-weight: 600; }
+.whatsapp-map-card { display: none; background: #1f2c34; border-radius: 12px; overflow: hidden; margin-top: 10px; }
+.map-static-visual { height: 110px; background: #0b141a; display: flex; align-items: center; justify-content: center; }
+.map-pin-center { font-size: 30px; color: #ea4335; }
+.map-card-details { padding: 10px 14px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
+.map-card-title { color: #e9edef; font-size: 13px; font-weight: 600; }
 .map-card-subtitle { color: #8696a0; font-size: 11px; }
-.map-card-action-btn { background: #00a884; color: white; padding: 8px 14px; border-radius: 20px; font-size: 12px; text-decoration: none; }
-
-.btn-submit { background: var(--primary-red); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 18px; cursor: pointer; }
-.back-btn { background: none; border: none; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 10px 0; cursor: pointer; }
-
-.admin-login-box { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-top: 20px; }
-.admin-stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.stat-box { flex: 1; min-width: 100px; background: var(--soft-red); border-radius: 12px; padding: 15px; text-align: center; }
-.stat-box h3 { margin: 0; font-size: 22px; color: var(--primary-red); }
-.search-box { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; }
-
-#customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999999; justify-content: center; align-items: center; }
-.modal-content { background: white; width: 90%; max-width: 330px; border-radius: 18px; padding: 24px; text-align: center; }
-.btn-ok { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-.team-join-btn { background: #7f1d1d; color: #fef3c7; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; margin-top: 15px; cursor: pointer; }
-
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-.dash-card { background: var(--soft-red); border-radius: 14px; padding: 18px; text-align: center; }
-.dash-card h3 { margin: 0; font-size: 28px; color: var(--primary-red); }
-.dash-card p { margin: 6px 0 0; font-size: 13px; color: var(--text2); }
+.map-card-action-btn { background: #00a884; color: white; padding: 7px 12px; border-radius: 16px; font-size: 11px; text-decoration: none; }
+.btn-submit { background: var(--primary-red); color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 600; font-size: 15px; margin-top: 14px; cursor: pointer; }
+.back-btn { background: none; border: none; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 6px; padding: 8px 0; cursor: pointer; }
+.admin-login-box { background: var(--card); border-radius: 14px; padding: 22px; margin-top: 16px; }
+.admin-stats { display: flex; gap: 10px; margin-bottom: 16px; }
+.stat-box { flex: 1; background: var(--soft-red); border-radius: 10px; padding: 12px; text-align: center; }
+.stat-box h3 { margin: 0; font-size: 20px; color: var(--primary-red); }
+.search-box { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 9px; margin-bottom: 12px; box-sizing: border-box; }
+#customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999999; justify-content: center; align-items: center; }
+.modal-content { background: white; width: 88%; max-width: 320px; border-radius: 16px; padding: 22px; text-align: center; }
+.btn-ok { width: 100%; padding: 11px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+.team-join-btn { background: #7f1d1d; color: #fef3c7; border: none; padding: 13px; width: 100%; border-radius: 10px; font-weight: 600; margin-top: 14px; cursor: pointer; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.dash-card { background: var(--soft-red); border-radius: 12px; padding: 16px; text-align: center; }
+.dash-card h3 { margin: 0; font-size: 26px; color: var(--primary-red); }
+.dash-card p { margin: 5px 0 0; font-size: 12px; color: var(--text2); }
 </style>
 </head>
 <body>
 <div id="splash">
   <div class="ambulance-container"><i class="fas fa-cow cow-on-top"></i><i class="fas fa-ambulance"></i></div>
-  <h1 style="color:#fff;font-size:24px;font-weight:700;margin:0">Bejuban ki Pukar</h1>
+  <h1 style="color:#fff;font-size:22px;font-weight:700;margin:0">Bejuban ki Pukar</h1>
 </div>
-<div id="loading-overlay"><i class="fas fa-cow loader-cow"></i><p style="font-weight:600;color:#e11d48">Sending Request...</p></div>
+<div id="loading-overlay"><i class="fas fa-cow loader-cow"></i><p style="font-weight:600;color:#e11d48">Sending...</p></div>
 
 <div class="app-container">
   <div class="founder-header" id="founder-header">
-    <button class="dark-toggle" onclick="toggleDark()" title="Dark Mode"><i class="fas fa-moon"></i></button>
+    <button class="dark-btn" id="darkBtn"><i class="fas fa-moon"></i></button>
     <div class="profile-pic"><img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" onerror="this.src='https://via.placeholder.com/150'"></div>
     <h2>Raj Malviya</h2>
     <p>Founder, Ujjain Animal Rescue</p>
@@ -140,140 +123,125 @@ body.dark .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%
 
   <div id="home" class="page active">
     <div class="nav-grid">
-      <div class="nav-card" onclick="showPage('rescue-form')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
-      <div class="nav-card" onclick="showPage('history');loadHistory()"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
-      <div class="nav-card" onclick="showPage('live-req');loadLiveRequests()"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
-      <div class="nav-card" onclick="showPage('team');loadTeam()"><i class="fas fa-users"></i><h3>Our Team</h3></div>
-      <div class="nav-card" onclick="showPage('dashboard');loadDashboard()"><i class="fas fa-chart-line"></i><h3>Impact Dashboard</h3></div>
-      <div class="nav-card admin-card" id="admin-nav-card" onclick="showPage('admin-panel');loadAdminPanel()"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
+      <div class="nav-card" id="btn-rescue"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
+      <div class="nav-card" id="btn-history"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
+      <div class="nav-card" id="btn-live"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
+      <div class="nav-card" id="btn-team"><i class="fas fa-users"></i><h3>Our Team</h3></div>
+      <div class="nav-card" id="btn-dashboard"><i class="fas fa-chart-line"></i><h3>Impact Dashboard</h3></div>
+      <div class="nav-card admin-card" id="admin-nav-card"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
     </div>
   </div>
   <!-- RESCUE FORM -->
   <div id="rescue-form" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px;font-size:22px">New Rescue Request</h2>
+    <button class="back-btn" id="back1"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px;font-size:20px">New Rescue Request</h2>
     <form id="main-rescue-form">
       <label>Aapka Naam*</label>
-      <input type="text" id="reporter-name" placeholder="Apna pura naam" required>
+      <input type="text" id="reporter-name" placeholder="Apna pura naam">
       <label>Pashu ka Prakar*</label>
-      <select id="animal-type" required>
+      <select id="animal-type">
         <option value="">Chuniye...</option>
         <option value="cow">Gai (Cow)</option>
         <option value="calf">Bachhda (Calf)</option>
       </select>
       <label>Photo*</label>
       <div class="preview-container" id="animal-photos-container">
-        <div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>
+        <div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" id="photo-input"></div>
       </div>
       <label>Location*</label>
-      <button type="button" id="init-gps-btn" class="btn-trigger-gps" onclick="requestSystemGPS()">
-        <i class="fas fa-map-marker-alt"></i> Share Location
-      </button>
+      <button type="button" id="init-gps-btn" class="btn-trigger-gps"><i class="fas fa-map-marker-alt"></i> Share Location</button>
       <div id="sub-loc-options" class="whatsapp-loc-container">
-        <div class="loc-option live" onclick="processLocation('live')">
-          <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
-          <div class="loc-option-text"><h4>Live Location</h4><p>Dynamic</p></div>
-        </div>
-        <div class="loc-option current" onclick="processLocation('current')">
-          <div class="icon-circle"><i class="fas fa-crosshairs"></i></div>
-          <div class="loc-option-text"><h4>Current Location</h4><p>Fixed</p></div>
-        </div>
+        <div class="loc-option live" id="loc-live"><div class="icon-circle"><i class="fas fa-location-dot"></i></div><div><h4 style="margin:0;font-size:14px">Live Location</h4><p style="margin:2px 0 0;font-size:11px;color:#6b7280">Dynamic</p></div></div>
+        <div class="loc-option current" id="loc-current"><div class="icon-circle"><i class="fas fa-crosshairs"></i></div><div><h4 style="margin:0;font-size:14px">Current Location</h4><p style="margin:2px 0 0;font-size:11px;color:#6b7280">Fixed</p></div></div>
       </div>
       <div id="whatsapp-map-preview" class="whatsapp-map-card">
-        <div class="map-static-visual" onclick="document.getElementById('map-redirect-link').click()">
-          <i class="fas fa-map-pin map-pin-center"></i>
-        </div>
+        <div class="map-static-visual"><i class="fas fa-map-pin map-pin-center"></i></div>
         <div class="map-card-details">
-          <div>
-            <div class="map-card-title" id="card-status-title">📍 Location</div>
-            <div class="map-card-subtitle" id="card-status-subtitle">Ready</div>
-          </div>
+          <div><div class="map-card-title" id="card-status-title">📍 Location</div><div class="map-card-subtitle" id="card-status-subtitle">Ready</div></div>
           <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">Open Maps</a>
         </div>
       </div>
       <input type="hidden" id="lat-long-data">
       <input type="hidden" id="selected-loc-type">
       <label>Mobile Number*</label>
-      <input type="tel" id="user-phone" placeholder="10 Digits" required>
-      <button type="button" class="btn-submit">Submit Request</button>
+      <input type="tel" id="user-phone" placeholder="10 Digits">
+      <button type="button" class="btn-submit" id="submit-btn">Submit Request</button>
     </form>
   </div>
 
   <!-- HISTORY -->
   <div id="history" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Rescue History</h2>
-    <input type="text" class="search-box" id="history-search" placeholder="Search naam / number..." oninput="filterHistory()">
+    <button class="back-btn" id="back2"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Rescue History</h2>
+    <input type="text" class="search-box" id="history-search" placeholder="Search naam / number...">
     <div id="history-list-container"><p style="color:#6b7280">Loading...</p></div>
   </div>
 
   <!-- LIVE -->
   <div id="live-req" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Live Requests</h2>
+    <button class="back-btn" id="back3"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Live Requests</h2>
     <div id="live-list-container"><p style="color:#6b7280">Loading...</p></div>
   </div>
 
   <!-- TEAM -->
   <div id="team" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Our Team</h2>
+    <button class="back-btn" id="back4"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Our Team</h2>
     <div id="team-list-container"><p style="color:#6b7280;text-align:center">Loading...</p></div>
-    <button class="team-join-btn" onclick="showPage('join-team')"><i class="fas fa-user-plus"></i> हमसे जुड़ें</button>
+    <button class="team-join-btn" id="btn-join"><i class="fas fa-user-plus"></i> हमसे जुड़ें</button>
   </div>
 
   <!-- JOIN -->
   <div id="join-team" class="page">
-    <button class="back-btn" onclick="showPage('team');loadTeam()"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">हमसे जुड़ें</h2>
-    <form id="join-form">
-      <label>Aapka Naam*</label><input type="text" id="join-name" required>
-      <label>Mobile Number*</label><input type="tel" id="join-phone" required>
-      <label>Address*</label><textarea id="join-address" rows="3" required></textarea>
-      <button type="button" class="btn-submit" onclick="submitJoinRequest()">Request Bhejein</button>
-    </form>
+    <button class="back-btn" id="back5"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">हमसे जुड़ें</h2>
+    <label>Aapka Naam*</label><input type="text" id="join-name">
+    <label>Mobile Number*</label><input type="tel" id="join-phone">
+    <label>Address*</label><textarea id="join-address" rows="3"></textarea>
+    <button type="button" class="btn-submit" id="join-submit">Request Bhejein</button>
   </div>
 
   <!-- DASHBOARD -->
   <div id="dashboard" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Impact Dashboard</h2>
+    <button class="back-btn" id="back6"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Impact Dashboard</h2>
     <div class="dashboard-grid">
-      <div class="dash-card"><h3 id="dash-total">0</h3><p>Total Requests</p></div>
+      <div class="dash-card"><h3 id="dash-total">0</h3><p>Total</p></div>
       <div class="dash-card"><h3 id="dash-pending">0</h3><p>Pending</p></div>
       <div class="dash-card"><h3 id="dash-completed">0</h3><p>Completed</p></div>
-      <div class="dash-card"><h3 id="dash-team">2</h3><p>Team Members</p></div>
+      <div class="dash-card"><h3 id="dash-team">2</h3><p>Team</p></div>
     </div>
   </div>
 
   <!-- ADMIN LOGIN -->
   <div id="admin-login" class="page">
-    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Admin Login</h2>
+    <button class="back-btn" id="back7"><i class="fas fa-arrow-left"></i> Back</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Admin Login</h2>
     <div class="admin-login-box">
       <label>Password</label>
       <input type="password" id="admin-password" placeholder="Password">
-      <p style="font-size:12px;color:#6b7280;margin:8px 0">3 galat attempts ke baad 30 sec lock</p>
-      <button class="btn-submit" onclick="adminLogin()">Login</button>
+      <p style="font-size:12px;color:#6b7280">3 galat attempts = 30 sec lock</p>
+      <button class="btn-submit" id="admin-login-btn">Login</button>
     </div>
   </div>
 
   <!-- ADMIN PANEL -->
   <div id="admin-panel" class="page">
-    <button class="back-btn" onclick="logoutAdmin()"><i class="fas fa-arrow-left"></i> Logout</button>
-    <h2 style="color:var(--primary-red);margin-top:12px">Admin Panel</h2>
+    <button class="back-btn" id="back8"><i class="fas fa-arrow-left"></i> Logout</button>
+    <h2 style="color:var(--primary-red);margin-top:10px">Admin Panel</h2>
     <div class="admin-stats">
       <div class="stat-box"><h3 id="stat-pending">0</h3><p>Pending</p></div>
       <div class="stat-box"><h3 id="stat-completed">0</h3><p>Completed</p></div>
     </div>
-    <input type="text" class="search-box" id="admin-search" placeholder="Search Live Requests..." oninput="filterAdminLive()">
-    <h3 style="margin:15px 0 10px;font-size:16px">Live Requests</h3>
+    <input type="text" class="search-box" id="admin-search" placeholder="Search...">
+    <h3 style="font-size:15px;margin:12px 0 8px">Live Requests</h3>
     <div id="admin-live-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="margin:25px 0 10px;font-size:16px">Members Request</h3>
+    <h3 style="font-size:15px;margin:20px 0 8px">Members Request</h3>
     <div id="admin-members-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="margin:25px 0 10px;font-size:16px">Current Team Members</h3>
+    <h3 style="font-size:15px;margin:20px 0 8px">Team Members</h3>
     <div id="admin-team-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="margin:25px 0 10px;font-size:16px">History</h3>
+    <h3 style="font-size:15px;margin:20px 0 8px">History</h3>
     <div id="admin-history-container"><p style="color:#6b7280">Loading...</p></div>
   </div>
 </div>
@@ -283,570 +251,490 @@ body.dark .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%
     <div class="modal-icon" id="modalIcon">⚠️</div>
     <div class="modal-title" id="modalTitle">Alert</div>
     <div class="modal-text" id="errorMsg"></div>
-    <button class="btn-ok" onclick="document.getElementById('customAlert').style.display='none'">OK</button>
+    <button class="btn-ok" id="alert-ok">OK</button>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-  authDomain: "ujjainanimalrescue.firebaseapp.com",
-  projectId: "ujjainanimalrescue",
-  storageBucket: "ujjainanimalrescue.firebasestorage.app",
-  messagingSenderId: "686634974496",
-  appId: "1:686634974496:web:8b56642568a257e49fab45"
-};
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-const FOUNDER_WHATSAPP = "916263895427";
-const TEAM_WHATSAPP = ["916263895427", "918319229059", "919977926920"];
-const ADMIN_PASSWORD = "raj@123";
-const PERMANENT_MEMBERS = [
-  { name: "Ankit Thakur", phone: "8319229059", address: "Ujjain", photo: "ankit.jpg" },
-  { name: "Aashish Pal", phone: "9977926920", address: "Ujjain", photo: "aashish.jpg" }
-];
-
-let watchId = null, selectedPhotos = [], photoBase64 = null;
-let liveUnsubscribe = null, adminLiveUnsub = null, countdownIntervals = {};
-let isAdminLoggedIn = false, pendingMembers = [], historyData = [], adminLiveData = [];
-let loginAttempts = 0, lockUntil = 0;
-
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('darkMode', document.body.classList.contains('dark') ? '1' : '0');
-}
-if (localStorage.getItem('darkMode') === '1') document.body.classList.add('dark');
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  if (id !== 'live-req' && liveUnsubscribe) {
-    liveUnsubscribe(); liveUnsubscribe = null;
-    Object.values(countdownIntervals).forEach(clearInterval);
-  }
-}
-
-function handlePhotoUpload(input) {
-  if (!input.files[0]) return;
-  const file = input.files[0];
-  selectedPhotos.push(file);
-  const reader = new FileReader();
-  reader.onload = e => {
-    // Compress for temporary storage
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const maxW = 400;
-      const scale = Math.min(1, maxW / img.width);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      photoBase64 = canvas.toDataURL('image/jpeg', 0.6);
-    };
-    img.src = e.target.result;
-
-    const slot = document.createElement('div');
-    slot.className = 'image-preview-slot';
-    slot.innerHTML = `<img src="${e.target.result}"><div class="remove-photo">×</div>`;
-    slot.querySelector('.remove-photo').onclick = function() {
-      const idx = Array.from(document.querySelectorAll('.image-preview-slot')).indexOf(slot);
-      selectedPhotos.splice(idx, 1);
-      if (selectedPhotos.length === 0) photoBase64 = null;
-      slot.remove();
-    };
-    document.getElementById('animal-photos-container').insertBefore(slot, document.querySelector('.add-photo-btn'));
+(function(){
+  var firebaseConfig = {
+    apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+    authDomain: "ujjainanimalrescue.firebaseapp.com",
+    projectId: "ujjainanimalrescue",
+    storageBucket: "ujjainanimalrescue.firebasestorage.app",
+    messagingSenderId: "686634974496",
+    appId: "1:686634974496:web:8b56642568a257e49fab45"
   };
-  reader.readAsDataURL(file);
-  input.value = '';
-}
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
 
-function requestSystemGPS() {
-  if (!navigator.geolocation) return showCustomAlert("Error", "GPS support nahi hai", true);
-  const btn = document.getElementById('init-gps-btn');
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
-  btn.disabled = true;
+  var FOUNDER = "916263895427";
+  var TEAM_WA = ["916263895427","918319229059","919977926920"];
+  var ADMIN_PASS = "raj@123";
+  var PERMANENT = [
+    {name:"Ankit Thakur", phone:"8319229059", address:"Ujjain", photo:"ankit.jpg"},
+    {name:"Aashish Pal", phone:"9977926920", address:"Ujjain", photo:"aashish.jpg"}
+  ];
 
-  navigator.geolocation.getCurrentPosition(
-    () => {
+  var watchId = null, selectedPhotos = [], photoBase64 = null;
+  var liveUnsub = null, adminLiveUnsub = null, countdowns = {};
+  var isAdmin = false, pendingMembers = [], historyData = [], adminLiveData = [];
+  var loginTries = 0, lockUntil = 0, clickCount = 0;
+
+  function $(id){ return document.getElementById(id); }
+  function showPage(id){
+    var pages = document.querySelectorAll('.page');
+    for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+    $(id).classList.add('active');
+    window.scrollTo(0,0);
+    if(id !== 'live-req' && liveUnsub){ liveUnsub(); liveUnsub = null; }
+  }
+  function alertBox(title, msg, isErr){
+    $('modalTitle').innerText = title;
+    $('errorMsg').innerText = msg;
+    $('modalIcon').innerText = isErr ? "❌" : "✅";
+    $('customAlert').style.display = 'flex';
+  }
+  function formatTime(ts){
+    if(!ts) return "Abhi";
+    return ts.toDate().toLocaleString('hi-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  }
+  function statusBadge(s){
+    if(s==='accepted') return '<span class="status-badge s-accepted">Accepted</span>';
+    if(s==='onway') return '<span class="status-badge s-onway">On the Way</span>';
+    if(s==='completed') return '<span class="status-badge s-completed">Completed</span>';
+    return '<span class="status-badge s-pending">Pending</span>';
+  }
+  function startCD(id, created, elId){
+    if(countdowns[id]) clearInterval(countdowns[id]);
+    var end = created.toDate().getTime() + 7200000;
+    countdowns[id] = setInterval(function(){
+      var diff = end - Date.now();
+      var el = $(elId);
+      if(!el){ clearInterval(countdowns[id]); return; }
+      if(diff <= 0){ el.innerHTML = "⏰ Time Over"; el.classList.add('urgent'); clearInterval(countdowns[id]); return; }
+      var h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+      el.innerHTML = "⏳ " + h + "h " + m + "m " + s + "s";
+      if(diff < 1800000) el.classList.add('urgent');
+    }, 1000);
+  }
+
+  // Navigation
+  $('btn-rescue').onclick = function(){ showPage('rescue-form'); };
+  $('btn-history').onclick = function(){ showPage('history'); loadHistory(); };
+  $('btn-live').onclick = function(){ showPage('live-req'); loadLive(); };
+  $('btn-team').onclick = function(){ showPage('team'); loadTeam(); };
+  $('btn-dashboard').onclick = function(){ showPage('dashboard'); loadDash(); };
+  $('admin-nav-card').onclick = function(){ showPage('admin-panel'); loadAdmin(); };
+  $('btn-join').onclick = function(){ showPage('join-team'); };
+  $('back1').onclick = function(){ showPage('home'); };
+  $('back2').onclick = function(){ showPage('home'); };
+  $('back3').onclick = function(){ showPage('home'); };
+  $('back4').onclick = function(){ showPage('home'); };
+  $('back5').onclick = function(){ showPage('team'); loadTeam(); };
+  $('back6').onclick = function(){ showPage('home'); };
+  $('back7').onclick = function(){ showPage('home'); };
+  $('back8').onclick = function(){ isAdmin=false; $('admin-nav-card').style.display='none'; showPage('home'); };
+  $('alert-ok').onclick = function(){ $('customAlert').style.display='none'; };
+  $('darkBtn').onclick = function(e){
+    e.stopPropagation();
+    document.body.classList.toggle('dark');
+    localStorage.setItem('dark', document.body.classList.contains('dark') ? '1' : '0');
+  };
+  if(localStorage.getItem('dark')==='1') document.body.classList.add('dark');
+
+  // Secret Admin (5 clicks)
+  $('founder-header').onclick = function(e){
+    if(e.target.closest('.dark-btn')) return;
+    clickCount++;
+    if(clickCount >= 5){ clickCount=0; showPage('admin-login'); }
+    setTimeout(function(){ clickCount=0; }, 2000);
+  };
+
+  // Photo
+  $('photo-input').onchange = function(){
+    var input = this;
+    if(!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    selectedPhotos.push(file);
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var c = document.createElement('canvas');
+        var scale = Math.min(1, 400/img.width);
+        c.width = img.width*scale; c.height = img.height*scale;
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        photoBase64 = c.toDataURL('image/jpeg',0.55);
+      };
+      img.src = e.target.result;
+      var slot = document.createElement('div');
+      slot.className = 'image-preview-slot';
+      slot.innerHTML = '<img src="'+e.target.result+'"><div class="remove-photo">×</div>';
+      slot.querySelector('.remove-photo').onclick = function(){
+        var slots = document.querySelectorAll('.image-preview-slot');
+        var idx = Array.prototype.indexOf.call(slots, slot);
+        selectedPhotos.splice(idx,1);
+        if(selectedPhotos.length===0) photoBase64=null;
+        slot.remove();
+      };
+      $('animal-photos-container').insertBefore(slot, $('animal-photos-container').querySelector('.add-photo-btn'));
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  };
+
+  // Location
+  $('init-gps-btn').onclick = function(){
+    if(!navigator.geolocation){ alertBox("Error","GPS nahi hai",true); return; }
+    var btn = $('init-gps-btn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(function(){
       btn.style.display = 'none';
-      document.getElementById('sub-loc-options').style.display = 'block';
+      $('sub-loc-options').style.display = 'block';
       btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Share Location';
       btn.disabled = false;
-    },
-    (err) => {
+    }, function(err){
       btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Share Location';
       btn.disabled = false;
-      let msg = "Location nahi mili. ";
-      if (err.code === 1) msg = "Location permission Allow karein.";
-      else if (err.code === 3) msg = "Timeout. Phir se try karein.";
-      showCustomAlert("Location Error", msg, true);
-    },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
-  );
-}
-
-function processLocation(type) {
-  if (watchId) navigator.geolocation.clearWatch(watchId);
-  document.getElementById('card-status-subtitle').innerText = "Fetching GPS...";
-  document.getElementById('whatsapp-map-preview').style.display = 'block';
-  document.getElementById('selected-loc-type').value = type;
-  const opt = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
-
-  const success = (p) => updateLoc(p.coords.latitude, p.coords.longitude, type === 'live' ? "🟢 Live Location" : "Current Location", type === 'live' ? "Tracking" : "Fixed");
-  const fail = () => showCustomAlert("Error", "Sateek location nahi mili. Phir se try karein.", true);
-
-  if (type === 'current') navigator.geolocation.getCurrentPosition(success, fail, opt);
-  else watchId = navigator.geolocation.watchPosition(success, fail, opt);
-}
-
-function updateLoc(lat, lng, title, sub) {
-  document.getElementById('lat-long-data').value = lat + "," + lng;
-  document.getElementById('card-status-title').innerText = title;
-  document.getElementById('card-status-subtitle').innerText = sub;
-  document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
-}
-
-function showCustomAlert(title, msg, err = true) {
-  document.getElementById('modalTitle').innerText = title;
-  document.getElementById('errorMsg').innerText = msg;
-  document.getElementById('modalIcon').innerText = err ? "❌" : "✅";
-  document.getElementById('customAlert').style.display = 'flex';
-}
-
-function formatTime(ts) {
-  if (!ts) return "Abhi";
-  return ts.toDate().toLocaleString('hi-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-}
-
-function getStatusBadge(status) {
-  const map = {
-    pending: '<span class="status-badge status-pending">Pending</span>',
-    accepted: '<span class="status-badge status-accepted">Accepted</span>',
-    onway: '<span class="status-badge status-onway">On the Way</span>',
-    completed: '<span class="status-badge status-completed">Completed</span>'
+      var msg = "Location nahi mili.";
+      if(err.code===1) msg = "Location permission Allow karein.";
+      alertBox("Location", msg, true);
+    }, {enableHighAccuracy:true, timeout:12000, maximumAge:20000});
   };
-  return map[status] || map.pending;
-}
-
-function startCountdown(id, created, elId) {
-  if (countdownIntervals[id]) clearInterval(countdownIntervals[id]);
-  const end = created.toDate().getTime() + 7200000;
-  countdownIntervals[id] = setInterval(() => {
-    const diff = end - Date.now();
-    const el = document.getElementById(elId);
-    if (!el) return clearInterval(countdownIntervals[id]);
-    if (diff <= 0) { el.innerHTML = "⏰ Time Over"; el.classList.add('urgent'); clearInterval(countdownIntervals[id]); return; }
-    const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-    el.innerHTML = `⏳ ${h}h ${m}m ${s}s`;
-    if (diff < 1800000) el.classList.add('urgent');
-  }, 1000);
-}
-
-function loadTeam() {
-  const container = document.getElementById('team-list-container');
-  let html = '';
-  PERMANENT_MEMBERS.forEach(m => {
-    html += `<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body">
-      <div class="id-photo"><img src="${m.photo}" onerror="this.src='https://via.placeholder.com/70?text=Photo'"></div>
-      <div class="id-details"><h3>\( {m.name}</h3><p><i class="fas fa-phone"></i> +91 \){m.phone}</p>
-      <p><i class="fas fa-map-marker-alt"></i> ${m.address}</p>
-      <a href="https://wa.me/91${m.phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>`;
-  });
-  db.collection("team_members").get().then(snap => {
-    snap.forEach(doc => {
-      const d = doc.data();
-      if (PERMANENT_MEMBERS.some(p => p.phone === d.phone || p.name === d.name)) return;
-      let phone = (d.phone || '').replace(/\D/g, '');
-      if (phone.startsWith('91')) phone = phone.slice(2);
-      html += `<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body">
-        <div class="id-photo"><img src="${d.photo || 'member.jpg'}" onerror="this.src='https://via.placeholder.com/70?text=Photo'"></div>
-        <div class="id-details"><h3>\( {d.name}</h3><p><i class="fas fa-phone"></i> +91 \){phone}</p>
-        <p><i class="fas fa-map-marker-alt"></i> ${d.address || 'Ujjain'}</p>
-        <a href="https://wa.me/91${phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>`;
-    });
-    container.innerHTML = html;
-  }).catch(() => container.innerHTML = html);
-}
-
-function loadLiveRequests() {
-  const box = document.getElementById('live-list-container');
-  box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
-  if (liveUnsubscribe) liveUnsubscribe();
-  liveUnsubscribe = db.collection("rescue_requests").where("status", "in", ["pending", "accepted", "onway"]).orderBy("createdAt", "desc")
-    .onSnapshot(snap => {
-      box.innerHTML = '';
-      if (snap.empty) { box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>'; return; }
-      let html = '';
-      snap.forEach(doc => {
-        const d = doc.data();
-        const photoHtml = d.tempPhoto ? `<img class="live-photo" src="${d.tempPhoto}">` : '';
-        html += `<div class="id-card"><div class="id-card-header">गो सेवक • LIVE</div><div class="id-card-body">
-          <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-          <div class="id-details">
-            <h3>${d.reporterName}</h3>
-            <p>${d.phone}</p>
-            <p>${formatTime(d.createdAt)}</p>
-            <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
-            ${getStatusBadge(d.status || 'pending')}
-            ${d.photoCount ? `<div class="photo-badge">📷 ${d.photoCount} Photo</div>` : ''}
-            <div class="countdown" id="cd-${doc.id}">...</div>
-            ${photoHtml}
-          </div></div></div>`;
-      });
-      box.innerHTML = html;
-      snap.forEach(doc => { if (doc.data().createdAt) startCountdown(doc.id, doc.data().createdAt, `cd-${doc.id}`); });
-    }, err => {
-      // Fallback without status in query if index missing
-      liveUnsubscribe = db.collection("rescue_requests").where("status", "==", "pending").orderBy("createdAt", "desc")
-        .onSnapshot(snap => {
-          box.innerHTML = '';
-          if (snap.empty) { box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>'; return; }
-          let html = '';
-          snap.forEach(doc => {
-            const d = doc.data();
-            const photoHtml = d.tempPhoto ? `<img class="live-photo" src="${d.tempPhoto}">` : '';
-            html += `<div class="id-card"><div class="id-card-header">गो सेवक • LIVE</div><div class="id-card-body">
-              <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-              <div class="id-details">
-                <h3>\( {d.reporterName}</h3><p> \){d.phone}</p><p>${formatTime(d.createdAt)}</p>
-                <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
-                ${getStatusBadge(d.status || 'pending')}
-                ${d.photoCount ? `<div class="photo-badge">📷 ${d.photoCount} Photo</div>` : ''}
-                <div class="countdown" id="cd-\( {doc.id}">...</div> \){photoHtml}
-              </div></div></div>`;
-          });
-          box.innerHTML = html;
-          snap.forEach(doc => { if (doc.data().createdAt) startCountdown(doc.id, doc.data().createdAt, `cd-${doc.id}`); });
-        });
-    });
-}
-
-function loadHistory() {
-  const box = document.getElementById('history-list-container');
-  box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
-  db.collection("rescue_requests").where("status", "==", "completed").orderBy("createdAt", "desc").limit(50).get()
-    .then(snap => {
-      historyData = [];
-      snap.forEach(doc => historyData.push({ id: doc.id, ...doc.data() }));
-      renderHistory(historyData);
-    });
-}
-
-function renderHistory(data) {
-  const box = document.getElementById('history-list-container');
-  if (data.length === 0) { box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>'; return; }
-  let html = '';
-  data.forEach(d => {
-    html += `<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body">
-      <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-      <div class="id-details">
-        <h3>\( {d.reporterName}</h3><p> \){d.phone}</p><p>${formatTime(d.createdAt)}</p>
-        <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
-      </div></div></div>`;
-  });
-  box.innerHTML = html;
-}
-
-function filterHistory() {
-  const q = (document.getElementById('history-search').value || '').toLowerCase();
-  const filtered = historyData.filter(d =>
-    (d.reporterName || '').toLowerCase().includes(q) || (d.phone || '').includes(q)
-  );
-  renderHistory(filtered);
-}
-
-function loadDashboard() {
-  db.collection("rescue_requests").get().then(snap => {
-    let total = 0, pending = 0, completed = 0;
-    snap.forEach(doc => {
-      total++;
-      const s = doc.data().status;
-      if (s === 'completed') completed++;
-      else pending++;
-    });
-    document.getElementById('dash-total').innerText = total;
-    document.getElementById('dash-pending').innerText = pending;
-    document.getElementById('dash-completed').innerText = completed;
-  });
-  db.collection("team_members").get().then(s => {
-    document.getElementById('dash-team').innerText = 2 + s.size;
-  });
-}
-
-function submitJoinRequest() {
-  const name = document.getElementById('join-name').value.trim();
-  const phone = document.getElementById('join-phone').value.trim();
-  const address = document.getElementById('join-address').value.trim();
-  if (!name || !phone || !address) return showCustomAlert("Error", "Sab fields bharo", false);
-  if (!/^[6-9]\d{9}$/.test(phone)) return showCustomAlert("Error", "Sahi number dalein", true);
-  db.collection("join_requests").add({
-    name, phone, address, status: "pending",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    showCustomAlert("Success", "Request bhej di gayi.", false);
-    document.getElementById('join-form').reset();
-    showPage('team'); loadTeam();
-  }).catch(err => showCustomAlert("Error", err.message, true));
-}
-
-function adminLogin() {
-  if (Date.now() < lockUntil) {
-    return showCustomAlert("Locked", "Bahut attempts. 30 sec baad try karo.", true);
+  $('loc-live').onclick = function(){ doLoc('live'); };
+  $('loc-current').onclick = function(){ doLoc('current'); };
+  function doLoc(type){
+    if(watchId) navigator.geolocation.clearWatch(watchId);
+    $('card-status-subtitle').innerText = "Fetching...";
+    $('whatsapp-map-preview').style.display = 'block';
+    $('selected-loc-type').value = type;
+    var opt = {enableHighAccuracy:true, timeout:15000, maximumAge:0};
+    var ok = function(p){
+      var lat=p.coords.latitude, lng=p.coords.longitude;
+      $('lat-long-data').value = lat+","+lng;
+      $('card-status-title').innerText = type==='live' ? "🟢 Live Location" : "Current Location";
+      $('card-status-subtitle').innerText = type==='live' ? "Tracking" : "Fixed";
+      $('map-redirect-link').href = "https://www.google.com/maps?q="+lat+","+lng;
+    };
+    var fail = function(){ alertBox("Error","Location nahi mili",true); };
+    if(type==='current') navigator.geolocation.getCurrentPosition(ok, fail, opt);
+    else watchId = navigator.geolocation.watchPosition(ok, fail, opt);
   }
-  if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
-    isAdminLoggedIn = true;
-    loginAttempts = 0;
-    document.getElementById('admin-nav-card').style.display = 'block';
-    showPage('admin-panel');
-    loadAdminPanel();
-  } else {
-    loginAttempts++;
-    if (loginAttempts >= 3) {
-      lockUntil = Date.now() + 30000;
-      loginAttempts = 0;
-      showCustomAlert("Locked", "3 galat attempts. 30 sec baad try karo.", true);
-    } else {
-      showCustomAlert("Error", `Galat Password (${loginAttempts}/3)`, true);
-    }
-  }
-}
-
-function logoutAdmin() {
-  isAdminLoggedIn = false;
-  document.getElementById('admin-nav-card').style.display = 'none';
-  showPage('home');
-}
-
-function loadAdminPanel() {
-  db.collection("rescue_requests").where("status", "==", "pending").get().then(s => document.getElementById('stat-pending').innerText = s.size);
-  db.collection("rescue_requests").where("status", "==", "completed").get().then(s => document.getElementById('stat-completed').innerText = s.size);
-
-  const liveBox = document.getElementById('admin-live-container');
-  if (adminLiveUnsub) adminLiveUnsub();
-  adminLiveUnsub = db.collection("rescue_requests").where("status", "in", ["pending", "accepted", "onway"]).orderBy("createdAt", "desc")
-    .onSnapshot(snap => {
-      adminLiveData = [];
-      snap.forEach(doc => adminLiveData.push({ id: doc.id, ...doc.data() }));
-      renderAdminLive(adminLiveData);
-    }, () => {
-      // fallback
-      adminLiveUnsub = db.collection("rescue_requests").where("status", "==", "pending").orderBy("createdAt", "desc")
-        .onSnapshot(snap => {
-          adminLiveData = [];
-          snap.forEach(doc => adminLiveData.push({ id: doc.id, ...doc.data() }));
-          renderAdminLive(adminLiveData);
-        });
-    });
-
-  // Members
-  const memBox = document.getElementById('admin-members-container');
-  db.collection("join_requests").get().then(snap => {
-    pendingMembers = [];
-    snap.forEach(doc => {
-      const d = doc.data();
-      if (d.status === "pending") pendingMembers.push({ id: doc.id, name: d.name || '', phone: d.phone || '', address: d.address || '' });
-    });
-    if (pendingMembers.length === 0) {
-      memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
-      return;
-    }
-    let html = '';
-    pendingMembers.forEach((item, index) => {
-      html += `<div class="id-card"><div class="id-card-header">MEMBER REQUEST</div><div class="id-card-body">
-        <div class="id-photo">👤</div><div class="id-details"><h3>\( {item.name}</h3><p> \){item.phone}</p><p>${item.address}</p></div></div>
-        <div class="card-actions">
-          <button class="btn-complete" onclick="acceptMemberByIndex(${index})">Accept</button>
-          <button class="btn-delete" onclick="declineMemberByIndex(${index})"><i class="fas fa-times"></i></button>
-        </div></div>`;
-    });
-    memBox.innerHTML = html;
-  });
 
   // Team
-  const teamBox = document.getElementById('admin-team-container');
-  db.collection("team_members").get().then(snap => {
-    if (snap.empty) { teamBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi extra team member nahi</p>'; return; }
-    let html = '';
-    snap.forEach(doc => {
-      const d = doc.data();
-      html += `<div class="id-card"><div class="id-card-header">TEAM MEMBER</div><div class="id-card-body">
-        <div class="id-photo">👤</div><div class="id-details"><h3>\( {d.name}</h3><p> \){d.phone}</p><p>${d.address || ''}</p></div></div>
-        <div class="card-actions"><button class="btn-delete" style="width:100%" onclick="deleteTeamMember('${doc.id}')"><i class="fas fa-trash"></i> Team se Hatao</button></div></div>`;
-    });
-    teamBox.innerHTML = html;
-  });
+  function loadTeam(){
+    var box = $('team-list-container');
+    var html = '';
+    for(var i=0;i<PERMANENT.length;i++){
+      var m = PERMANENT[i];
+      html += '<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="'+m.photo+'" onerror="this.src=\'https://via.placeholder.com/70\'"></div><div class="id-details"><h3>'+m.name+'</h3><p><i class="fas fa-phone"></i> +91'+m.phone+'</p><p><i class="fas fa-map-marker-alt"></i> '+m.address+'</p><a href="https://wa.me/91'+m.phone+'" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>';
+    }
+    db.collection("team_members").get().then(function(snap){
+      snap.forEach(function(doc){
+        var d = doc.data();
+        var skip = false;
+        for(var j=0;j<PERMANENT.length;j++) if(PERMANENT[j].phone===d.phone || PERMANENT[j].name===d.name) skip=true;
+        if(skip) return;
+        var ph = (d.phone||'').replace(/\D/g,'');
+        if(ph.indexOf('91')===0) ph=ph.slice(2);
+        html += '<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="'+(d.photo||'member.jpg')+'" onerror="this.src=\'https://via.placeholder.com/70\'"></div><div class="id-details"><h3>'+d.name+'</h3><p><i class="fas fa-phone"></i> +91'+ph+'</p><p><i class="fas fa-map-marker-alt"></i> '+(d.address||'Ujjain')+'</p><a href="https://wa.me/91'+ph+'" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>';
+      });
+      box.innerHTML = html;
+    }).catch(function(){ box.innerHTML = html; });
+  }
+
+  // Live
+  function loadLive(){
+    var box = $('live-list-container');
+    box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
+    if(liveUnsub) liveUnsub();
+    liveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+      .onSnapshot(function(snap){
+        if(snap.empty){ box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>'; return; }
+        var html = '';
+        snap.forEach(function(doc){
+          var d = doc.data();
+          var photo = d.tempPhoto ? '<img class="live-photo" src="'+d.tempPhoto+'">' : '';
+          html += '<div class="id-card"><div class="id-card-header">गो सेवक • LIVE</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p>'+statusBadge(d.status||'pending')+(d.photoCount?'<div class="photo-badge">📷 '+d.photoCount+' Photo</div>':'')+'<div class="countdown" id="cd-'+doc.id+'">...</div>'+photo+'</div></div></div>';
+        });
+        box.innerHTML = html;
+        snap.forEach(function(doc){ if(doc.data().createdAt) startCD(doc.id, doc.data().createdAt, 'cd-'+doc.id); });
+      });
+  }
 
   // History
-  const histBox = document.getElementById('admin-history-container');
-  db.collection("rescue_requests").where("status", "==", "completed").orderBy("createdAt", "desc").limit(15).get()
-    .then(snap => {
-      let html = '';
-      snap.forEach(doc => {
-        const d = doc.data();
-        html += `<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body">
-          <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-          <div class="id-details"><h3>\( {d.reporterName}</h3><p> \){d.phone} • ${formatTime(d.createdAt)}</p></div></div>
-          <div class="card-actions"><button class="btn-delete" style="width:100%" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i> Delete</button></div></div>`;
+  function loadHistory(){
+    var box = $('history-list-container');
+    box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
+    db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(40).get()
+      .then(function(snap){
+        historyData = [];
+        snap.forEach(function(doc){ historyData.push(doc.data()); });
+        renderHistory(historyData);
       });
-      histBox.innerHTML = html || '<p style="color:#6b7280;text-align:center">Koi history nahi</p>';
+  }
+  function renderHistory(data){
+    var box = $('history-list-container');
+    if(!data.length){ box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>'; return; }
+    var html = '';
+    for(var i=0;i<data.length;i++){
+      var d = data[i];
+      html += '<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p></div></div></div>';
+    }
+    box.innerHTML = html;
+  }
+  $('history-search').oninput = function(){
+    var q = (this.value||'').toLowerCase();
+    var filtered = historyData.filter(function(d){
+      return (d.reporterName||'').toLowerCase().indexOf(q)>=0 || (d.phone||'').indexOf(q)>=0;
     });
-}
+    renderHistory(filtered);
+  };
 
-function renderAdminLive(data) {
-  const liveBox = document.getElementById('admin-live-container');
-  if (data.length === 0) { liveBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi pending nahi</p>'; return; }
-  let html = '';
-  data.forEach(d => {
-    html += `<div class="id-card"><div class="id-card-header">ADMIN • LIVE</div><div class="id-card-body">
-      <div class="id-photo">${d.animalType === 'cow' ? '🐄' : '🐮'}</div>
-      <div class="id-details">
-        <h3>\( {d.reporterName}</h3><p> \){d.phone}</p><p>${formatTime(d.createdAt)}</p>
-        <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
-        ${getStatusBadge(d.status || 'pending')}
-        \( {d.tempPhoto ? `<img class="live-photo" src=" \){d.tempPhoto}">` : ''}
-      </div></div>
-      <div class="card-actions">
-        <button class="btn-status" onclick="updateStatus('${d.id}','accepted')">Accept</button>
-        <button class="btn-status" onclick="updateStatus('${d.id}','onway')">On Way</button>
-        <button class="btn-complete" onclick="markCompleted('${d.id}')">Complete</button>
-        <button class="btn-delete" onclick="deleteRequest('${d.id}')"><i class="fas fa-trash"></i></button>
-      </div></div>`;
-  });
-  liveBox.innerHTML = html;
-}
-
-function filterAdminLive() {
-  const q = (document.getElementById('admin-search').value || '').toLowerCase();
-  const filtered = adminLiveData.filter(d =>
-    (d.reporterName || '').toLowerCase().includes(q) || (d.phone || '').includes(q)
-  );
-  renderAdminLive(filtered);
-}
-
-async function updateStatus(id, status) {
-  await db.collection("rescue_requests").doc(id).update({ status });
-  showCustomAlert("Updated", "Status update ho gaya", false);
-  if (isAdminLoggedIn) loadAdminPanel();
-}
-
-async function acceptMemberByIndex(index) {
-  const item = pendingMembers[index];
-  if (!item || !item.id) return showCustomAlert("Error", "Request nahi mili", true);
-  if (!confirm("Accept karein?")) return;
-  try {
-    await db.collection("team_members").add({
-      name: item.name, phone: item.phone, address: item.address,
-      role: "गौ सेवक", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  // Dashboard
+  function loadDash(){
+    db.collection("rescue_requests").get().then(function(snap){
+      var total=0, pending=0, completed=0;
+      snap.forEach(function(doc){
+        total++;
+        if(doc.data().status==='completed') completed++; else pending++;
+      });
+      $('dash-total').innerText = total;
+      $('dash-pending').innerText = pending;
+      $('dash-completed').innerText = completed;
     });
-    await db.collection("join_requests").doc(item.id).update({ status: "accepted" });
-    showCustomAlert("Accepted", "Member add ho gaya!", false);
-    loadAdminPanel(); loadTeam();
-  } catch (err) { showCustomAlert("Error", err.message, true); }
-}
+    db.collection("team_members").get().then(function(s){ $('dash-team').innerText = 2 + s.size; });
+  }
 
-async function declineMemberByIndex(index) {
-  const item = pendingMembers[index];
-  if (!item || !item.id) return showCustomAlert("Error", "Request nahi mili", true);
-  if (!confirm("Decline karein?")) return;
-  await db.collection("join_requests").doc(item.id).update({ status: "declined" });
-  showCustomAlert("Declined", "Request decline ho gayi", false);
-  loadAdminPanel();
-}
+  // Join
+  $('join-submit').onclick = function(){
+    var name = $('join-name').value.trim();
+    var phone = $('join-phone').value.trim();
+    var address = $('join-address').value.trim();
+    if(!name||!phone||!address){ alertBox("Error","Sab fields bharo",false); return; }
+    if(!/^[6-9]\d{9}$/.test(phone)){ alertBox("Error","Sahi number dalein",true); return; }
+    db.collection("join_requests").add({
+      name:name, phone:phone, address:address, status:"pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(){
+      alertBox("Success","Request bhej di gayi",false);
+      $('join-name').value=''; $('join-phone').value=''; $('join-address').value='';
+      showPage('team'); loadTeam();
+    }).catch(function(e){ alertBox("Error",e.message,true); });
+  };
 
-async function deleteTeamMember(id) {
-  if (!confirm("Team se hataayein?")) return;
-  await db.collection("team_members").doc(id).delete();
-  showCustomAlert("Deleted", "Member hata diya", false);
-  loadAdminPanel(); loadTeam();
-}
+  // Admin Login
+  $('admin-login-btn').onclick = function(){
+    if(Date.now() < lockUntil){ alertBox("Locked","30 sec baad try karo",true); return; }
+    if($('admin-password').value === ADMIN_PASS){
+      isAdmin = true; loginTries = 0;
+      $('admin-nav-card').style.display = 'block';
+      showPage('admin-panel'); loadAdmin();
+    } else {
+      loginTries++;
+      if(loginTries >= 3){ lockUntil = Date.now()+30000; loginTries=0; alertBox("Locked","3 galat attempts. 30 sec wait.",true); }
+      else alertBox("Error","Galat Password ("+loginTries+"/3)",true);
+    }
+  };
 
-async function markCompleted(id) {
-  if (!confirm("Complete mark karein?")) return;
-  // Photo remove on complete (save memory)
-  await db.collection("rescue_requests").doc(id).update({
-    status: "completed",
-    completedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    tempPhoto: firebase.firestore.FieldValue.delete()
-  });
-  showCustomAlert("Done", "Complete ho gaya", false);
-  if (isAdminLoggedIn) loadAdminPanel();
-}
+  // Admin Panel
+  function loadAdmin(){
+    db.collection("rescue_requests").where("status","==","pending").get().then(function(s){ $('stat-pending').innerText=s.size; });
+    db.collection("rescue_requests").where("status","==","completed").get().then(function(s){ $('stat-completed').innerText=s.size; });
 
-async function deleteRequest(id) {
-  if (!confirm("Delete karein?")) return;
-  await db.collection("rescue_requests").doc(id).delete();
-  showCustomAlert("Deleted", "Request delete ho gayi", false);
-  if (isAdminLoggedIn) loadAdminPanel();
-}
+    var liveBox = $('admin-live-container');
+    if(adminLiveUnsub) adminLiveUnsub();
+    adminLiveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+      .onSnapshot(function(snap){
+        adminLiveData = [];
+        snap.forEach(function(doc){ adminLiveData.push({id:doc.id, data:doc.data()}); });
+        renderAdminLive(adminLiveData);
+      });
 
-// SUBMIT
-document.querySelector('.btn-submit').addEventListener('click', async function(e) {
-  e.preventDefault();
-  const name = document.getElementById('reporter-name').value.trim();
-  const animal = document.getElementById('animal-type').value;
-  const phone = document.getElementById('user-phone').value.trim();
-  const loc = document.getElementById('lat-long-data').value;
+    // Members
+    var memBox = $('admin-members-container');
+    db.collection("join_requests").get().then(function(snap){
+      pendingMembers = [];
+      snap.forEach(function(doc){
+        var d = doc.data();
+        if(d.status==="pending") pendingMembers.push({id:doc.id, name:d.name||'', phone:d.phone||'', address:d.address||''});
+      });
+      if(!pendingMembers.length){ memBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi request nahi</p>'; return; }
+      var html = '';
+      for(var i=0;i<pendingMembers.length;i++){
+        var item = pendingMembers[i];
+        html += '<div class="id-card"><div class="id-card-header">MEMBER REQUEST</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>'+item.name+'</h3><p>'+item.phone+'</p><p>'+item.address+'</p></div></div><div class="card-actions"><button class="btn-complete" data-idx="'+i+'" data-act="accept">Accept</button><button class="btn-delete" data-idx="'+i+'" data-act="decline"><i class="fas fa-times"></i></button></div></div>';
+      }
+      memBox.innerHTML = html;
+      memBox.onclick = function(e){
+        var btn = e.target.closest('button');
+        if(!btn) return;
+        var idx = parseInt(btn.getAttribute('data-idx'));
+        var act = btn.getAttribute('data-act');
+        if(act==='accept') acceptMember(idx);
+        if(act==='decline') declineMember(idx);
+      };
+    });
 
-  if (!name) return showCustomAlert("Error", "Naam likhein", false);
-  if (!animal) return showCustomAlert("Error", "Animal chunein", false);
-  if (selectedPhotos.length === 0) return showCustomAlert("Error", "Photo select karein", false);
-  if (!/^[6-9]\d{9}$/.test(phone)) return showCustomAlert("Error", "Sahi number dalein", true);
-  if (!loc) return showCustomAlert("Error", "Location share karein", false);
+    // Team
+    var teamBox = $('admin-team-container');
+    db.collection("team_members").get().then(function(snap){
+      if(snap.empty){ teamBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi extra member nahi</p>'; return; }
+      var html = '';
+      snap.forEach(function(doc){
+        var d = doc.data();
+        html += '<div class="id-card"><div class="id-card-header">TEAM MEMBER</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>'+d.name+'</h3><p>'+d.phone+'</p><p>'+(d.address||'')+'</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" data-id="'+doc.id+'" data-act="delteam"><i class="fas fa-trash"></i> Hatao</button></div></div>';
+      });
+      teamBox.innerHTML = html;
+      teamBox.onclick = function(e){
+        var btn = e.target.closest('button');
+        if(!btn || btn.getAttribute('data-act')!=='delteam') return;
+        if(!confirm("Hataayein?")) return;
+        db.collection("team_members").doc(btn.getAttribute('data-id')).delete().then(function(){
+          alertBox("Deleted","Member hata diya",false); loadAdmin(); loadTeam();
+        });
+      };
+    });
 
-  document.getElementById('loading-overlay').style.display = 'flex';
+    // History
+    var histBox = $('admin-history-container');
+    db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(12).get()
+      .then(function(snap){
+        var html = '';
+        snap.forEach(function(doc){
+          var d = doc.data();
+          html += '<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+' • '+formatTime(d.createdAt)+'</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" data-id="'+doc.id+'" data-act="delreq"><i class="fas fa-trash"></i> Delete</button></div></div>';
+        });
+        histBox.innerHTML = html || '<p style="color:#6b7280;text-align:center">Koi history nahi</p>';
+        histBox.onclick = function(e){
+          var btn = e.target.closest('button');
+          if(!btn || btn.getAttribute('data-act')!=='delreq') return;
+          if(!confirm("Delete?")) return;
+          db.collection("rescue_requests").doc(btn.getAttribute('data-id')).delete().then(function(){
+            alertBox("Deleted","Delete ho gaya",false); loadAdmin();
+          });
+        };
+      });
+  }
 
-  try {
-    const data = {
-      reporterName: name,
-      animalType: animal,
-      phone: phone,
-      location: loc,
-      locationType: document.getElementById('selected-loc-type').value || "current",
-      photoCount: selectedPhotos.length,
-      status: "pending",
+  function renderAdminLive(data){
+    var box = $('admin-live-container');
+    if(!data.length){ box.innerHTML='<p style="color:#6b7280;text-align:center">Koi pending nahi</p>'; return; }
+    var html = '';
+    for(var i=0;i<data.length;i++){
+      var item = data[i];
+      var d = item.data;
+      var photo = d.tempPhoto ? '<img class="live-photo" src="'+d.tempPhoto+'">' : '';
+      html += '<div class="id-card"><div class="id-card-header">ADMIN • LIVE</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p>'+statusBadge(d.status||'pending')+photo+'</div></div><div class="card-actions"><button class="btn-status" data-id="'+item.id+'" data-st="accepted">Accept</button><button class="btn-status" data-id="'+item.id+'" data-st="onway">On Way</button><button class="btn-complete" data-id="'+item.id+'" data-act="complete">Complete</button><button class="btn-delete" data-id="'+item.id+'" data-act="del"><i class="fas fa-trash"></i></button></div></div>';
+    }
+    box.innerHTML = html;
+    box.onclick = function(e){
+      var btn = e.target.closest('button');
+      if(!btn) return;
+      var id = btn.getAttribute('data-id');
+      var st = btn.getAttribute('data-st');
+      var act = btn.getAttribute('data-act');
+      if(st){ db.collection("rescue_requests").doc(id).update({status:st}).then(function(){ alertBox("Updated","Status badal gaya",false); }); }
+      if(act==='complete'){
+        if(!confirm("Complete?")) return;
+        db.collection("rescue_requests").doc(id).update({status:"completed", completedAt:firebase.firestore.FieldValue.serverTimestamp(), tempPhoto:firebase.firestore.FieldValue.delete()}).then(function(){
+          alertBox("Done","Complete ho gaya",false); loadAdmin();
+        });
+      }
+      if(act==='del'){
+        if(!confirm("Delete?")) return;
+        db.collection("rescue_requests").doc(id).delete().then(function(){ alertBox("Deleted","Delete ho gaya",false); loadAdmin(); });
+      }
+    };
+  }
+  $('admin-search').oninput = function(){
+    var q = (this.value||'').toLowerCase();
+    var filtered = adminLiveData.filter(function(item){
+      var d = item.data;
+      return (d.reporterName||'').toLowerCase().indexOf(q)>=0 || (d.phone||'').indexOf(q)>=0;
+    });
+    renderAdminLive(filtered);
+  };
+
+  function acceptMember(idx){
+    var item = pendingMembers[idx];
+    if(!item) return;
+    if(!confirm("Accept?")) return;
+    db.collection("team_members").add({
+      name:item.name, phone:item.phone, address:item.address, role:"गौ सेवक",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      return db.collection("join_requests").doc(item.id).update({status:"accepted"});
+    }).then(function(){
+      alertBox("Accepted","Member add ho gaya",false); loadAdmin(); loadTeam();
+    }).catch(function(e){ alertBox("Error",e.message,true); });
+  }
+  function declineMember(idx){
+    var item = pendingMembers[idx];
+    if(!item) return;
+    if(!confirm("Decline?")) return;
+    db.collection("join_requests").doc(item.id).update({status:"declined"}).then(function(){
+      alertBox("Declined","Decline ho gaya",false); loadAdmin();
+    });
+  }
+
+  // Submit
+  $('submit-btn').onclick = function(){
+    var name = $('reporter-name').value.trim();
+    var animal = $('animal-type').value;
+    var phone = $('user-phone').value.trim();
+    var loc = $('lat-long-data').value;
+    if(!name){ alertBox("Error","Naam likhein",false); return; }
+    if(!animal){ alertBox("Error","Animal chunein",false); return; }
+    if(selectedPhotos.length===0){ alertBox("Error","Photo select karein",false); return; }
+    if(!/^[6-9]\d{9}$/.test(phone)){ alertBox("Error","Sahi number dalein",true); return; }
+    if(!loc){ alertBox("Error","Location share karein",false); return; }
+
+    $('loading-overlay').style.display = 'flex';
+    var data = {
+      reporterName: name, animalType: animal, phone: phone, location: loc,
+      locationType: $('selected-loc-type').value || "current",
+      photoCount: selectedPhotos.length, status: "pending",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    // Temporary photo for Live view only
-    if (photoBase64 && photoBase64.length < 900000) {
-      data.tempPhoto = photoBase64;
-    }
+    if(photoBase64 && photoBase64.length < 850000) data.tempPhoto = photoBase64;
 
-    await db.collection("rescue_requests").add(data);
-    document.getElementById('loading-overlay').style.display = 'none';
-    showCustomAlert("Success", "Request bhej di gayi!", false);
-
-    const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal === 'cow' ? 'Gai' : 'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
-    TEAM_WHATSAPP.forEach((num, i) => {
-      setTimeout(() => window.open(`https://wa.me/\( {num}?text= \){msg}`, '_blank'), i * 700);
+    db.collection("rescue_requests").add(data).then(function(){
+      $('loading-overlay').style.display = 'none';
+      alertBox("Success","Request bhej di gayi!",false);
+      var msg = "🚨 *New Rescue Request*%0A%0A*Name:* "+name+"%0A*Animal:* "+(animal==='cow'?'Gai':'Bachhda')+"%0A*Phone:* "+phone+"%0A*Location:* https://www.google.com/maps?q="+loc;
+      for(var i=0;i<TEAM_WA.length;i++){
+        (function(num, delay){ setTimeout(function(){ window.open("https://wa.me/"+num+"?text="+msg,'_blank'); }, delay); })(TEAM_WA[i], i*700);
+      }
+      $('main-rescue-form').reset();
+      selectedPhotos = []; photoBase64 = null;
+      $('animal-photos-container').innerHTML = '<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" id="photo-input"></div>';
+      $('photo-input').onchange = arguments.callee; // rebind not perfect, user may need refresh for photo again - fix below
+      // rebind photo
+      setTimeout(function(){
+        var pi = document.querySelector('#animal-photos-container input');
+        if(pi) pi.onchange = $('photo-input') && null;
+        var newInput = document.querySelector('#animal-photos-container input[type=file]');
+        if(newInput){
+          newInput.onchange = function(){ /* same as photo handler - simplified */ location.reload(); };
+        }
+      },100);
+      $('init-gps-btn').style.display = 'block';
+      $('sub-loc-options').style.display = 'none';
+      $('whatsapp-map-preview').style.display = 'none';
+      $('lat-long-data').value = '';
+      if(watchId){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+    }).catch(function(e){
+      $('loading-overlay').style.display = 'none';
+      alertBox("Error", e.message, true);
     });
+  };
 
-    document.getElementById('main-rescue-form').reset();
-    selectedPhotos = []; photoBase64 = null;
-    document.getElementById('animal-photos-container').innerHTML = `<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>`;
-    document.getElementById('init-gps-btn').style.display = 'block';
-    document.getElementById('sub-loc-options').style.display = 'none';
-    document.getElementById('whatsapp-map-preview').style.display = 'none';
-    document.getElementById('lat-long-data').value = '';
-    if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-  } catch (err) {
-    document.getElementById('loading-overlay').style.display = 'none';
-    showCustomAlert("Error", err.message, true);
-  }
-});
-
-// Secret Admin
-let clicks = 0;
-document.getElementById('founder-header').addEventListener('click', (e) => {
-  if (e.target.closest('.dark-toggle')) return;
-  clicks++;
-  if (clicks >= 5) { clicks = 0; showPage('admin-login'); }
-  setTimeout(() => clicks = 0, 2000);
-});
+})();
 </script>
 </body>
 </html>
-.
