@@ -26,6 +26,7 @@
             padding: 26px 20px;
             text-align: center;
             border-radius: 0 0 28px 28px;
+            cursor: pointer;
         }
         .header h2 { font-size: 20px; margin-top: 6px; }
         .header p { font-size: 13px; opacity: 0.9; }
@@ -53,6 +54,7 @@
             display: block;
         }
         .card h3 { font-size: 16px; font-weight: 600; }
+        .admin-card { display: none; }
 
         .page { display: none; padding: 18px; }
         .page.active { display: block; }
@@ -221,6 +223,31 @@
         .id-details p { font-size: 13px; color: #4b5563; margin: 3px 0; }
         .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
 
+        .card-actions {
+            padding: 0 14px 14px;
+            display: flex;
+            gap: 8px;
+        }
+        .btn-complete {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 10px;
+            flex: 1;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
         .empty {
             text-align: center;
             color: #9ca3af;
@@ -243,6 +270,14 @@
             font-weight: 600;
             color: #e11d48;
         }
+
+        .admin-login-box {
+            background: #fff;
+            border: 1px solid #fecdd3;
+            border-radius: 16px;
+            padding: 22px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -252,7 +287,7 @@
     </div>
 
     <div class="app">
-        <div class="header">
+        <div class="header" id="header">
             <h2>Raj Malviya</h2>
             <p>Founder, Ujjain Animal Rescue</p>
         </div>
@@ -275,6 +310,10 @@
                 <div class="card" onclick="go('team')">
                     <i class="fas fa-users"></i>
                     <h3>Our Team</h3>
+                </div>
+                <div class="card admin-card" id="adminCard" onclick="go('admin'); loadAdmin()">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Admin Panel</h3>
                 </div>
             </div>
         </div>
@@ -337,13 +376,30 @@
             <h2 style="color:#e11d48; margin-bottom:12px;">Our Team</h2>
             <div class="empty">Team members baad mein add karenge</div>
         </div>
+
+        <!-- ADMIN LOGIN -->
+        <div id="adminLogin" class="page">
+            <button class="back" onclick="go('home')">← Back</button>
+            <h2 style="color:#e11d48; margin-bottom:12px;">Admin Login</h2>
+            <div class="admin-login-box">
+                <label>Password</label>
+                <input type="password" id="adminPass" placeholder="Password">
+                <button class="btn-submit" onclick="adminLogin()">Login</button>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="admin" class="page">
+            <button class="back" onclick="logoutAdmin()">← Logout</button>
+            <h2 style="color:#e11d48; margin-bottom:14px;">Admin Panel</h2>
+            <div id="adminBox"><div class="empty">Loading...</div></div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
             authDomain: "ujjainanimalrescue.firebaseapp.com",
@@ -356,16 +412,36 @@
         const db = firebase.firestore();
 
         const FOUNDER_WHATSAPP = "916263895427";
+        const ADMIN_PASSWORD = "raj@123";
+
         let photos = [];
         let liveUnsub = null;
+        let adminUnsub = null;
+        let isAdmin = false;
+        let clickCount = 0;
+
+        // 5 clicks on header for admin
+        document.getElementById("header").addEventListener("click", function() {
+            clickCount++;
+            if (clickCount >= 5) {
+                clickCount = 0;
+                go("adminLogin");
+            }
+            setTimeout(() => clickCount = 0, 2000);
+        });
 
         function go(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
+
             if (pageId !== 'live' && liveUnsub) {
                 liveUnsub();
                 liveUnsub = null;
+            }
+            if (pageId !== 'admin' && adminUnsub) {
+                adminUnsub();
+                adminUnsub = null;
             }
         }
 
@@ -404,11 +480,8 @@
             }
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    document.getElementById("latlong").value = lat + "," + lng;
+                    document.getElementById("latlong").value = pos.coords.latitude + "," + pos.coords.longitude;
                     document.getElementById("locInfo").style.display = "block";
-                    document.getElementById("locInfo").innerText = "Location mil gayi ✅";
                 },
                 function() {
                     alert("Location allow karein please");
@@ -445,12 +518,10 @@
                 document.getElementById("loading").style.display = "none";
                 alert("✅ Request successfully bhej di gayi!");
 
-                // WhatsApp
                 const animalName = animal === "cow" ? "Gai" : "Bachhda";
                 const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animalName}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
                 window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, "_blank");
 
-                // Reset form
                 document.getElementById("rescueForm").reset();
                 photos = [];
                 document.getElementById("photoBox").innerHTML = `
@@ -477,7 +548,6 @@
         function loadLive() {
             const box = document.getElementById("liveBox");
             box.innerHTML = '<div class="empty">Loading...</div>';
-
             if (liveUnsub) liveUnsub();
 
             liveUnsub = db.collection("rescue_requests")
@@ -496,19 +566,17 @@
                         <div class="id-card">
                             <div class="id-card-header">LIVE REQUEST</div>
                             <div class="id-card-body">
-                                <div class="id-photo">${emoji}</div>
+                             <div class="id-photo">${emoji}</div>
                                 <div class="id-details">
                                     <h3>${d.reporterName}</h3>
                                     <p>${d.phone}</p>
                                     <p>${formatTime(d.createdAt)}</p>
-                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location dekhе</a></p>
+                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location dekhe</a></p>
                                 </div>
                             </div>
                         </div>`;
                     });
                     box.innerHTML = html;
-                }, err => {
-                    box.innerHTML = `<div class="empty">Error: ${err.message}</div>`;
                 });
         }
 
@@ -545,6 +613,77 @@
                     });
                     box.innerHTML = html;
                 });
+        }
+
+        function adminLogin() {
+            if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById("adminCard").style.display = "block";
+                go("admin");
+                loadAdmin();
+            } else {
+                alert("Galat Password");
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById("adminCard").style.display = "none";
+            go("home");
+        }
+
+        function loadAdmin() {
+            const box = document.getElementById("adminBox");
+            box.innerHTML = '<div class="empty">Loading...</div>';
+            if (adminUnsub) adminUnsub();
+
+            adminUnsub = db.collection("rescue_requests")
+                .where("status", "==", "pending")
+                .orderBy("createdAt", "desc")
+                .onSnapshot(snap => {
+                    if (snap.empty) {
+                        box.innerHTML = '<div class="empty">Koi pending request nahi</div>';
+                        return;
+                    }
+                    let html = "";
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
+                        html += `
+                        <div class="id-card">
+                            <div class="id-card-header">ADMIN • PENDING</div>
+                            <div class="id-card-body">
+                                <div class="id-photo">${emoji}</div>
+                                <div class="id-details">
+                                    <h3>${d.reporterName}</h3>
+                                    <p>${d.phone}</p>
+                                    <p>${formatTime(d.createdAt)}</p>
+                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-complete" onclick="markComplete('${doc.id}')">Complete</button>
+                                <button class="btn-delete" onclick="deleteReq('${doc.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    });
+                    box.innerHTML = html;
+                });
+        }
+
+        async function markComplete(id) {
+            if (!confirm("Complete mark karein?")) return;
+            await db.collection("rescue_requests").doc(id).update({
+                status: "completed",
+                completedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Complete ho gaya!");
+        }
+
+        async function deleteReq(id) {
+            if (!confirm("Delete karein?")) return;
+            await db.collection("rescue_requests").doc(id).delete();
+            alert("Request delete ho gayi");
         }
     </script>
 </body>
