@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bejuban ki Pukar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,16 +18,18 @@
             margin: 0 auto;
             min-height: 100vh;
             background: white;
+            padding-bottom: 40px;
         }
         .header {
             background: #e11d48;
             color: white;
-            padding: 28px 20px;
+            padding: 26px 20px;
             text-align: center;
             border-radius: 0 0 28px 28px;
         }
-        .header h2 { font-size: 20px; margin-top: 8px; }
+        .header h2 { font-size: 20px; margin-top: 6px; }
         .header p { font-size: 13px; opacity: 0.9; }
+
         .nav {
             padding: 22px 18px;
             display: flex;
@@ -51,20 +53,128 @@
             display: block;
         }
         .card h3 { font-size: 16px; font-weight: 600; }
-        .page { display: none; padding: 20px; }
+
+        .page { display: none; padding: 18px; }
         .page.active { display: block; }
+
         .back {
             background: none;
             border: none;
             color: #6b7280;
             font-weight: 600;
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
         }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+            margin-top: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #e11d48;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .image-preview-slot {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            border: 2px solid #e11d48;
+            overflow: hidden;
+            position: relative;
+        }
+        .image-preview-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-photo {
+            position: absolute;
+            top: -7px;
+            right: -7px;
+            background: #dc2626;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+            font-weight: bold;
+        }
+        .add-photo-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            border: 2px dashed #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+        .add-photo-btn input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn-gps {
+            background: #00a884;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+        .btn-submit {
+            background: #e11d48;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
         .content-box {
             background: #f0fdf4;
             border: 2px solid #00a884;
@@ -76,6 +186,16 @@
             font-weight: 600;
             color: #065f46;
             line-height: 1.5;
+        }
+
+        .loc-info {
+            background: #f0fdf4;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #065f46;
+            display: none;
         }
     </style>
 </head>
@@ -108,15 +228,42 @@
             </div>
         </div>
 
-        <!-- RESCUE -->
+        <!-- RESCUE FORM -->
         <div id="rescue" class="page">
             <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:10px;">Rescue Request</h2>
-            <div class="content-box">
-                ✅ Button kaam kar raha hai<br>
-                Yeh Rescue Request page hai.<br>
-                (Full form baad mein add karenge)
-            </div>
+            <h2 style="color:#e11d48; margin-bottom:6px; font-size:21px;">New Rescue Request</h2>
+
+            <form id="rescueForm">
+                <label>Aapka Naam *</label>
+                <input type="text" id="name" placeholder="Apna pura naam" required>
+
+                <label>Pashu ka Prakar *</label>
+                <select id="animal" required>
+                    <option value="">Chuniye...</option>
+                    <option value="cow">Gai (Cow)</option>
+                    <option value="calf">Bachhda (Calf)</option>
+                </select>
+
+                <label>Photo (Max 2) *</label>
+                <div class="preview-container" id="photoBox">
+                    <div class="add-photo-btn" id="addBtn">
+                        <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
+                        <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
+                    </div>
+                </div>
+
+                <label>Location *</label>
+                <button type="button" class="btn-gps" onclick="getLocation()">
+                    <i class="fas fa-map-marker-alt"></i> Share Location
+                </button>
+                <div class="loc-info" id="locInfo">Location mil gayi ✅</div>
+                <input type="hidden" id="latlong">
+
+                <label>Mobile Number *</label>
+                <input type="tel" id="phone" placeholder="10 Digits" maxlength="10" required>
+
+                <button type="button" class="btn-submit" onclick="submitForm()">Submit Request</button>
+            </form>
         </div>
 
         <!-- LIVE -->
@@ -124,8 +271,8 @@
             <button class="back" onclick="go('home')">← Back</button>
             <h2 style="color:#e11d48; margin-bottom:10px;">Live Requests</h2>
             <div class="content-box">
-                ✅ Button kaam kar raha hai<br>
-                Yeh Live Requests page hai.
+                Abhi yeh page simple hai.<br>
+                Firebase lagane ke baad yahan live requests dikhengi.
             </div>
         </div>
 
@@ -134,8 +281,8 @@
             <button class="back" onclick="go('home')">← Back</button>
             <h2 style="color:#e11d48; margin-bottom:10px;">Rescue History</h2>
             <div class="content-box">
-                ✅ Button kaam kar raha hai<br>
-                Yeh History page hai.
+                Abhi yeh page simple hai.<br>
+                Firebase lagane ke baad yahan history dikhegi.
             </div>
         </div>
 
@@ -144,25 +291,94 @@
             <button class="back" onclick="go('home')">← Back</button>
             <h2 style="color:#e11d48; margin-bottom:10px;">Our Team</h2>
             <div class="content-box">
-                ✅ Button kaam kar raha hai<br>
-                Yeh Team page hai.
+                Abhi yeh page simple hai.<br>
+                Firebase lagane ke baad yahan team members dikhenge.
             </div>
         </div>
     </div>
 
     <script>
+        let photos = [];
+
         function go(pageId) {
-            // Pehle saare pages hide karo
-            document.querySelectorAll('.page').forEach(function(p) {
-                p.classList.remove('active');
-            });
-            // Phir selected page dikhao
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        // Test ke liye
-        console.log("JS successfully loaded");
+        function addPhoto(input) {
+            if (!input.files[0]) return;
+            if (photos.length >= 2) {
+                alert("Maximum 2 photos allowed");
+                input.value = "";
+                return;
+            }
+            const file = input.files[0];
+            photos.push(file);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement("div");
+                div.className = "image-preview-slot";
+                div.innerHTML = `<img src="${e.target.result}"><div class="remove-photo">×</div>`;
+                div.querySelector(".remove-photo").onclick = function() {
+                    const index = Array.from(document.querySelectorAll(".image-preview-slot")).indexOf(div);
+                    photos.splice(index, 1);
+                    div.remove();
+                    document.getElementById("addBtn").style.display = photos.length >= 2 ? "none" : "flex";
+                };
+                document.getElementById("photoBox").insertBefore(div, document.getElementById("addBtn"));
+                document.getElementById("addBtn").style.display = photos.length >= 2 ? "none" : "flex";
+            };
+            reader.readAsDataURL(file);
+            input.value = "";
+        }
+
+        function getLocation() {
+            if (!navigator.geolocation) {
+                alert("GPS available nahi hai");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    document.getElementById("latlong").value = lat + "," + lng;
+                    document.getElementById("locInfo").style.display = "block";
+                    document.getElementById("locInfo").innerText = "Location mil gayi ✅ (" + lat.toFixed(5) + ", " + lng.toFixed(5) + ")";
+                },
+                function() {
+                    alert("Location allow karein please");
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function submitForm() {
+            const name = document.getElementById("name").value.trim();
+            const animal = document.getElementById("animal").value;
+            const phone = document.getElementById("phone").value.trim();
+            const loc = document.getElementById("latlong").value;
+
+            if (!name) return alert("Naam likhein");
+            if (!animal) return alert("Animal chunein");
+            if (photos.length === 0) return alert("Kam se kam 1 photo dalo");
+            if (!/^[6-9]\d{9}$/.test(phone)) return alert("Sahi 10 digit number dalein");
+            if (!loc) return alert("Location share karein");
+
+            alert("✅ Form successfully submit ho gaya!\n\nName: " + name + "\nAnimal: " + animal + "\nPhone: " + phone + "\nLocation: " + loc + "\nPhotos: " + photos.length);
+
+            // Reset
+            document.getElementById("rescueForm").reset();
+            photos = [];
+            document.getElementById("photoBox").innerHTML = `
+                <div class="add-photo-btn" id="addBtn">
+                    <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
+                    <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
+                </div>`;
+            document.getElementById("locInfo").style.display = "none";
+            document.getElementById("latlong").value = "";
+        }
     </script>
 </body>
 </html>
