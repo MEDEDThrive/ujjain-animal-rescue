@@ -36,7 +36,7 @@ input,select,textarea{width:100%;padding:14px;border:1px solid #d1d5db;border-ra
 .id-card{background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 38%,#fff5f5 38%,#fff 100%);border-radius:16px;margin-bottom:18px;overflow:hidden;border:1px solid #fecaca}
 .id-card-header{background:#7f1d1d;color:#fef3c7;text-align:center;padding:11px;font-size:14px;font-weight:700}
 .id-card-body{padding:16px;display:flex;gap:14px}
-.id-photo{width:70px;height:70px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:32px;border:2px solid #fef3c7;overflow:hidden}
+.id-photo{width:70px;height:70px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:32px;border:2px solid #fef3c7;overflow:hidden;flex-shrink:0}
 .id-photo img{width:100%;height:100%;object-fit:cover}
 .id-details h3{margin:0 0 5px;font-size:16px}
 .id-details p{margin:3px 0;font-size:13px;color:#4b5563}
@@ -207,371 +207,474 @@ input,select,textarea{width:100%;padding:14px;border:1px solid #d1d5db;border-ra
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig={apiKey:"AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",authDomain:"ujjainanimalrescue.firebaseapp.com",projectId:"ujjainanimalrescue",storageBucket:"ujjainanimalrescue.firebasestorage.app",messagingSenderId:"686634974496",appId:"1:686634974496:web:8b56642568a257e49fab45"};
-const app=firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+  authDomain: "ujjainanimalrescue.firebaseapp.com",
+  projectId: "ujjainanimalrescue",
+  storageBucket: "ujjainanimalrescue.firebasestorage.app",
+  messagingSenderId: "686634974496",
+  appId: "1:686634974496:web:8b56642568a257e49fab45"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const FOUNDER_WHATSAPP="916263895427";
-const ADMIN_PASSWORD="raj@123";
+const FOUNDER_WHATSAPP = "916263895427";
+const TEAM_WHATSAPP = ["916263895427", "918319229059", "919977926920"]; // Aap + Ankit + Aashish
+const ADMIN_PASSWORD = "raj@123";
 
-const PERMANENT_MEMBERS=[
-{name:"Ankit Thakur",phone:"8319229059",address:"Ujjain",photo:"ankit.jpg"},
-{name:"Aashish Pal",phone:"9977926920",address:"Ujjain",photo:"aashish.jpg"}
+const PERMANENT_MEMBERS = [
+  { name: "Ankit Thakur", phone: "8319229059", address: "Ujjain", photo: "ankit.jpg" },
+  { name: "Aashish Pal", phone: "9977926920", address: "Ujjain", photo: "aashish.jpg" }
 ];
 
-let watchId=null,selectedPhotos=[],liveUnsubscribe=null,adminLiveUnsub=null,countdownIntervals={},isAdminLoggedIn=false;
+let watchId = null, selectedPhotos = [], liveUnsubscribe = null, adminLiveUnsub = null;
+let countdownIntervals = {}, isAdminLoggedIn = false, pendingMembers = [];
 
-function showPage(id){
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-window.scrollTo(0,0);
-if(id!=='live-req'&&liveUnsubscribe){liveUnsubscribe();liveUnsubscribe=null;Object.values(countdownIntervals).forEach(clearInterval)}
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id !== 'live-req' && liveUnsubscribe) {
+    liveUnsubscribe(); liveUnsubscribe = null;
+    Object.values(countdownIntervals).forEach(clearInterval);
+  }
 }
 
-function handlePhotoUpload(input){
-if(!input.files[0])return;
-const file=input.files[0];
-selectedPhotos.push(file);
-const reader=new FileReader();
-reader.onload=e=>{
-const slot=document.createElement('div');
-slot.className='image-preview-slot';
-slot.innerHTML=`<img src="${e.target.result}"><div class="remove-photo">×</div>`;
-slot.querySelector('.remove-photo').onclick=function(){
-const idx=Array.from(document.querySelectorAll('.image-preview-slot')).indexOf(slot);
-selectedPhotos.splice(idx,1);
-slot.remove();
-};
-document.getElementById('animal-photos-container').insertBefore(slot,document.querySelector('.add-photo-btn'));
-};
-reader.readAsDataURL(file);
-input.value='';
+function handlePhotoUpload(input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  selectedPhotos.push(file);
+  const reader = new FileReader();
+  reader.onload = e => {
+    const slot = document.createElement('div');
+    slot.className = 'image-preview-slot';
+    slot.innerHTML = `<img src="${e.target.result}"><div class="remove-photo">×</div>`;
+    slot.querySelector('.remove-photo').onclick = function() {
+      const idx = Array.from(document.querySelectorAll('.image-preview-slot')).indexOf(slot);
+      selectedPhotos.splice(idx, 1);
+      slot.remove();
+    };
+    document.getElementById('animal-photos-container').insertBefore(slot, document.querySelector('.add-photo-btn'));
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
 }
 
-function requestSystemGPS(){
-if(!navigator.geolocation)return showCustomAlert("Error","GPS nahi hai",true);
-navigator.geolocation.getCurrentPosition(()=>{
-document.getElementById('init-gps-btn').style.display='none';
-document.getElementById('sub-loc-options').style.display='block';
-},()=>showCustomAlert("Permission","Location Allow karein",true),{enableHighAccuracy:true,timeout:8000});
+function requestSystemGPS() {
+  if (!navigator.geolocation) return showCustomAlert("Error","GPS nahi hai",true);
+  navigator.geolocation.getCurrentPosition(() => {
+    document.getElementById('init-gps-btn').style.display = 'none';
+    document.getElementById('sub-loc-options').style.display = 'block';
+  }, () => showCustomAlert("Permission","Location Allow karein",true), {enableHighAccuracy:true, timeout:10000});
 }
 
-function processLocation(type){
-if(watchId)navigator.geolocation.clearWatch(watchId);
-document.getElementById('card-status-subtitle').innerText="Fetching...";
-document.getElementById('whatsapp-map-preview').style.display='block';
-document.getElementById('selected-loc-type').value=type;
-const opt={enableHighAccuracy:true,timeout:15000,maximumAge:0};
-if(type==='current'){
-navigator.geolocation.getCurrentPosition(p=>updateLoc(p.coords.latitude,p.coords.longitude,"Current Location","Fixed"),()=>showCustomAlert("Error","Location nahi mili",true),opt);
-}else{
-watchId=navigator.geolocation.watchPosition(p=>updateLoc(p.coords.latitude,p.coords.longitude,"🟢 Live Location","Tracking"),()=>showCustomAlert("Error","Location nahi mili",true),opt);
-}
-}
-
-function updateLoc(lat,lng,title,sub){
-document.getElementById('lat-long-data').value=lat+","+lng;
-document.getElementById('card-status-title').innerText=title;
-document.getElementById('card-status-subtitle').innerText=sub;
-document.getElementById('map-redirect-link').href=`https://www.google.com/maps?q=\( {lat}, \){lng}`;
+function processLocation(type) {
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+  document.getElementById('card-status-subtitle').innerText = "Fetching...";
+  document.getElementById('whatsapp-map-preview').style.display = 'block';
+  document.getElementById('selected-loc-type').value = type;
+  const opt = {enableHighAccuracy:true, timeout:15000, maximumAge:0};
+  if (type === 'current') {
+    navigator.geolocation.getCurrentPosition(p => updateLoc(p.coords.latitude, p.coords.longitude, "Current Location", "Fixed"), () => showCustomAlert("Error","Location nahi mili",true), opt);
+  } else {
+    watchId = navigator.geolocation.watchPosition(p => updateLoc(p.coords.latitude, p.coords.longitude, "🟢 Live Location", "Tracking"), () => showCustomAlert("Error","Location nahi mili",true), opt);
+  }
 }
 
-function showCustomAlert(title,msg,err=true){
-document.getElementById('modalTitle').innerText=title;
-document.getElementById('errorMsg').innerText=msg;
-document.getElementById('modalIcon').innerText=err?"❌":"✅";
-document.getElementById('customAlert').style.display='flex';
+function updateLoc(lat, lng, title, sub) {
+  document.getElementById('lat-long-data').value = lat + "," + lng;
+  document.getElementById('card-status-title').innerText = title;
+  document.getElementById('card-status-subtitle').innerText = sub;
+  document.getElementById('map-redirect-link').href = `https://www.google.com/maps?q=\( {lat}, \){lng}`;
 }
 
-function formatTime(ts){
-if(!ts)return"Abhi";
-return ts.toDate().toLocaleString('hi-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+function showCustomAlert(title, msg, err=true) {
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('errorMsg').innerText = msg;
+  document.getElementById('modalIcon').innerText = err ? "❌" : "✅";
+  document.getElementById('customAlert').style.display = 'flex';
 }
 
-function startCountdown(id,created,elId){
-if(countdownIntervals[id])clearInterval(countdownIntervals[id]);
-const end=created.toDate().getTime()+7200000;
-countdownIntervals[id]=setInterval(()=>{
-const diff=end-Date.now();
-const el=document.getElementById(elId);
-if(!el)return clearInterval(countdownIntervals[id]);
-if(diff<=0){el.innerHTML="⏰ Time Over";el.classList.add('urgent');clearInterval(countdownIntervals[id]);return}
-const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-el.innerHTML=`⏳ ${h}h ${m}m ${s}s`;
-if(diff<1800000)el.classList.add('urgent');
-},1000);
+function formatTime(ts) {
+  if (!ts) return "Abhi";
+  return ts.toDate().toLocaleString('hi-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
 }
 
-function loadTeam(){
-const container=document.getElementById('team-list-container');
-let html='';
-PERMANENT_MEMBERS.forEach(m=>{
-html+=`<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="\( {m.photo}" onerror="this.src='https://via.placeholder.com/70'"></div><div class="id-details"><h3> \){m.name}</h3><p><i class="fas fa-phone"></i> +91${m.phone}</p><p><i class="fas fa-map-marker-alt"></i> \( {m.address}</p><a href="https://wa.me/91 \){m.phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>`;
-});
-db.collection("team_members").orderBy("createdAt","desc").get().then(snap=>{
-snap.forEach(doc=>{
-const d=doc.data();
-if(PERMANENT_MEMBERS.some(p=>p.phone===d.phone||p.name===d.name))return;
-let phone=(d.phone||'').replace(/\D/g,'');
-if(phone.startsWith('91'))phone=phone.slice(2);
-html+=`<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="\( {d.photo||'member.jpg'}" onerror="this.src='https://via.placeholder.com/70'"></div><div class="id-details"><h3> \){d.name}</h3><p><i class="fas fa-phone"></i> +91${phone}</p><p><i class="fas fa-map-marker-alt"></i> \( {d.address||'Ujjain'}</p><a href="https://wa.me/91 \){phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>`;
-});
-container.innerHTML=html;
-}).catch(()=>{container.innerHTML=html});
+function startCountdown(id, created, elId) {
+  if (countdownIntervals[id]) clearInterval(countdownIntervals[id]);
+  const end = created.toDate().getTime() + 7200000;
+  countdownIntervals[id] = setInterval(() => {
+    const diff = end - Date.now();
+    const el = document.getElementById(elId);
+    if (!el) return clearInterval(countdownIntervals[id]);
+    if (diff <= 0) { el.innerHTML = "⏰ Time Over"; el.classList.add('urgent'); clearInterval(countdownIntervals[id]); return; }
+    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    el.innerHTML = `⏳ ${h}h ${m}m ${s}s`;
+    if (diff < 1800000) el.classList.add('urgent');
+  }, 1000);
 }
 
-function loadLiveRequests(){
-const box=document.getElementById('live-list-container');
-box.innerHTML='<p style="color:#6b7280">Loading...</p>';
-if(liveUnsubscribe)liveUnsubscribe();
-liveUnsubscribe=db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc").onSnapshot(snap=>{
-box.innerHTML='';
-if(snap.empty){box.innerHTML='<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>';return}
-let html='';
-snap.forEach(doc=>{
-const d=doc.data();
-html+=`<div class="id-card"><div class="id-card-header">गो सेवक • LIVE</div><div class="id-card-body"><div class="id-photo">\( {d.animalType==='cow'?'🐄':'🐮'}</div><div class="id-details"><h3> \){d.reporterName}</h3><p>\( {d.phone}</p><p> \){formatTime(d.createdAt)}</p><p><a href="https://www.google.com/maps?q=\( {d.location}" target="_blank" class="map-link">Location</a></p> \){d.photoCount?`<div class="photo-badge">📷 \( {d.photoCount} Photo</div>`:''}<div class="countdown" id="cd- \){doc.id}">...</div></div></div></div>`;
-});
-box.innerHTML=html;
-snap.forEach(doc=>{if(doc.data().createdAt)startCountdown(doc.id,doc.data().createdAt,`cd-${doc.id}`)});
-});
-}
-
-function loadHistory(){
-const box=document.getElementById('history-list-container');
-box.innerHTML='<p style="color:#6b7280">Loading...</p>';
-db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(30).get().then(snap=>{
-if(snap.empty){box.innerHTML='<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>';return}
-let html='';
-snap.forEach(doc=>{
-const d=doc.data();
-html+=`<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">\( {d.animalType==='cow'?'🐄':'🐮'}</div><div class="id-details"><h3> \){d.reporterName}</h3><p>\( {d.phone}</p><p> \){formatTime(d.createdAt)}</p><p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p></div></div></div>`;
-});
-box.innerHTML=html;
-});
-}
-
-function submitJoinRequest(){
-const name=document.getElementById('join-name').value.trim();
-const phone=document.getElementById('join-phone').value.trim();
-const address=document.getElementById('join-address').value.trim();
-if(!name||!phone||!address)return showCustomAlert("Error","Sab fields bharo",false);
-if(!/^[6-9]\d{9}$/.test(phone))return showCustomAlert("Error","Sahi number dalein",true);
-db.collection("join_requests").add({name,phone,address,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()})
-.then(()=>{showCustomAlert("Success","Request bhej di gayi. Admin approve karega.",false);document.getElementById('join-form').reset();showPage('team');loadTeam()})
-.catch(err=>showCustomAlert("Error",err.message,true));
-}
-
-function adminLogin(){
-if(document.getElementById('admin-password').value===ADMIN_PASSWORD){
-isAdminLoggedIn=true;
-document.getElementById('admin-nav-card').style.display='block';
-showPage('admin-panel');
-loadAdminPanel();
-}else showCustomAlert("Error","Galat Password",true);
-}
-
-function logoutAdmin(){
-isAdminLoggedIn=false;
-document.getElementById('admin-nav-card').style.display='none';
-showPage('home');
-}
-
-function loadAdminPanel(){
-db.collection("rescue_requests").where("status","==","pending").get().then(s=>document.getElementById('stat-pending').innerText=s.size);
-db.collection("rescue_requests").where("status","==","completed").get().then(s=>document.getElementById('stat-completed').innerText=s.size);
-
-const liveBox=document.getElementById('admin-live-container');
-if(adminLiveUnsub)adminLiveUnsub();
-adminLiveUnsub=db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc").onSnapshot(snap=>{
-if(snap.empty){liveBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi pending nahi</p>';return}
-let html='';
-snap.forEach(doc=>{
-const d=doc.data();
-html+=`<div class="id-card"><div class="id-card-header">ADMIN • LIVE</div><div class="id-card-body"><div class="id-photo">\( {d.animalType==='cow'?'🐄':'🐮'}</div><div class="id-details"><h3> \){d.reporterName}</h3><p>\( {d.phone}</p><p> \){formatTime(d.createdAt)}</p><p><a href="https://www.google.com/maps?q=\( {d.location}" target="_blank" class="map-link">Location</a></p></div></div><div class="card-actions"><button class="btn-complete" onclick="markCompleted(' \){doc.id}')">Complete</button><button class="btn-delete" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i></button></div></div>`;
-});
-liveBox.innerHTML=html;
-});
-
-// Members Request (Fixed)
-const memBox = document.getElementById('admin-members-container');
-db.collection("join_requests").get().then(snap => {
-    let pending = [];
+function loadTeam() {
+  const container = document.getElementById('team-list-container');
+  let html = '';
+  // Permanent members with photo
+  PERMANENT_MEMBERS.forEach(m => {
+    html += `<div class="id-card">
+      <div class="id-card-header">गौ सेवक</div>
+      <div class="id-card-body">
+        <div class="id-photo"><img src="${m.photo}" onerror="this.src='https://via.placeholder.com/70?text=Photo'"></div>
+        <div class="id-details">
+          <h3>${m.name}</h3>
+          <p><i class="fas fa-phone"></i> +91${m.phone}</p>
+          <p><i class="fas fa-map-marker-alt"></i> ${m.address}</p>
+          <a href="https://wa.me/91${m.phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+      </div>
+    </div>`;
+  });
+  // Extra accepted members
+  db.collection("team_members").get().then(snap => {
     snap.forEach(doc => {
+      const d = doc.data();
+      if (PERMANENT_MEMBERS.some(p => p.phone === d.phone || p.name === d.name)) return;
+      let phone = (d.phone || '').replace(/\D/g,'');
+      if (phone.startsWith('91')) phone = phone.slice(2);
+      html += `<div class="id-card">
+        <div class="id-card-header">गौ सेवक</div>
+        <div class="id-card-body">
+          <div class="id-photo"><img src="${d.photo || 'member.jpg'}" onerror="this.src='https://via.placeholder.com/70?text=Photo'"></div>
+          <div class="id-details">
+            <h3>${d.name}</h3>
+            <p><i class="fas fa-phone"></i> +91${phone}</p>
+            <p><i class="fas fa-map-marker-alt"></i> ${d.address || 'Ujjain'}</p>
+            <a href="https://wa.me/91${phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          </div>
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }).catch(() => container.innerHTML = html);
+}
+
+function loadLiveRequests() {
+  const box = document.getElementById('live-list-container');
+  box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
+  if (liveUnsubscribe) liveUnsubscribe();
+  liveUnsubscribe = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+    .onSnapshot(snap => {
+      box.innerHTML = '';
+      if (snap.empty) { box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>'; return; }
+      let html = '';
+      snap.forEach(doc => {
         const d = doc.data();
-        if (d.status === "pending") {
-            pending.push({
-                id: doc.id,
-                name: d.name || '',
-                phone: d.phone || '',
-                address: d.address || ''
-            });
-        }
-    });
-
-    if (pending.length === 0) {
-        memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
-        return;
-    }
-
-    let html = '';
-    pending.forEach((item, index) => {
-        // ID ko safely store karne ke liye
-        html += `
-            <div class="id-card">
-                <div class="id-card-header">MEMBER REQUEST</div>
-                <div class="id-card-body">
-                    <div class="id-photo">👤</div>
-                    <div class="id-details">
-                        <h3>${item.name}</h3>
-                        <p>${item.phone}</p>
-                        <p>${item.address}</p>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-complete" onclick="acceptMemberByIndex(${index})">Accept</button>
-                    <button class="btn-delete" onclick="declineMemberByIndex(${index})"><i class="fas fa-times"></i></button>
-                </div>
+        html += `<div class="id-card">
+          <div class="id-card-header">गो सेवक • LIVE</div>
+          <div class="id-card-body">
+            <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
+            <div class="id-details">
+              <h3>${d.reporterName}</h3>
+              <p>${d.phone}</p>
+              <p>${formatTime(d.createdAt)}</p>
+              <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+              ${d.photoCount ? `<div class="photo-badge">📷 ${d.photoCount} Photo</div>` : ''}
+              <div class="countdown" id="cd-${doc.id}">...</div>
             </div>
-        `;
+          </div>
+        </div>`;
+      });
+      box.innerHTML = html;
+      snap.forEach(doc => { if (doc.data().createdAt) startCountdown(doc.id, doc.data().createdAt, `cd-${doc.id}`); });
+    });
+}
+
+function loadHistory() {
+  const box = document.getElementById('history-list-container');
+  box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
+  db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(30).get()
+    .then(snap => {
+      if (snap.empty) { box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>'; return; }
+      let html = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        html += `<div class="id-card">
+          <div class="id-card-header">COMPLETED</div>
+          <div class="id-card-body">
+            <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
+            <div class="id-details">
+              <h3>${d.reporterName}</h3>
+              <p>${d.phone}</p>
+              <p>${formatTime(d.createdAt)}</p>
+              <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+            </div>
+          </div>
+        </div>`;
+      });
+      box.innerHTML = html;
+    });
+}
+
+function submitJoinRequest() {
+  const name = document.getElementById('join-name').value.trim();
+  const phone = document.getElementById('join-phone').value.trim();
+  const address = document.getElementById('join-address').value.trim();
+  if (!name || !phone || !address) return showCustomAlert("Error","Sab fields bharo",false);
+  if (!/^[6-9]\d{9}$/.test(phone)) return showCustomAlert("Error","Sahi number dalein",true);
+  db.collection("join_requests").add({
+    name, phone, address, status: "pending",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    showCustomAlert("Success","Request bhej di gayi. Admin approve karega.",false);
+    document.getElementById('join-form').reset();
+    showPage('team');
+    loadTeam();
+  }).catch(err => showCustomAlert("Error",err.message,true));
+}
+
+function adminLogin() {
+  if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+    isAdminLoggedIn = true;
+    document.getElementById('admin-nav-card').style.display = 'block';
+    showPage('admin-panel');
+    loadAdminPanel();
+  } else showCustomAlert("Error","Galat Password",true);
+}
+
+function logoutAdmin() {
+  isAdminLoggedIn = false;
+  document.getElementById('admin-nav-card').style.display = 'none';
+  showPage('home');
+}
+
+function loadAdminPanel() {
+  db.collection("rescue_requests").where("status","==","pending").get().then(s => document.getElementById('stat-pending').innerText = s.size);
+  db.collection("rescue_requests").where("status","==","completed").get().then(s => document.getElementById('stat-completed').innerText = s.size);
+
+  // Live
+  const liveBox = document.getElementById('admin-live-container');
+  if (adminLiveUnsub) adminLiveUnsub();
+  adminLiveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+    .onSnapshot(snap => {
+      if (snap.empty) { liveBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi pending nahi</p>'; return; }
+      let html = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        html += `<div class="id-card">
+          <div class="id-card-header">ADMIN • LIVE</div>
+          <div class="id-card-body">
+            <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
+            <div class="id-details">
+              <h3>${d.reporterName}</h3>
+              <p>${d.phone}</p>
+              <p>${formatTime(d.createdAt)}</p>
+              <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-complete" onclick="markCompleted('${doc.id}')">Complete</button>
+            <button class="btn-delete" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`;
+      });
+      liveBox.innerHTML = html;
     });
 
-    // Global mein save karo
-    window.pendingMembers = pending;
+  // Members Request (Fixed)
+  const memBox = document.getElementById('admin-members-container');
+  db.collection("join_requests").get().then(snap => {
+    pendingMembers = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.status === "pending") {
+        pendingMembers.push({ id: doc.id, name: d.name||'', phone: d.phone||'', address: d.address||'' });
+      }
+    });
+    if (pendingMembers.length === 0) {
+      memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
+      return;
+    }
+    let html = '';
+    pendingMembers.forEach((item, index) => {
+      html += `<div class="id-card">
+        <div class="id-card-header">MEMBER REQUEST</div>
+        <div class="id-card-body">
+          <div class="id-photo">👤</div>
+          <div class="id-details">
+            <h3>${item.name}</h3>
+            <p>${item.phone}</p>
+            <p>${item.address}</p>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-complete" onclick="acceptMemberByIndex(${index})">Accept</button>
+          <button class="btn-delete" onclick="declineMemberByIndex(${index})"><i class="fas fa-times"></i></button>
+        </div>
+      </div>`;
+    });
     memBox.innerHTML = html;
-});
+  });
 
-const teamBox=document.getElementById('admin-team-container');
-db.collection("team_members").orderBy("createdAt","desc").get().then(snap=>{
-if(snap.empty){teamBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi extra team member nahi</p>';return}
-let html='';
-snap.forEach(doc=>{
-const d=doc.data();
-html+=`<div class="id-card"><div class="id-card-header">TEAM MEMBER</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>\( {d.name}</h3><p> \){d.phone}</p><p>\( {d.address||''}</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" onclick="deleteTeamMember(' \){doc.id}')"><i class="fas fa-trash"></i> Team se Hatao</button></div></div>`;
-});
-teamBox.innerHTML=html;
-});
+  // Current Team Members
+  const teamBox = document.getElementById('admin-team-container');
+  db.collection("team_members").get().then(snap => {
+    if (snap.empty) {
+      teamBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi extra team member nahi</p>';
+      return;
+    }
+    let html = '';
+    snap.forEach(doc => {
+      const d = doc.data();
+      html += `<div class="id-card">
+        <div class="id-card-header">TEAM MEMBER</div>
+        <div class="id-card-body">
+          <div class="id-photo">👤</div>
+          <div class="id-details">
+            <h3>${d.name}</h3>
+            <p>${d.phone}</p>
+            <p>${d.address || ''}</p>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-delete" style="width:100%" onclick="deleteTeamMember('${doc.id}')">
+            <i class="fas fa-trash"></i> Team se Hatao
+          </button>
+        </div>
+      </div>`;
+    });
+    teamBox.innerHTML = html;
+  });
 
-const histBox=document.getElementById('admin-history-container');
-db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(15).get().then(snap=>{
-let html='';
-snap.forEach(doc=>{
-const d=doc.data();
-html+=`<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">\( {d.animalType==='cow'?'🐄':'🐮'}</div><div class="id-details"><h3> \){d.reporterName}</h3><p>${d.phone} • \( {formatTime(d.createdAt)}</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" onclick="deleteRequest(' \){doc.id}')"><i class="fas fa-trash"></i> Delete</button></div></div>`;
-});
-histBox.innerHTML=html||'<p style="color:#6b7280;text-align:center">Koi history nahi</p>';
-});
+  // History
+  const histBox = document.getElementById('admin-history-container');
+  db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(15).get()
+    .then(snap => {
+      let html = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        html += `<div class="id-card">
+          <div class="id-card-header">COMPLETED</div>
+          <div class="id-card-body">
+            <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
+            <div class="id-details">
+              <h3>${d.reporterName}</h3>
+              <p>${d.phone} • ${formatTime(d.createdAt)}</p>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-delete" style="width:100%" onclick="deleteRequest('${doc.id}')"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </div>`;
+      });
+      histBox.innerHTML = html || '<p style="color:#6b7280;text-align:center">Koi history nahi</p>';
+    });
 }
 
 async function acceptMemberByIndex(index) {
-    const item = window.pendingMembers[index];
-    if (!item || !item.id) {
-        showCustomAlert("Error", "Request nahi mili. Page refresh karke try karo.", true);
-        return;
-    }
-
-    if (!confirm("Is member ko Accept karein?")) return;
-
-    try {
-        await db.collection("team_members").add({
-            name: item.name,
-            phone: item.phone,
-            address: item.address,
-            role: "गौ सेवक",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        await db.collection("join_requests").doc(item.id).update({
-            status: "accepted"
-        });
-
-        showCustomAlert("Accepted", "Member Team mein add ho gaya!", false);
-        loadAdminPanel();
-        loadTeam();
-    } catch (err) {
-        showCustomAlert("Error", err.message, true);
-    }
+  const item = pendingMembers[index];
+  if (!item || !item.id) return showCustomAlert("Error","Request nahi mili",true);
+  if (!confirm("Is member ko Accept karein?")) return;
+  try {
+    await db.collection("team_members").add({
+      name: item.name, phone: item.phone, address: item.address,
+      role: "गौ सेवक", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection("join_requests").doc(item.id).update({ status: "accepted" });
+    showCustomAlert("Accepted","Member Team mein add ho gaya!",false);
+    loadAdminPanel();
+    loadTeam();
+  } catch (err) { showCustomAlert("Error", err.message, true); }
 }
 
 async function declineMemberByIndex(index) {
-    const item = window.pendingMembers[index];
-    if (!item || !item.id) {
-        showCustomAlert("Error", "Request nahi mili. Page refresh karke try karo.", true);
-        return;
-    }
-
-    if (!confirm("Decline karein?")) return;
-
-    try {
-        await db.collection("join_requests").doc(item.id).update({
-            status: "declined"
-        });
-        showCustomAlert("Declined", "Request decline ho gayi", false);
-        loadAdminPanel();
-    } catch (err) {
-        showCustomAlert("Error", err.message, true);
-    }
+  const item = pendingMembers[index];
+  if (!item || !item.id) return showCustomAlert("Error","Request nahi mili",true);
+  if (!confirm("Decline karein?")) return;
+  try {
+    await db.collection("join_requests").doc(item.id).update({ status: "declined" });
+    showCustomAlert("Declined","Request decline ho gayi",false);
+    loadAdminPanel();
+  } catch (err) { showCustomAlert("Error", err.message, true); }
 }
 
-async function deleteTeamMember(id){
-if(!confirm("Kya aap is member ko Team se hataana chahte ho?"))return;
-await db.collection("team_members").doc(id).delete();
-showCustomAlert("Deleted","Member Team se hata diya gaya.",false);
-loadAdminPanel();
-loadTeam();
+async function deleteTeamMember(id) {
+  if (!confirm("Kya aap is member ko Team se hataana chahte ho?")) return;
+  await db.collection("team_members").doc(id).delete();
+  showCustomAlert("Deleted","Member Team se hata diya gaya.",false);
+  loadAdminPanel();
+  loadTeam();
 }
 
-async function markCompleted(id){
-if(!confirm("Complete mark karein?"))return;
-await db.collection("rescue_requests").doc(id).update({status:"completed",completedAt:firebase.firestore.FieldValue.serverTimestamp()});
-showCustomAlert("Done","Complete ho gaya",false);
-if(isAdminLoggedIn)loadAdminPanel();
+async function markCompleted(id) {
+  if (!confirm("Complete mark karein?")) return;
+  await db.collection("rescue_requests").doc(id).update({ status: "completed", completedAt: firebase.firestore.FieldValue.serverTimestamp() });
+  showCustomAlert("Done","Complete ho gaya",false);
+  if (isAdminLoggedIn) loadAdminPanel();
 }
 
-async function deleteRequest(id){
-if(!confirm("Delete karein?"))return;
-await db.collection("rescue_requests").doc(id).delete();
-showCustomAlert("Deleted","Request delete ho gayi",false);
-if(isAdminLoggedIn)loadAdminPanel();
+async function deleteRequest(id) {
+  if (!confirm("Delete karein?")) return;
+  await db.collection("rescue_requests").doc(id).delete();
+  showCustomAlert("Deleted","Request delete ho gayi",false);
+  if (isAdminLoggedIn) loadAdminPanel();
 }
 
-document.querySelector('.btn-submit').addEventListener('click',async function(e){
-e.preventDefault();
-const name=document.getElementById('reporter-name').value.trim();
-const animal=document.getElementById('animal-type').value;
-const phone=document.getElementById('user-phone').value.trim();
-const loc=document.getElementById('lat-long-data').value;
-if(!name)return showCustomAlert("Error","Naam likhein",false);
-if(!animal)return showCustomAlert("Error","Animal chunein",false);
-if(selectedPhotos.length===0)return showCustomAlert("Error","Photo select karein",false);
-if(!/^[6-9]\d{9}$/.test(phone))return showCustomAlert("Error","Sahi number dalein",true);
-if(!loc)return showCustomAlert("Error","Location share karein",false);
-document.getElementById('loading-overlay').style.display='flex';
-try{
-await db.collection("rescue_requests").add({reporterName:name,animalType:animal,phone:phone,location:loc,locationType:document.getElementById('selected-loc-type').value||"current",photoCount:selectedPhotos.length,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-document.getElementById('loading-overlay').style.display='none';
-showCustomAlert("Success","Request bhej di gayi!",false);
-const msg=`🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal==='cow'?'Gai':'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
-window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`,'_blank');
-document.getElementById('main-rescue-form').reset();
-selectedPhotos=[];
-document.getElementById('animal-photos-container').innerHTML=`<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>`;
-document.getElementById('init-gps-btn').style.display='block';
-document.getElementById('sub-loc-options').style.display='none';
-document.getElementById('whatsapp-map-preview').style.display='none';
-document.getElementById('lat-long-data').value='';
-if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null}
-}catch(err){document.getElementById('loading-overlay').style.display='none';showCustomAlert("Error",err.message,true)}
+// SUBMIT + Multiple WhatsApp
+document.querySelector('.btn-submit').addEventListener('click', async function(e) {
+  e.preventDefault();
+  const name = document.getElementById('reporter-name').value.trim();
+  const animal = document.getElementById('animal-type').value;
+  const phone = document.getElementById('user-phone').value.trim();
+  const loc = document.getElementById('lat-long-data').value;
+
+  if (!name) return showCustomAlert("Error","Naam likhein",false);
+  if (!animal) return showCustomAlert("Error","Animal chunein",false);
+  if (selectedPhotos.length === 0) return showCustomAlert("Error","Photo select karein",false);
+  if (!/^[6-9]\d{9}$/.test(phone)) return showCustomAlert("Error","Sahi number dalein",true);
+  if (!loc) return showCustomAlert("Error","Location share karein",false);
+
+  document.getElementById('loading-overlay').style.display = 'flex';
+
+  try {
+    await db.collection("rescue_requests").add({
+      reporterName: name, animalType: animal, phone: phone, location: loc,
+      locationType: document.getElementById('selected-loc-type').value || "current",
+      photoCount: selectedPhotos.length, status: "pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    document.getElementById('loading-overlay').style.display = 'none';
+    showCustomAlert("Success","Request bhej di gayi!",false);
+
+    // Multiple WhatsApp
+    const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animal==='cow'?'Gai':'Bachhda'}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
+    TEAM_WHATSAPP.forEach((num, i) => {
+      setTimeout(() => {
+        window.open(`https://wa.me/\( {num}?text= \){msg}`, '_blank');
+      }, i * 800);
+    });
+
+    // Reset
+    document.getElementById('main-rescue-form').reset();
+    selectedPhotos = [];
+    document.getElementById('animal-photos-container').innerHTML = `<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" onchange="handlePhotoUpload(this)"></div>`;
+    document.getElementById('init-gps-btn').style.display = 'block';
+    document.getElementById('sub-loc-options').style.display = 'none';
+    document.getElementById('whatsapp-map-preview').style.display = 'none';
+    document.getElementById('lat-long-data').value = '';
+    if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+
+  } catch (err) {
+    document.getElementById('loading-overlay').style.display = 'none';
+    showCustomAlert("Error", err.message, true);
+  }
 });
 
-let clicks=0;
-document.getElementById('founder-header').addEventListener('click',()=>{
-clicks++;
-if(clicks>=5){clicks=0;showPage('admin-login')}
-setTimeout(()=>clicks=0,2000);
+// Secret Admin
+let clicks = 0;
+document.getElementById('founder-header').addEventListener('click', () => {
+  clicks++;
+  if (clicks >= 5) { clicks = 0; showPage('admin-login'); }
+  setTimeout(() => clicks = 0, 2000);
 });
 </script>
 </body>
 </html>
-
-.
