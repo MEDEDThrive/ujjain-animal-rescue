@@ -393,17 +393,52 @@ html+=`<div class="id-card"><div class="id-card-header">ADMIN • LIVE</div><div
 liveBox.innerHTML=html;
 });
 
-const memBox=document.getElementById('admin-members-container');
-db.collection("join_requests").get().then(snap=>{
-let pending=[];
-snap.forEach(doc=>{const d=doc.data();if(d.status==="pending")pending.push({id:doc.id,...d})});
-pending.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-if(pending.length===0){memBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';return}
-let html='';
-pending.forEach(d=>{
-html+=`<div class="id-card"><div class="id-card-header">MEMBER REQUEST</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>\( {d.name}</h3><p> \){d.phone}</p><p>\( {d.address}</p></div></div><div class="card-actions"><button class="btn-complete" onclick="acceptMember(' \){d.id}','\( {d.name}',' \){d.phone}','\( {d.address}')">Accept</button><button class="btn-delete" onclick="declineMember(' \){d.id}')"><i class="fas fa-times"></i></button></div></div>`;
-});
-memBox.innerHTML=html;
+// Members Request (Fixed)
+const memBox = document.getElementById('admin-members-container');
+db.collection("join_requests").get().then(snap => {
+    let pending = [];
+    snap.forEach(doc => {
+        const d = doc.data();
+        if (d.status === "pending") {
+            pending.push({
+                id: doc.id,
+                name: d.name || '',
+                phone: d.phone || '',
+                address: d.address || ''
+            });
+        }
+    });
+
+    if (pending.length === 0) {
+        memBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi member request nahi</p>';
+        return;
+    }
+
+    let html = '';
+    pending.forEach((item, index) => {
+        // ID ko safely store karne ke liye
+        html += `
+            <div class="id-card">
+                <div class="id-card-header">MEMBER REQUEST</div>
+                <div class="id-card-body">
+                    <div class="id-photo">👤</div>
+                    <div class="id-details">
+                        <h3>${item.name}</h3>
+                        <p>${item.phone}</p>
+                        <p>${item.address}</p>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-complete" onclick="acceptMemberByIndex(${index})">Accept</button>
+                    <button class="btn-delete" onclick="declineMemberByIndex(${index})"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        `;
+    });
+
+    // Global mein save karo
+    window.pendingMembers = pending;
+    memBox.innerHTML = html;
 });
 
 const teamBox=document.getElementById('admin-team-container');
@@ -428,26 +463,54 @@ histBox.innerHTML=html||'<p style="color:#6b7280;text-align:center">Koi history 
 });
 }
 
-async function acceptMember(id,name,phone,address){
-if(!id||id==="{d.id}"||id==="undefined"){showCustomAlert("Error","Invalid ID. Page refresh karke try karo.",true);return}
-if(!confirm("Is member ko Accept karein?"))return;
-try{
-await db.collection("team_members").add({name,phone,address,role:"गौ सेवक",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-await db.collection("join_requests").doc(id).update({status:"accepted"});
-showCustomAlert("Accepted","Member Team mein add ho gaya!",false);
-loadAdminPanel();
-loadTeam();
-}catch(err){showCustomAlert("Error",err.message,true)}
+async function acceptMemberByIndex(index) {
+    const item = window.pendingMembers[index];
+    if (!item || !item.id) {
+        showCustomAlert("Error", "Request nahi mili. Page refresh karke try karo.", true);
+        return;
+    }
+
+    if (!confirm("Is member ko Accept karein?")) return;
+
+    try {
+        await db.collection("team_members").add({
+            name: item.name,
+            phone: item.phone,
+            address: item.address,
+            role: "गौ सेवक",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db.collection("join_requests").doc(item.id).update({
+            status: "accepted"
+        });
+
+        showCustomAlert("Accepted", "Member Team mein add ho gaya!", false);
+        loadAdminPanel();
+        loadTeam();
+    } catch (err) {
+        showCustomAlert("Error", err.message, true);
+    }
 }
 
-async function declineMember(id){
-if(!id||id==="{d.id}"||id==="undefined"){showCustomAlert("Error","Invalid ID. Page refresh karke try karo.",true);return}
-if(!confirm("Decline karein?"))return;
-try{
-await db.collection("join_requests").doc(id).update({status:"declined"});
-showCustomAlert("Declined","Request decline ho gayi",false);
-loadAdminPanel();
-}catch(err){showCustomAlert("Error",err.message,true)}
+async function declineMemberByIndex(index) {
+    const item = window.pendingMembers[index];
+    if (!item || !item.id) {
+        showCustomAlert("Error", "Request nahi mili. Page refresh karke try karo.", true);
+        return;
+    }
+
+    if (!confirm("Decline karein?")) return;
+
+    try {
+        await db.collection("join_requests").doc(item.id).update({
+            status: "declined"
+        });
+        showCustomAlert("Declined", "Request decline ho gayi", false);
+        loadAdminPanel();
+    } catch (err) {
+        showCustomAlert("Error", err.message, true);
+    }
 }
 
 async function deleteTeamMember(id){
