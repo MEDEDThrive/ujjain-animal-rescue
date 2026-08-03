@@ -34,7 +34,13 @@
         .cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 14px; color: #fff; animation: bounce 1s ease infinite; }
         @keyframes drive { 0%,100%{transform:translateX(-18px)} 50%{transform:translateX(18px)} }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-        @keyframes fadeOut { to { opacity:0; visibility:hidden; } }
+        @keyframes fadeOut { 
+    to { 
+        opacity: 0; 
+        visibility: hidden; 
+        pointer-events: none; 
+    } 
+        }
 
         #loading-overlay {
             display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.94);
