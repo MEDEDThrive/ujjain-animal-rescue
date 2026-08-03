@@ -175,19 +175,6 @@
             cursor: pointer;
         }
 
-        .content-box {
-            background: #f0fdf4;
-            border: 2px solid #00a884;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #065f46;
-            line-height: 1.5;
-        }
-
         .loc-info {
             background: #f0fdf4;
             border-radius: 10px;
@@ -197,9 +184,73 @@
             color: #065f46;
             display: none;
         }
+
+        .id-card {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 36%, #fff5f5 36%, #fff 100%);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid #fecaca;
+        }
+        .id-card-header {
+            background: #7f1d1d;
+            color: #fef3c7;
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .id-card-body {
+            padding: 14px;
+            display: flex;
+            gap: 12px;
+        }
+        .id-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #fef2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 2px solid #fef3c7;
+            flex-shrink: 0;
+        }
+        .id-details h3 { font-size: 15px; margin-bottom: 4px; }
+        .id-details p { font-size: 13px; color: #4b5563; margin: 3px 0; }
+        .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
+
+        .empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        #loading {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #loading p {
+            margin-top: 12px;
+            font-weight: 600;
+            color: #e11d48;
+        }
     </style>
 </head>
 <body>
+    <div id="loading">
+        <i class="fas fa-spinner fa-spin" style="font-size:40px;color:#e11d48"></i>
+        <p>Please wait...</p>
+    </div>
+
     <div class="app">
         <div class="header">
             <h2>Raj Malviya</h2>
@@ -213,11 +264,11 @@
                     <i class="fas fa-notes-medical"></i>
                     <h3>Rescue Request</h3>
                 </div>
-                <div class="card" onclick="go('live')">
+                <div class="card" onclick="go('live'); loadLive()">
                     <i class="fas fa-broadcast-tower"></i>
                     <h3>Live Requests</h3>
                 </div>
-                <div class="card" onclick="go('history')">
+                <div class="card" onclick="go('history'); loadHistory()">
                     <i class="fas fa-history"></i>
                     <h3>Rescue History</h3>
                 </div>
@@ -269,41 +320,53 @@
         <!-- LIVE -->
         <div id="live" class="page">
             <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:10px;">Live Requests</h2>
-            <div class="content-box">
-                Abhi yeh page simple hai.<br>
-                Firebase lagane ke baad yahan live requests dikhengi.
-            </div>
+            <h2 style="color:#e11d48; margin-bottom:12px;">Live Requests</h2>
+            <div id="liveBox"><div class="empty">Loading...</div></div>
         </div>
 
         <!-- HISTORY -->
         <div id="history" class="page">
             <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:10px;">Rescue History</h2>
-            <div class="content-box">
-                Abhi yeh page simple hai.<br>
-                Firebase lagane ke baad yahan history dikhegi.
-            </div>
+            <h2 style="color:#e11d48; margin-bottom:12px;">Rescue History</h2>
+            <div id="historyBox"><div class="empty">Loading...</div></div>
         </div>
 
         <!-- TEAM -->
         <div id="team" class="page">
             <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:10px;">Our Team</h2>
-            <div class="content-box">
-                Abhi yeh page simple hai.<br>
-                Firebase lagane ke baad yahan team members dikhenge.
-            </div>
+            <h2 style="color:#e11d48; margin-bottom:12px;">Our Team</h2>
+            <div class="empty">Team members baad mein add karenge</div>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
     <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+            authDomain: "ujjainanimalrescue.firebaseapp.com",
+            projectId: "ujjainanimalrescue",
+            storageBucket: "ujjainanimalrescue.firebasestorage.app",
+            messagingSenderId: "686634974496",
+            appId: "1:686634974496:web:8b56642568a257e49fab45"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const FOUNDER_WHATSAPP = "916263895427";
         let photos = [];
+        let liveUnsub = null;
 
         function go(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
+            if (pageId !== 'live' && liveUnsub) {
+                liveUnsub();
+                liveUnsub = null;
+            }
         }
 
         function addPhoto(input) {
@@ -345,7 +408,7 @@
                     const lng = pos.coords.longitude;
                     document.getElementById("latlong").value = lat + "," + lng;
                     document.getElementById("locInfo").style.display = "block";
-                    document.getElementById("locInfo").innerText = "Location mil gayi ✅ (" + lat.toFixed(5) + ", " + lng.toFixed(5) + ")";
+                    document.getElementById("locInfo").innerText = "Location mil gayi ✅";
                 },
                 function() {
                     alert("Location allow karein please");
@@ -354,7 +417,7 @@
             );
         }
 
-        function submitForm() {
+        async function submitForm() {
             const name = document.getElementById("name").value.trim();
             const animal = document.getElementById("animal").value;
             const phone = document.getElementById("phone").value.trim();
@@ -366,18 +429,122 @@
             if (!/^[6-9]\d{9}$/.test(phone)) return alert("Sahi 10 digit number dalein");
             if (!loc) return alert("Location share karein");
 
-            alert("✅ Form successfully submit ho gaya!\n\nName: " + name + "\nAnimal: " + animal + "\nPhone: " + phone + "\nLocation: " + loc + "\nPhotos: " + photos.length);
+            document.getElementById("loading").style.display = "flex";
 
-            // Reset
-            document.getElementById("rescueForm").reset();
-            photos = [];
-            document.getElementById("photoBox").innerHTML = `
-                <div class="add-photo-btn" id="addBtn">
-                    <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
-                    <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
-                </div>`;
-            document.getElementById("locInfo").style.display = "none";
-            document.getElementById("latlong").value = "";
+            try {
+                await db.collection("rescue_requests").add({
+                    reporterName: name,
+                    animalType: animal,
+                    phone: phone,
+                    location: loc,
+                    photoCount: photos.length,
+                    status: "pending",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                document.getElementById("loading").style.display = "none";
+                alert("✅ Request successfully bhej di gayi!");
+
+                // WhatsApp
+                const animalName = animal === "cow" ? "Gai" : "Bachhda";
+                const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animalName}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
+                window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, "_blank");
+
+                // Reset form
+                document.getElementById("rescueForm").reset();
+                photos = [];
+                document.getElementById("photoBox").innerHTML = `
+                    <div class="add-photo-btn" id="addBtn">
+                        <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
+                        <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
+                    </div>`;
+                document.getElementById("locInfo").style.display = "none";
+                document.getElementById("latlong").value = "";
+
+            } catch (err) {
+                document.getElementById("loading").style.display = "none";
+                alert("Error: " + err.message);
+            }
+        }
+
+        function formatTime(ts) {
+            if (!ts) return "Abhi";
+            return ts.toDate().toLocaleString("hi-IN", {
+                day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+            });
+        }
+
+        function loadLive() {
+            const box = document.getElementById("liveBox");
+            box.innerHTML = '<div class="empty">Loading...</div>';
+
+            if (liveUnsub) liveUnsub();
+
+            liveUnsub = db.collection("rescue_requests")
+                .where("status", "==", "pending")
+                .orderBy("createdAt", "desc")
+                .onSnapshot(snap => {
+                    if (snap.empty) {
+                        box.innerHTML = '<div class="empty">Koi Live Request nahi hai</div>';
+                        return;
+                    }
+                    let html = "";
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
+                        html += `
+                        <div class="id-card">
+                            <div class="id-card-header">LIVE REQUEST</div>
+                            <div class="id-card-body">
+                                <div class="id-photo">${emoji}</div>
+                                <div class="id-details">
+                                    <h3>${d.reporterName}</h3>
+                                    <p>${d.phone}</p>
+                                    <p>${formatTime(d.createdAt)}</p>
+                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location dekhе</a></p>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    box.innerHTML = html;
+                }, err => {
+                    box.innerHTML = `<div class="empty">Error: ${err.message}</div>`;
+                });
+        }
+
+        function loadHistory() {
+            const box = document.getElementById("historyBox");
+            box.innerHTML = '<div class="empty">Loading...</div>';
+
+            db.collection("rescue_requests")
+                .where("status", "==", "completed")
+                .orderBy("createdAt", "desc")
+                .limit(30)
+                .get()
+                .then(snap => {
+                    if (snap.empty) {
+                        box.innerHTML = '<div class="empty">Koi History nahi hai</div>';
+                        return;
+                    }
+                    let html = "";
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
+                        html += `
+                        <div class="id-card">
+                            <div class="id-card-header">COMPLETED</div>
+                            <div class="id-card-body">
+                                <div class="id-photo">${emoji}</div>
+                                <div class="id-details">
+                                    <h3>${d.reporterName}</h3>
+                                    <p>${d.phone}</p>
+                                    <p>${formatTime(d.createdAt)}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    box.innerHTML = html;
+                });
         }
     </script>
 </body>
