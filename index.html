@@ -213,7 +213,7 @@
             </button>
         </div>
 
-        <!-- JOIN TEAM FORM -->
+        <!-- JOIN TEAM -->
         <div id="join-team" class="page">
             <button class="back-btn" onclick="showPage('team');loadTeam()"><i class="fas fa-arrow-left"></i> Back</button>
             <h2 style="color:var(--primary-red);margin-top:12px;">हमसे जुड़ें</h2>
@@ -289,6 +289,12 @@
 
         const FOUNDER_WHATSAPP = "916263895427";
         const ADMIN_PASSWORD = "raj@123";
+
+        // Permanent Team Members
+        const PERMANENT_MEMBERS = [
+            { name: "Ankit Thakur", phone: "8319229059", address: "Ujjain", photo: "ankit.jpg" },
+            { name: "Aashish Pal", phone: "9977926920", address: "Ujjain", photo: "aashish.jpg" }
+        ];
 
         let watchId = null, selectedPhotos = [], liveUnsubscribe = null, adminLiveUnsub = null;
         let countdownIntervals = {}, isAdminLoggedIn = false;
@@ -393,50 +399,45 @@
             },1000);
         }
 
-        // ========== LOAD TEAM (Dynamic) ==========
+        // ========== LOAD TEAM (Permanent + Accepted) ==========
         function loadTeam() {
             const container = document.getElementById('team-list-container');
             container.innerHTML = '<p style="color:#6b7280;text-align:center;">Loading team...</p>';
 
+            let html = '';
+
+            // 1. Permanent Members (Ankit + Aashish)
+            PERMANENT_MEMBERS.forEach(m => {
+                html += `
+                    <div class="id-card">
+                        <div class="id-card-header">गौ सेवक</div>
+                        <div class="id-card-body">
+                            <div class="id-photo">
+                                <img src="${m.photo}" onerror="this.src='https://via.placeholder.com/70'">
+                            </div>
+                            <div class="id-details">
+                                <h3>${m.name}</h3>
+                                <p><i class="fas fa-phone"></i> +91${m.phone}</p>
+                                <p><i class="fas fa-map-marker-alt"></i> ${m.address}</p>
+                                <a href="https://wa.me/91${m.phone}" target="_blank" class="btn-whatsapp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 2. Accepted Members from Database
             db.collection("team_members").orderBy("createdAt", "desc").get()
                 .then(snap => {
-                    if (snap.empty) {
-                        // Default members if no one in database
-                        container.innerHTML = `
-                            <div class="id-card">
-                                <div class="id-card-header">गौ सेवक</div>
-                                <div class="id-card-body">
-                                    <div class="id-photo"><img src="ankit.jpg" onerror="this.src='https://via.placeholder.com/70'"></div>
-                                    <div class="id-details">
-                                        <h3>Ankit Thakur</h3>
-                                        <p><i class="fas fa-phone"></i> +918319229059</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> Ujjain</p>
-                                        <a href="https://wa.me/918319229059" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="id-card">
-                                <div class="id-card-header">गौ सेवक</div>
-                                <div class="id-card-body">
-                                    <div class="id-photo"><img src="aashish.jpg" onerror="this.src='https://via.placeholder.com/70'"></div>
-                                    <div class="id-details">
-                                        <h3>Aashish Pal</h3>
-                                        <p><i class="fas fa-phone"></i> +919977926920</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> Ujjain</p>
-                                        <a href="https://wa.me/919977926920" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    let html = '';
                     snap.forEach(doc => {
                         const d = doc.data();
-                        let phone = d.phone || '';
-                        if (!phone.startsWith('+')) phone = '+91' + phone.replace(/^91/, '');
-                        const wa = phone.replace('+', '');
+                        // Skip if already in permanent list
+                        if (PERMANENT_MEMBERS.some(p => p.phone === d.phone || p.name === d.name)) return;
+
+                        let phone = (d.phone || '').replace(/\D/g,'');
+                        if (phone.startsWith('91')) phone = phone.slice(2);
 
                         html += `
                             <div class="id-card">
@@ -447,9 +448,9 @@
                                     </div>
                                     <div class="id-details">
                                         <h3>${d.name}</h3>
-                                        <p><i class="fas fa-phone"></i> ${phone}</p>
+                                        <p><i class="fas fa-phone"></i> +91${phone}</p>
                                         <p><i class="fas fa-map-marker-alt"></i> ${d.address || 'Ujjain'}</p>
-                                        <a href="https://wa.me/${wa}" target="_blank" class="btn-whatsapp">
+                                        <a href="https://wa.me/91${phone}" target="_blank" class="btn-whatsapp">
                                             <i class="fab fa-whatsapp"></i> WhatsApp
                                         </a>
                                     </div>
@@ -459,8 +460,8 @@
                     });
                     container.innerHTML = html;
                 })
-                .catch(err => {
-                    container.innerHTML = `<p style="color:#e11d48;">Error: ${err.message}</p>`;
+                .catch(() => {
+                    container.innerHTML = html; // at least show permanent members
                 });
         }
 
@@ -483,6 +484,38 @@
                             <div class="id-card-body">
                                 <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
                                 <div class="id-details">
+                                    <h3>${d.reporterName}</h3>
+                                    <p>${d.phone}</p>
+                                    <p>${formatTime(d.createdAt)}</p>
+                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+                                    ${d.photoCount?`<div class="photo-badge">📷 ${d.photoCount} Photo</div>`:''}
+                                    <div class="countdown" id="cd-${doc.id}">...</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    box.innerHTML = html;
+                    snap.forEach(doc => { if(doc.data().createdAt) startCountdown(doc.id, doc.data().createdAt, `cd-${doc.id}`); });
+                });
+        }
+
+        function loadHistory() {
+            const box = document.getElementById('history-list-container');
+            box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
+            db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(30).get()
+                .then(snap => {
+                    if (snap.empty) {
+                        box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>';
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `<div class="id-card">
+                            <div class="id-card-header">COMPLETED</div>
+                            <div class="id-card-body">
+                                <div class="id-photo">${d.animalType==='cow'?'🐄':'🐮'}</div>
+                        <div class="id-details">
                                     <h3>${d.reporterName}</h3>
                                     <p>${d.phone}</p>
                                     <p>${formatTime(d.createdAt)}</p>
@@ -566,7 +599,7 @@
             db.collection("rescue_requests").where("status","==","pending").get().then(s => document.getElementById('stat-pending').innerText = s.size);
             db.collection("rescue_requests").where("status","==","completed").get().then(s => document.getElementById('stat-completed').innerText = s.size);
 
-            // Live Requests
+            // Live
             const liveBox = document.getElementById('admin-live-container');
             if (adminLiveUnsub) adminLiveUnsub();
             adminLiveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
@@ -633,11 +666,11 @@
                 memBox.innerHTML = html;
             });
 
-            // Current Team Members (with Delete)
+            // Current Team Members (only from DB - permanent ones are fixed)
             const teamBox = document.getElementById('admin-team-container');
             db.collection("team_members").orderBy("createdAt","desc").get().then(snap => {
                 if (snap.empty) {
-                    teamBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi team member nahi</p>';
+                    teamBox.innerHTML = '<p style="color:#6b7280;text-align:center">Koi extra team member nahi</p>';
                     return;
                 }
                 let html = '';
@@ -690,15 +723,19 @@
 
         async function acceptMember(id, name, phone, address) {
             if (!confirm("Is member ko Accept karein?")) return;
-            await db.collection("team_members").add({
-                name, phone, address,
-                role: "गौ सेवक",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            await db.collection("join_requests").doc(id).update({status: "accepted"});
-            showCustomAlert("Accepted","Member Team mein add ho gaya!",false);
-            loadAdminPanel();
-            loadTeam();
+            try {
+                await db.collection("team_members").add({
+                    name, phone, address,
+                    role: "गौ सेवक",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await db.collection("join_requests").doc(id).update({status: "accepted"});
+                showCustomAlert("Accepted","Member Team mein add ho gaya!",false);
+                loadAdminPanel();
+                loadTeam();
+            } catch (err) {
+                showCustomAlert("Error", err.message, true);
+            }
         }
 
         async function declineMember(id) {
