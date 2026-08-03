@@ -1,690 +1,600 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bejuban ki Pukar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #fef2f2;
-            color: #1f2937;
-        }
-        .app {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: white;
-            padding-bottom: 40px;
-        }
-        .header {
-            background: #e11d48;
-            color: white;
-            padding: 26px 20px;
-            text-align: center;
-            border-radius: 0 0 28px 28px;
-            cursor: pointer;
-        }
-        .header h2 { font-size: 20px; margin-top: 6px; }
-        .header p { font-size: 13px; opacity: 0.9; }
-
-        .nav {
-            padding: 22px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .card {
-            background: white;
-            border: 2px solid #fecdd3;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        .card:active { transform: scale(0.97); }
-        .card i {
-            font-size: 32px;
-            color: #e11d48;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .card h3 { font-size: 16px; font-weight: 600; }
-        .admin-card { display: none; }
-
-        .page { display: none; padding: 18px; }
-        .page.active { display: block; }
-
-        .back {
-            background: none;
-            border: none;
-            color: #6b7280;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #4b5563;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 6px;
-            margin-top: 14px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #e11d48;
-        }
-
-        .preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-        .image-preview-slot {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            border: 2px solid #e11d48;
-            overflow: hidden;
-            position: relative;
-        }
-        .image-preview-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .remove-photo {
-            position: absolute;
-            top: -7px;
-            right: -7px;
-            background: #dc2626;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 2px solid white;
-            font-weight: bold;
-        }
-        .add-photo-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            border: 2px dashed #9ca3af;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: pointer;
-        }
-        .add-photo-btn input {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .btn-gps {
-            background: #00a884;
-            color: white;
-            border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            margin-top: 6px;
-        }
-        .btn-submit {
-            background: #e11d48;
-            color: white;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-
-        .loc-info {
-            background: #f0fdf4;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 10px;
-            font-size: 13px;
-            color: #065f46;
-            display: none;
-        }
-
-        .id-card {
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 36%, #fff5f5 36%, #fff 100%);
-            border-radius: 16px;
-            margin-bottom: 16px;
-            overflow: hidden;
-            border: 1px solid #fecaca;
-        }
-        .id-card-header {
-            background: #7f1d1d;
-            color: #fef3c7;
-            text-align: center;
-            padding: 10px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-        .id-card-body {
-            padding: 14px;
-            display: flex;
-            gap: 12px;
-        }
-        .id-photo {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            background: #fef2f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            border: 2px solid #fef3c7;
-            flex-shrink: 0;
-        }
-        .id-details h3 { font-size: 15px; margin-bottom: 4px; }
-        .id-details p { font-size: 13px; color: #4b5563; margin: 3px 0; }
-        .map-link { color: #00a884; font-weight: 600; text-decoration: none; }
-
-        .card-actions {
-            padding: 0 14px 14px;
-            display: flex;
-            gap: 8px;
-        }
-        .btn-complete {
-            background: #059669;
-            color: white;
-            border: none;
-            padding: 10px;
-            flex: 1;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .btn-delete {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .empty {
-            text-align: center;
-            color: #9ca3af;
-            padding: 40px 20px;
-            font-size: 14px;
-        }
-
-        #loading {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        #loading p {
-            margin-top: 12px;
-            font-weight: 600;
-            color: #e11d48;
-        }
-
-        .admin-login-box {
-            background: #fff;
-            border: 1px solid #fecdd3;
-            border-radius: 16px;
-            padding: 22px;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bejuban ki Pukar</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:#fef2f2;color:#1f2937}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#fff;padding-bottom:40px}
+.header{background:#e11d48;color:#fff;padding:26px 20px;text-align:center;border-radius:0 0 28px 28px;cursor:pointer}
+.header h2{font-size:20px;margin-top:6px}
+.header p{font-size:13px;opacity:.9}
+.nav{padding:22px 18px;display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border:2px solid #fecdd3;border-radius:16px;padding:20px;text-align:center;cursor:pointer;user-select:none}
+.card:active{transform:scale(.97)}
+.card i{font-size:32px;color:#e11d48;margin-bottom:8px;display:block}
+.card h3{font-size:16px;font-weight:600}
+.admin-card{display:none}
+.page{display:none;padding:18px}
+.page.active{display:block}
+.back{background:none;border:none;color:#6b7280;font-weight:600;font-size:14px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+label{font-size:12px;font-weight:600;color:#4b5563;text-transform:uppercase;display:block;margin-bottom:6px;margin-top:14px}
+input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#e11d48}
+.preview-container{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.image-preview-slot{width:70px;height:70px;border-radius:12px;border:2px solid #e11d48;overflow:hidden;position:relative}
+.image-preview-slot img{width:100%;height:100%;object-fit:cover}
+.remove-photo{position:absolute;top:-7px;right:-7px;background:#dc2626;color:#fff;width:22px;height:22px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-weight:bold}
+.add-photo-btn{width:70px;height:70px;border-radius:12px;border:2px dashed #9ca3af;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.add-photo-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.btn-gps{background:#00a884;color:#fff;border:none;padding:14px;width:100%;border-radius:12px;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-top:6px}
+.btn-submit{background:#e11d48;color:#fff;border:none;padding:15px;width:100%;border-radius:12px;font-weight:600;font-size:16px;margin-top:20px;cursor:pointer}
+.loc-info{background:#f0fdf4;border-radius:10px;padding:12px;margin-top:10px;font-size:13px;color:#065f46;display:none}
+.id-card{background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 36%,#fff5f5 36%,#fff 100%);border-radius:16px;margin-bottom:16px;overflow:hidden;border:1px solid #fecaca}
+.id-card-header{background:#7f1d1d;color:#fef3c7;text-align:center;padding:10px;font-size:13px;font-weight:700}
+.id-card-body{padding:14px;display:flex;gap:12px}
+.id-photo{width:60px;height:60px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid #fef3c7;flex-shrink:0;overflow:hidden}
+.id-photo img{width:100%;height:100%;object-fit:cover}
+.id-details{flex:1;min-width:0}
+.id-details h3{font-size:15px;margin-bottom:4px}
+.id-details p{font-size:13px;color:#4b5563;margin:3px 0}
+.map-link{color:#00a884;font-weight:600;text-decoration:none}
+.card-actions{padding:0 14px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-complete{background:#059669;color:#fff;border:none;padding:10px;flex:1;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer}
+.btn-delete{background:#dc2626;color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+.btn-whatsapp,.btn-call{color:#fff;border:none;padding:7px 11px;border-radius:8px;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;margin-top:6px}
+.btn-whatsapp{background:#00a884}
+.btn-call{background:#3b82f6}
+.empty{text-align:center;color:#9ca3af;padding:40px 20px;font-size:14px}
+#loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:9999;justify-content:center;align-items:center;flex-direction:column}
+#loading p{margin-top:12px;font-weight:600;color:#e11d48}
+.admin-login-box{background:#fff;border:1px solid #fecdd3;border-radius:16px;padding:22px;margin-top:20px}
+.section-title{font-size:15px;font-weight:600;margin:18px 0 10px}
+.photo-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.photo-row img{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid #fecaca;cursor:pointer}
+</style>
 </head>
 <body>
-    <div id="loading">
-        <i class="fas fa-spinner fa-spin" style="font-size:40px;color:#e11d48"></i>
-        <p>Please wait...</p>
+<div id="loading">
+    <i class="fas fa-spinner fa-spin" style="font-size:40px;color:#e11d48"></i>
+    <p>Please wait...</p>
+</div>
+
+<div class="app">
+    <div class="header" id="header">
+        <h2>Raj Malviya</h2>
+        <p>Founder, Ujjain Animal Rescue</p>
     </div>
 
-    <div class="app">
-        <div class="header" id="header">
-            <h2>Raj Malviya</h2>
-            <p>Founder, Ujjain Animal Rescue</p>
-        </div>
-
-        <!-- HOME -->
-        <div id="home" class="page active">
-            <div class="nav">
-                <div class="card" onclick="go('rescue')">
-                    <i class="fas fa-notes-medical"></i>
-                    <h3>Rescue Request</h3>
-                </div>
-                <div class="card" onclick="go('live'); loadLive()">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <h3>Live Requests</h3>
-                </div>
-                <div class="card" onclick="go('history'); loadHistory()">
-                    <i class="fas fa-history"></i>
-                    <h3>Rescue History</h3>
-                </div>
-                <div class="card" onclick="go('team')">
-                    <i class="fas fa-users"></i>
-                    <h3>Our Team</h3>
-                </div>
-                <div class="card admin-card" id="adminCard" onclick="go('admin'); loadAdmin()">
-                    <i class="fas fa-user-shield"></i>
-                    <h3>Admin Panel</h3>
-                </div>
-            </div>
-        </div>
-
-        <!-- RESCUE FORM -->
-        <div id="rescue" class="page">
-            <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:6px; font-size:21px;">New Rescue Request</h2>
-
-            <form id="rescueForm">
-                <label>Aapka Naam *</label>
-                <input type="text" id="name" placeholder="Apna pura naam" required>
-
-                <label>Pashu ka Prakar *</label>
-                <select id="animal" required>
-                    <option value="">Chuniye...</option>
-                    <option value="cow">Gai (Cow)</option>
-                    <option value="calf">Bachhda (Calf)</option>
-                </select>
-
-                <label>Photo (Max 2) *</label>
-                <div class="preview-container" id="photoBox">
-                    <div class="add-photo-btn" id="addBtn">
-                        <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
-                        <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
-                    </div>
-                </div>
-
-                <label>Location *</label>
-                <button type="button" class="btn-gps" onclick="getLocation()">
-                    <i class="fas fa-map-marker-alt"></i> Share Location
-                </button>
-                <div class="loc-info" id="locInfo">Location mil gayi ✅</div>
-                <input type="hidden" id="latlong">
-
-                <label>Mobile Number *</label>
-                <input type="tel" id="phone" placeholder="10 Digits" maxlength="10" required>
-
-                <button type="button" class="btn-submit" onclick="submitForm()">Submit Request</button>
-            </form>
-        </div>
-
-        <!-- LIVE -->
-        <div id="live" class="page">
-            <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:12px;">Live Requests</h2>
-            <div id="liveBox"><div class="empty">Loading...</div></div>
-        </div>
-
-        <!-- HISTORY -->
-        <div id="history" class="page">
-            <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:12px;">Rescue History</h2>
-            <div id="historyBox"><div class="empty">Loading...</div></div>
-        </div>
-
-        <!-- TEAM -->
-        <div id="team" class="page">
-            <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:12px;">Our Team</h2>
-            <div class="empty">Team members baad mein add karenge</div>
-        </div>
-
-        <!-- ADMIN LOGIN -->
-        <div id="adminLogin" class="page">
-            <button class="back" onclick="go('home')">← Back</button>
-            <h2 style="color:#e11d48; margin-bottom:12px;">Admin Login</h2>
-            <div class="admin-login-box">
-                <label>Password</label>
-                <input type="password" id="adminPass" placeholder="Password">
-                <button class="btn-submit" onclick="adminLogin()">Login</button>
-            </div>
-        </div>
-
-        <!-- ADMIN PANEL -->
-        <div id="admin" class="page">
-            <button class="back" onclick="logoutAdmin()">← Logout</button>
-            <h2 style="color:#e11d48; margin-bottom:14px;">Admin Panel</h2>
-            <div id="adminBox"><div class="empty">Loading...</div></div>
+    <!-- HOME -->
+    <div id="home" class="page active">
+        <div class="nav">
+            <div class="card" onclick="go('rescue')"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
+            <div class="card" onclick="go('live');loadLive()"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
+            <div class="card" onclick="go('history');loadHistory()"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
+            <div class="card" onclick="go('team');loadTeam()"><i class="fas fa-users"></i><h3>Our Team</h3></div>
+            <div class="card admin-card" id="adminCard" onclick="go('admin');loadAdmin()"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+    <!-- RESCUE -->
+    <div id="rescue" class="page">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:6px;font-size:21px">New Rescue Request</h2>
+        <form id="rescueForm">
+            <label>Aapka Naam *</label>
+            <input type="text" id="name" placeholder="Apna pura naam" required>
+            <label>Pashu ka Prakar *</label>
+            <select id="animal" required>
+                <option value="">Chuniye...</option>
+                <option value="cow">Gai (Cow)</option>
+                <option value="calf">Bachhda (Calf)</option>
+            </select>
+            <label>Photo (Max 2) *</label>
+            <div class="preview-container" id="photoBox">
+                <div class="add-photo-btn" id="addBtn">
+                    <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
+                    <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
+                </div>
+            </div>
+            <label>Location *</label>
+            <button type="button" class="btn-gps" onclick="getLocation()"><i class="fas fa-map-marker-alt"></i> Share Location</button>
+            <div class="loc-info" id="locInfo">Location mil gayi ✅</div>
+            <input type="hidden" id="latlong">
+            <label>Mobile Number *</label>
+            <input type="tel" id="phone" placeholder="10 Digits" maxlength="10" required>
+            <button type="button" class="btn-submit" onclick="submitForm()">Submit Request</button>
+        </form>
+    </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-            authDomain: "ujjainanimalrescue.firebaseapp.com",
-            projectId: "ujjainanimalrescue",
-            storageBucket: "ujjainanimalrescue.firebasestorage.app",
-            messagingSenderId: "686634974496",
-            appId: "1:686634974496:web:8b56642568a257e49fab45"
+    <!-- LIVE -->
+    <div id="live" class="page">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:12px">Live Requests</h2>
+        <div id="liveBox"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="history" class="page">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:12px">Rescue History</h2>
+        <div id="historyBox"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- TEAM -->
+    <div id="team" class="page">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:12px">Our Team</h2>
+        <div id="teamBox"><div class="empty">Loading...</div></div>
+        <button class="btn-submit" style="margin-top:16px" onclick="go('join')">हमसे जुड़ें</button>
+    </div>
+
+    <!-- JOIN -->
+    <div id="join" class="page">
+        <button class="back" onclick="go('team')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:12px">हमसे जुड़ें</h2>
+        <label>Aapka Naam *</label>
+        <input type="text" id="joinName" placeholder="Pura naam">
+        <label>Mobile Number *</label>
+        <input type="tel" id="joinPhone" placeholder="10 Digits" maxlength="10">
+        <label>Address *</label>
+        <textarea id="joinAddress" rows="3" placeholder="Aapka address"></textarea>
+        <button class="btn-submit" onclick="submitJoin()">Request Bhejein</button>
+    </div>
+
+    <!-- ADMIN LOGIN -->
+    <div id="adminLogin" class="page">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="color:#e11d48;margin-bottom:12px">Admin Login</h2>
+        <div class="admin-login-box">
+            <label>Password</label>
+            <input type="password" id="adminPass" placeholder="Password">
+            <button class="btn-submit" onclick="adminLogin()">Login</button>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="admin" class="page">
+        <button class="back" onclick="logoutAdmin()">← Logout</button>
+        <h2 style="color:#e11d48;margin-bottom:14px">Admin Panel</h2>
+
+        <div class="section-title">Pending Requests</div>
+        <div id="adminLive"><div class="empty">Loading...</div></div>
+
+        <div class="section-title">Member Requests</div>
+        <div id="adminMembers"><div class="empty">Loading...</div></div>
+
+        <div class="section-title">Team Members</div>
+        <div id="adminTeam"><div class="empty">Loading...</div></div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+    authDomain: "ujjainanimalrescue.firebaseapp.com",
+    projectId: "ujjainanimalrescue",
+    storageBucket: "ujjainanimalrescue.firebasestorage.app",
+    messagingSenderId: "686634974496",
+    appId: "1:686634974496:web:8b56642568a257e49fab45"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+const FOUNDER_WHATSAPP = "916263895427";
+const ADMIN_PASSWORD = "raj@123";
+let photos = [];
+let liveUnsub = null;
+let adminUnsub = null;
+let isAdmin = false;
+let clickCount = 0;
+
+document.getElementById("header").addEventListener("click", () => {
+    clickCount++;
+    if (clickCount >= 5) {
+        clickCount = 0;
+        go("adminLogin");
+    }
+    setTimeout(() => clickCount = 0, 2000);
+});
+
+function go(id) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    window.scrollTo(0,0);
+    if (id !== "live" && liveUnsub) { liveUnsub(); liveUnsub = null; }
+    if (id !== "admin" && adminUnsub) { adminUnsub(); adminUnsub = null; }
+}
+
+function formatTime(ts) {
+    if (!ts) return "Abhi";
+    return ts.toDate().toLocaleString("hi-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+}
+
+function generateId() {
+    const d = new Date();
+    return "REQ-" + d.toISOString().slice(2,10).replace(/-/g,"") + "-" + Math.floor(100+Math.random()*900);
+}
+
+// ===== PHOTO =====
+function compressImage(file) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let w = img.width, h = img.height;
+                if (w > 900) { h = Math.round(h*900/w); w = 900; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext("2d").drawImage(img,0,0,w,h);
+                canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.7);
+            };
+            img.src = e.target.result;
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        reader.readAsDataURL(file);
+    });
+}
 
-        const FOUNDER_WHATSAPP = "916263895427";
-        const ADMIN_PASSWORD = "raj@123";
+async function uploadPhotos(reqId) {
+    const urls = [];
+    for (let i=0; i<photos.length; i++) {
+        const blob = await compressImage(photos[i]);
+        const ref = storage.ref("rescue_photos/" + reqId + "_" + i + "_" + Date.now() + ".jpg");
+        await ref.put(blob);
+        urls.push(await ref.getDownloadURL());
+    }
+    return urls;
+}
 
-        let photos = [];
-        let liveUnsub = null;
-        let adminUnsub = null;
-        let isAdmin = false;
-        let clickCount = 0;
+async function deletePhotos(urls) {
+    if (!urls) return;
+    for (const url of urls) {
+        try { await storage.refFromURL(url).delete(); } catch(e){}
+    }
+}
 
-        // 5 clicks on header for admin
-        document.getElementById("header").addEventListener("click", function() {
-            clickCount++;
-            if (clickCount >= 5) {
-                clickCount = 0;
-                go("adminLogin");
-            }
-            setTimeout(() => clickCount = 0, 2000);
+function addPhoto(input) {
+    if (!input.files[0]) return;
+    if (photos.length >= 2) { alert("Maximum 2 photos"); input.value=""; return; }
+    const file = input.files[0];
+    photos.push(file);
+    const reader = new FileReader();
+    reader.onload = e => {
+        const div = document.createElement("div");
+        div.className = "image-preview-slot";
+        div.innerHTML = `<img src="${e.target.result}"><div class="remove-photo">×</div>`;
+        div.querySelector(".remove-photo").onclick = function() {
+            const idx = Array.from(document.querySelectorAll(".image-preview-slot")).indexOf(div);
+            photos.splice(idx,1);
+            div.remove();
+            document.getElementById("addBtn").style.display = photos.length>=2 ? "none" : "flex";
+        };
+        document.getElementById("photoBox").insertBefore(div, document.getElementById("addBtn"));
+        document.getElementById("addBtn").style.display = photos.length>=2 ? "none" : "flex";
+    };
+    reader.readAsDataURL(file);
+    input.value = "";
+}
+
+function getLocation() {
+    if (!navigator.geolocation) return alert("GPS nahi hai");
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            document.getElementById("latlong").value = pos.coords.latitude + "," + pos.coords.longitude;
+            document.getElementById("locInfo").style.display = "block";
+        },
+        () => alert("Location allow karein"),
+        {enableHighAccuracy:true, timeout:10000}
+    );
+}
+
+// ===== SUBMIT =====
+async function submitForm() {
+    const name = document.getElementById("name").value.trim();
+    const animal = document.getElementById("animal").value;
+    const phone = document.getElementById("phone").value.trim();
+    const loc = document.getElementById("latlong").value;
+
+    if (!name) return alert("Naam likhein");
+    if (!animal) return alert("Animal chunein");
+    if (photos.length === 0) return alert("Kam se kam 1 photo dalo");
+    if (!/^[6-9]\d{9}$/.test(phone)) return alert("Sahi number dalein");
+    if (!loc) return alert("Location share karein");
+
+    document.getElementById("loading").style.display = "flex";
+
+    try {
+        const reqId = generateId();
+        const photoURLs = await uploadPhotos(reqId);
+
+        await db.collection("rescue_requests").add({
+            requestId: reqId,
+            reporterName: name,
+            animalType: animal,
+            phone: phone,
+            location: loc,
+            photoURLs: photoURLs,
+            photoCount: photoURLs.length,
+            status: "pending",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        function go(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            window.scrollTo(0, 0);
+        document.getElementById("loading").style.display = "none";
+        alert("✅ Request bhej di gayi!");
 
-            if (pageId !== 'live' && liveUnsub) {
-                liveUnsub();
-                liveUnsub = null;
-            }
-            if (pageId !== 'admin' && adminUnsub) {
-                adminUnsub();
-                adminUnsub = null;
-            }
-        }
+        const animalName = animal === "cow" ? "Gai" : "Bachhda";
+        const msg = `🚨 *New Rescue Request*%0A%0A*ID:* ${reqId}%0A*Name:* ${name}%0A*Animal:* ${animalName}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
+        window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, "_blank");
 
-        function addPhoto(input) {
-            if (!input.files[0]) return;
-            if (photos.length >= 2) {
-                alert("Maximum 2 photos allowed");
-                input.value = "";
-                return;
-            }
-            const file = input.files[0];
-            photos.push(file);
+        document.getElementById("rescueForm").reset();
+        photos = [];
+        document.getElementById("photoBox").innerHTML = `<div class="add-photo-btn" id="addBtn"><i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i><input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)"></div>`;
+        document.getElementById("locInfo").style.display = "none";
+        document.getElementById("latlong").value = "";
+    } catch(err) {
+        document.getElementById("loading").style.display = "none";
+        alert("Error: " + err.message);
+    }
+}
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const div = document.createElement("div");
-                div.className = "image-preview-slot";
-                div.innerHTML = `<img src="${e.target.result}"><div class="remove-photo">×</div>`;
-                div.querySelector(".remove-photo").onclick = function() {
-                    const index = Array.from(document.querySelectorAll(".image-preview-slot")).indexOf(div);
-                    photos.splice(index, 1);
-                    div.remove();
-                    document.getElementById("addBtn").style.display = photos.length >= 2 ? "none" : "flex";
-                };
-                document.getElementById("photoBox").insertBefore(div, document.getElementById("addBtn"));
-                document.getElementById("addBtn").style.display = photos.length >= 2 ? "none" : "flex";
-            };
-            reader.readAsDataURL(file);
-            input.value = "";
-        }
+// ===== RENDER =====
+function renderCard(doc, d, showActions=false) {
+    const emoji = d.animalType === "cow" ? "🐄" : "🐮";
+    let photosHtml = "";
+    if (d.photoURLs && d.photoURLs.length && d.status !== "completed") {
+        photosHtml = `<div class="photo-row">`;
+        d.photoURLs.forEach(u => photosHtml += `<img src="\( {u}" onclick="window.open(' \){u}')">`);
+        photosHtml += `</div>`;
+    }
+    let actions = "";
+    if (showActions) {
+        actions = `<div class="card-actions">
+            <button class="btn-complete" onclick="markComplete('${doc.id}')">Complete</button>
+            <button class="btn-delete" onclick="deleteReq('${doc.id}')"><i class="fas fa-trash"></i></button>
+        </div>`;
+    }
+    return `
+    <div class="id-card">
+        <div class="id-card-header">${d.requestId || "REQ"} • ${d.status === "pending" ? "LIVE" : "COMPLETED"}</div>
+        <div class="id-card-body">
+            <div class="id-photo">${emoji}</div>
+            <div class="id-details">
+                <h3>${d.reporterName}</h3>
+                <p>${d.phone}</p>
+                <p>${formatTime(d.createdAt)}</p>
+                <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
+                ${photosHtml}
+                <div>
+                    <a href="tel:+91${d.phone}" class="btn-call"><i class="fas fa-phone"></i> Call</a>
+                    <a href="https://wa.me/91${d.phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                </div>
+            </div>
+        </div>
+        ${actions}
+    </div>`;
+}
 
-        function getLocation() {
-            if (!navigator.geolocation) {
-                alert("GPS available nahi hai");
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                function(pos) {
-                    document.getElementById("latlong").value = pos.coords.latitude + "," + pos.coords.longitude;
-                    document.getElementById("locInfo").style.display = "block";
-                },
-                function() {
-                    alert("Location allow karein please");
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        }
+// ===== LIVE =====
+function loadLive() {
+    const box = document.getElementById("liveBox");
+    box.innerHTML = '<div class="empty">Loading...</div>';
+    if (liveUnsub) liveUnsub();
+    liveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+        .onSnapshot(snap => {
+            if (snap.empty) { box.innerHTML = '<div class="empty">Koi Live Request nahi</div>'; return; }
+            let html = "";
+            snap.forEach(doc => html += renderCard(doc, doc.data(), false));
+            box.innerHTML = html;
+        });
+}
 
-        async function submitForm() {
-            const name = document.getElementById("name").value.trim();
-            const animal = document.getElementById("animal").value;
-            const phone = document.getElementById("phone").value.trim();
-            const loc = document.getElementById("latlong").value;
+// ===== HISTORY =====
+function loadHistory() {
+    const box = document.getElementById("historyBox");
+    box.innerHTML = '<div class="empty">Loading...</div>';
+    db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(30).get()
+        .then(snap => {
+            if (snap.empty) { box.innerHTML = '<div class="empty">Koi History nahi</div>'; return; }
+            let html = "";
+            snap.forEach(doc => html += renderCard(doc, doc.data(), false));
+            box.innerHTML = html;
+        });
+}
 
-            if (!name) return alert("Naam likhein");
-            if (!animal) return alert("Animal chunein");
-            if (photos.length === 0) return alert("Kam se kam 1 photo dalo");
-            if (!/^[6-9]\d{9}$/.test(phone)) return alert("Sahi 10 digit number dalein");
-            if (!loc) return alert("Location share karein");
+// ===== TEAM =====
+function loadTeam() {
+    const box = document.getElementById("teamBox");
+    box.innerHTML = '<div class="empty">Loading...</div>';
+    db.collection("team_members").orderBy("createdAt","desc").get().then(snap => {
+        if (snap.empty) { box.innerHTML = '<div class="empty">Abhi koi member nahi</div>'; return; }
+        let html = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+            <div class="id-card">
+                <div class="id-card-header">गौ सेवक</div>
+                <div class="id-card-body">
+                    <div class="id-photo">👤</div>
+                    <div class="id-details">
+                        <h3>${d.name}</h3>
+                        <p>+91${d.phone}</p>
+                        <p>${d.address || ""}</p>
+                        <div>
+                            <a href="tel:+91${d.phone}" class="btn-call"><i class="fas fa-phone"></i> Call</a>
+                            <a href="https://wa.me/91${d.phone}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        box.innerHTML = html;
+    });
+}
 
-            document.getElementById("loading").style.display = "flex";
+function submitJoin() {
+    const name = document.getElementById("joinName").value.trim();
+    const phone = document.getElementById("joinPhone").value.trim();
+    const address = document.getElementById("joinAddress").value.trim();
+    if (!name || !phone || !address) return alert("Sab fields bharo");
+    if (!/^[6-9]\d{9}$/.test(phone)) return alert("Sahi number dalein");
 
-            try {
-                await db.collection("rescue_requests").add({
-                    reporterName: name,
-                    animalType: animal,
-                    phone: phone,
-                    location: loc,
-                    photoCount: photos.length,
-                    status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+    db.collection("join_requests").add({
+        name, phone, address, status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        alert("Request bhej di gayi. Admin approve karega.");
+        document.getElementById("joinName").value = "";
+        document.getElementById("joinPhone").value = "";
+        document.getElementById("joinAddress").value = "";
+        go("team");
+    });
+}
 
-                document.getElementById("loading").style.display = "none";
-                alert("✅ Request successfully bhej di gayi!");
+// ===== ADMIN =====
+function adminLogin() {
+    if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById("adminCard").style.display = "block";
+        go("admin");
+        loadAdmin();
+    } else alert("Galat Password");
+}
 
-                const animalName = animal === "cow" ? "Gai" : "Bachhda";
-                const msg = `🚨 *New Rescue Request*%0A%0A*Name:* ${name}%0A*Animal:* ${animalName}%0A*Phone:* \( {phone}%0A*Location:* https://www.google.com/maps?q= \){loc}`;
-                window.open(`https://wa.me/\( {FOUNDER_WHATSAPP}?text= \){msg}`, "_blank");
+function logoutAdmin() {
+    isAdmin = false;
+    document.getElementById("adminCard").style.display = "none";
+    go("home");
+}
 
-                document.getElementById("rescueForm").reset();
-                photos = [];
-                document.getElementById("photoBox").innerHTML = `
-                    <div class="add-photo-btn" id="addBtn">
-                        <i class="fas fa-camera" style="font-size:22px;color:#9ca3af"></i>
-                        <input type="file" accept="image/*" capture="environment" onchange="addPhoto(this)">
-                    </div>`;
-                document.getElementById("locInfo").style.display = "none";
-                document.getElementById("latlong").value = "";
+function loadAdmin() {
+    // Pending requests
+    const liveBox = document.getElementById("adminLive");
+    if (adminUnsub) adminUnsub();
+    adminUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
+        .onSnapshot(snap => {
+            if (snap.empty) { liveBox.innerHTML = '<div class="empty">Koi pending nahi</div>'; return; }
+            let html = "";
+            snap.forEach(doc => html += renderCard(doc, doc.data(), true));
+            liveBox.innerHTML = html;
+        });
 
-            } catch (err) {
-                document.getElementById("loading").style.display = "none";
-                alert("Error: " + err.message);
-            }
-        }
+    // Member requests
+    const memBox = document.getElementById("adminMembers");
+    db.collection("join_requests").get().then(snap => {
+        let pending = [];
+        snap.forEach(doc => {
+            const d = doc.data();
+            if (d.status === "pending") pending.push({id:doc.id, ...d});
+        });
+        if (!pending.length) { memBox.innerHTML = '<div class="empty">Koi member request nahi</div>'; return; }
+        pending.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+        let html = "";
+        pending.forEach(d => {
+            html += `
+            <div class="id-card">
+                <div class="id-card-header">MEMBER REQUEST</div>
+                <div class="id-card-body">
+                    <div class="id-photo">👤</div>
+                    <div class="id-details">
+                        <h3>${d.name}</h3>
+                        <p>${d.phone}</p>
+                        <p>${d.address}</p>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-complete" onclick="acceptMember('\( {d.id}',' \){d.name}','\( {d.phone}',' \){d.address}')">Accept</button>
+                    <button class="btn-delete" onclick="declineMember('${d.id}')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>`;
+        });
+        memBox.innerHTML = html;
+    });
 
-        function formatTime(ts) {
-            if (!ts) return "Abhi";
-            return ts.toDate().toLocaleString("hi-IN", {
-                day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
-            });
-        }
+    // Team members
+    const teamBox = document.getElementById("adminTeam");
+    db.collection("team_members").orderBy("createdAt","desc").get().then(snap => {
+        if (snap.empty) { teamBox.innerHTML = '<div class="empty">Koi member nahi</div>'; return; }
+        let html = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+            <div class="id-card">
+                <div class="id-card-header">TEAM MEMBER</div>
+                <div class="id-card-body">
+                    <div class="id-photo">👤</div>
+                    <div class="id-details">
+                        <h3>${d.name}</h3>
+                        <p>+91${d.phone}</p>
+                        <p>${d.address||""}</p>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-delete" style="width:100%" onclick="removeMember('${doc.id}')">
+                        <i class="fas fa-user-minus"></i> Remove
+                    </button>
+                </div>
+            </div>`;
+        });
+        teamBox.innerHTML = html;
+    });
+}
 
-        function loadLive() {
-            const box = document.getElementById("liveBox");
-            box.innerHTML = '<div class="empty">Loading...</div>';
-            if (liveUnsub) liveUnsub();
+async function markComplete(id) {
+    if (!confirm("Complete mark karein?")) return;
+    const doc = await db.collection("rescue_requests").doc(id).get();
+    const data = doc.data();
+    if (data.photoURLs) await deletePhotos(data.photoURLs);
+    await db.collection("rescue_requests").doc(id).update({
+        status: "completed",
+        completedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        photoURLs: []
+    });
+    alert("Complete ho gaya!");
+}
 
-            liveUnsub = db.collection("rescue_requests")
-                .where("status", "==", "pending")
-                .orderBy("createdAt", "desc")
-                .onSnapshot(snap => {
-                    if (snap.empty) {
-                        box.innerHTML = '<div class="empty">Koi Live Request nahi hai</div>';
-                        return;
-                    }
-                    let html = "";
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
-                        html += `
-                        <div class="id-card">
-                            <div class="id-card-header">LIVE REQUEST</div>
-                            <div class="id-card-body">
-                             <div class="id-photo">${emoji}</div>
-                                <div class="id-details">
-                                    <h3>${d.reporterName}</h3>
-                                    <p>${d.phone}</p>
-                                    <p>${formatTime(d.createdAt)}</p>
-                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location dekhe</a></p>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                    box.innerHTML = html;
-                });
-        }
+async function deleteReq(id) {
+    if (!confirm("Delete karein?")) return;
+    const doc = await db.collection("rescue_requests").doc(id).get();
+    const data = doc.data();
+    if (data.photoURLs) await deletePhotos(data.photoURLs);
+    await db.collection("rescue_requests").doc(id).delete();
+    alert("Delete ho gaya");
+}
 
-        function loadHistory() {
-            const box = document.getElementById("historyBox");
-            box.innerHTML = '<div class="empty">Loading...</div>';
+async function acceptMember(id, name, phone, address) {
+    if (!confirm("Accept karein?")) return;
+    await db.collection("team_members").add({
+        name, phone, address, role: "गौ सेवक",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection("join_requests").doc(id).update({status:"accepted"});
+    alert("Member add ho gaya");
+    loadAdmin();
+}
 
-            db.collection("rescue_requests")
-                .where("status", "==", "completed")
-                .orderBy("createdAt", "desc")
-                .limit(30)
-                .get()
-                .then(snap => {
-                    if (snap.empty) {
-                        box.innerHTML = '<div class="empty">Koi History nahi hai</div>';
-                        return;
-                    }
-                    let html = "";
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
-                        html += `
-                        <div class="id-card">
-                            <div class="id-card-header">COMPLETED</div>
-                            <div class="id-card-body">
-                                <div class="id-photo">${emoji}</div>
-                                <div class="id-details">
-                                    <h3>${d.reporterName}</h3>
-                                    <p>${d.phone}</p>
-                                    <p>${formatTime(d.createdAt)}</p>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                    box.innerHTML = html;
-                });
-        }
+async function declineMember(id) {
+    if (!confirm("Decline karein?")) return;
+    await db.collection("join_requests").doc(id).update({status:"declined"});
+    alert("Declined");
+    loadAdmin();
+}
 
-        function adminLogin() {
-            if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById("adminCard").style.display = "block";
-                go("admin");
-                loadAdmin();
-            } else {
-                alert("Galat Password");
-            }
-        }
-
-        function logoutAdmin() {
-            isAdmin = false;
-            document.getElementById("adminCard").style.display = "none";
-            go("home");
-        }
-
-        function loadAdmin() {
-            const box = document.getElementById("adminBox");
-            box.innerHTML = '<div class="empty">Loading...</div>';
-            if (adminUnsub) adminUnsub();
-
-            adminUnsub = db.collection("rescue_requests")
-                .where("status", "==", "pending")
-                .orderBy("createdAt", "desc")
-                .onSnapshot(snap => {
-                    if (snap.empty) {
-                        box.innerHTML = '<div class="empty">Koi pending request nahi</div>';
-                        return;
-                    }
-                    let html = "";
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const emoji = d.animalType === "cow" ? "🐄" : "🐮";
-                        html += `
-                        <div class="id-card">
-                            <div class="id-card-header">ADMIN • PENDING</div>
-                            <div class="id-card-body">
-                                <div class="id-photo">${emoji}</div>
-                                <div class="id-details">
-                                    <h3>${d.reporterName}</h3>
-                                    <p>${d.phone}</p>
-                                    <p>${formatTime(d.createdAt)}</p>
-                                    <p><a href="https://www.google.com/maps?q=${d.location}" target="_blank" class="map-link">Location</a></p>
-                                </div>
-                            </div>
-                            <div class="card-actions">
-                                <button class="btn-complete" onclick="markComplete('${doc.id}')">Complete</button>
-                                <button class="btn-delete" onclick="deleteReq('${doc.id}')"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>`;
-                    });
-                    box.innerHTML = html;
-                });
-        }
-
-        async function markComplete(id) {
-            if (!confirm("Complete mark karein?")) return;
-            await db.collection("rescue_requests").doc(id).update({
-                status: "completed",
-                completedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("Complete ho gaya!");
-        }
-
-        async function deleteReq(id) {
-            if (!confirm("Delete karein?")) return;
-            await db.collection("rescue_requests").doc(id).delete();
-            alert("Request delete ho gayi");
-        }
-    </script>
+async function removeMember(id) {
+    if (!confirm("Member hata dein?")) return;
+    await db.collection("team_members").doc(id).delete();
+    alert("Removed");
+    loadAdmin();
+}
+</script>
 </body>
 </html>
