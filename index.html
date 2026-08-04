@@ -1,846 +1,528 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ujjain Animal Rescue - AI Powered</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- jsPDF for Client-Side PDF Generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-:root {
-  --primary-red: #e11d48;
-  --soft-red: #fef2f2;
-  --bg: #fef2f2;
-  --card: #ffffff;
-  --text: #1f2937;
-  --text2: #4b5563;
-}
-body.dark {
-  --bg: #111827;
-  --card: #1f2937;
-  --text: #f3f4f6;
-  --text2: #9ca3af;
-  --soft-red: #1f2937;
-}
-body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); }
-#splash { position: fixed; inset: 0; background: var(--primary-red); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; animation: fadeOut 0.5s ease 2.5s forwards; }
-.ambulance-container { position: relative; font-size: 50px; margin-bottom: 20px; animation: drive 2s ease-in-out infinite; }
-.cow-on-top { position: absolute; font-size: 22px; top: -18px; left: 12px; color: #fff; animation: bounce 1s ease infinite; }
-@keyframes drive { 0%{transform:translateX(-20px)} 50%{transform:translateX(20px)} 100%{transform:translateX(-20px)} }
-@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-@keyframes fadeOut { to { opacity:0; visibility:hidden } }
-#loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999999; flex-direction: column; justify-content: center; align-items: center; }
-.loader-cow { font-size: 50px; color: var(--primary-red); animation: drive 1.5s infinite; margin-bottom: 10px; }
-.app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--card); padding-bottom: 40px; }
-.founder-header { background: var(--primary-red); color: white; padding: 28px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
-.profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 3px solid white; margin: 0 auto 10px; overflow: hidden; background: #e5e7eb; }
-.profile-pic img { width: 100%; height: 100%; object-fit: cover; }
-.founder-header h2 { margin: 0; font-size: 20px; }
-.founder-header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
-.dark-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
-.api-btn { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-.nav-grid { display: flex; flex-direction: column; gap: 16px; padding: 22px 18px; }
-.nav-card { background: var(--card); border: 2px solid var(--soft-red); border-radius: 16px; padding: 22px; text-align: center; cursor: pointer; }
-.nav-card i { font-size: 34px; color: var(--primary-red); margin-bottom: 8px; }
-.nav-card h3 { margin: 0; font-size: 16px; color: var(--text); }
-.admin-card { display: none; }
-.page { display: none; padding: 18px; }
-.page.active { display: block; }
-label { font-size: 12px; font-weight: 600; color: var(--text2); display: block; margin: 12px 0 6px; text-transform: uppercase; }
-input, select, textarea { width: 100%; padding: 13px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 12px; font-size: 14px; box-sizing: border-box; background: var(--card); color: var(--text); }
-.id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #fff5f5 38%, #fff 100%); border-radius: 14px; margin-bottom: 16px; overflow: hidden; border: 1px solid #fecaca; }
-body.dark .id-card { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 38%, #1f2937 38%, #1f2937 100%); }
-.id-card-header { background: #7f1d1d; color: #fef3c7; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; }
-.id-card-body { padding: 14px; display: flex; gap: 12px; }
-.id-photo { width: 65px; height: 65px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 2px solid #fef3c7; overflow: hidden; flex-shrink: 0; }
-.id-photo img { width: 100%; height: 100%; object-fit: cover; }
-.id-details h3 { margin: 0 0 4px; font-size: 15px; color: var(--text); }
-.id-details p { margin: 2px 0; font-size: 12px; color: var(--text2); }
-.map-link { color: #00a884; font-weight: 600; text-decoration: none; }
-.photo-badge { background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 7px; border-radius: 8px; display: inline-block; margin-top: 3px; }
-.live-photo { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
-.countdown { background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 16px; display: inline-block; margin-top: 5px; }
-.countdown.urgent { background: #fee2e2; color: #b91c1c; }
-.status-badge { font-size: 11px; padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 3px; font-weight: 600; }
-.s-pending { background: #fef3c7; color: #92400e; }
-.s-accepted { background: #dbeafe; color: #1e40af; }
-.s-onway { background: #e0e7ff; color: #3730a3; }
-.s-completed { background: #d1fae5; color: #065f46; }
-.card-actions { padding: 0 14px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
-.btn-complete { background: #059669; color: white; border: none; padding: 10px; flex: 1; border-radius: 8px; font-weight: 600; cursor: pointer; min-width: 70px; }
-.btn-delete { background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; width: 44px; cursor: pointer; }
-.btn-status { background: #3b82f6; color: white; border: none; padding: 7px 10px; border-radius: 7px; font-size: 11px; cursor: pointer; }
-.btn-whatsapp { background: #00a884; color: white; border: none; padding: 7px 10px; border-radius: 7px; font-size: 12px; text-decoration: none; display: inline-block; margin-top: 5px; }
-.preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
-.image-preview-slot { width: 65px; height: 65px; border-radius: 10px; border: 2px solid var(--primary-red); overflow: hidden; position: relative; }
-.image-preview-slot img { width: 100%; height: 100%; object-fit: cover; }
-.remove-photo { position: absolute; top: -7px; right: -7px; background: #dc2626; color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
-.add-photo-btn { width: 65px; height: 65px; border-radius: 10px; border: 2px dashed #9ca3af; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
-.add-photo-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.btn-trigger-gps { background: #00a884; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.whatsapp-loc-container { display: none; background: #f0fdf4; border-radius: 10px; padding: 10px; margin-bottom: 12px; }
-.loc-option { background: white; border: 1px solid #e5e7eb; padding: 11px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 7px; }
-.loc-option .icon-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
-.loc-option.live .icon-circle { background: #00a884; }
-.loc-option.current .icon-circle { background: #3b82f6; }
-.whatsapp-map-card { display: none; background: #1f2c34; border-radius: 12px; overflow: hidden; margin-top: 10px; }
-.map-static-visual { height: 110px; background: #0b141a; display: flex; align-items: center; justify-content: center; }
-.map-pin-center { font-size: 30px; color: #ea4335; }
-.map-card-details { padding: 10px 14px; background: #202c33; display: flex; justify-content: space-between; align-items: center; }
-.map-card-title { color: #e9edef; font-size: 13px; font-weight: 600; }
-.map-card-subtitle { color: #8696a0; font-size: 11px; }
-.map-card-action-btn { background: #00a884; color: white; padding: 7px 12px; border-radius: 16px; font-size: 11px; text-decoration: none; }
-.ai-vision-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px; margin-top: 10px; display: none; }
-.btn-submit { background: var(--primary-red); color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 600; font-size: 15px; margin-top: 14px; cursor: pointer; }
-.back-btn { background: none; border: none; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 6px; padding: 8px 0; cursor: pointer; }
-.admin-login-box { background: var(--card); border-radius: 14px; padding: 22px; margin-top: 16px; }
-.admin-stats { display: flex; gap: 10px; margin-bottom: 16px; }
-.stat-box { flex: 1; background: var(--soft-red); border-radius: 10px; padding: 12px; text-align: center; }
-.stat-box h3 { margin: 0; font-size: 20px; color: var(--primary-red); }
-.search-box { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 9px; margin-bottom: 12px; box-sizing: border-box; }
-#customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999999; justify-content: center; align-items: center; }
-.modal-content { background: white; width: 88%; max-width: 320px; border-radius: 16px; padding: 22px; text-align: center; }
-.btn-ok { width: 100%; padding: 11px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-.team-join-btn { background: #7f1d1d; color: #fef3c7; border: none; padding: 13px; width: 100%; border-radius: 10px; font-weight: 600; margin-top: 14px; cursor: pointer; }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-.dash-card { background: var(--soft-red); border-radius: 12px; padding: 16px; text-align: center; }
-.dash-card h3 { margin: 0; font-size: 26px; color: var(--primary-red); }
-.dash-card p { margin: 5px 0 0; font-size: 12px; color: var(--text2); }
-</style>
-</head>
-<body>
-<div id="splash">
-  <div class="ambulance-container"><i class="fas fa-cow cow-on-top"></i><i class="fas fa-ambulance"></i></div>
-  <h1 style="color:#fff;font-size:22px;font-weight:700;margin:0">Bejuban ki Pukar</h1>
-</div>
-<div id="loading-overlay"><i class="fas fa-cow loader-cow"></i><p style="font-weight:600;color:#e11d48">Sending...</p></div>
-
-<div class="app-container">
-  <div class="founder-header" id="founder-header">
-    <button class="api-btn" id="apiBtn" title="Gemini API Key"><i class="fas fa-key"></i></button>
-    <button class="dark-btn" id="darkBtn"><i class="fas fa-moon"></i></button>
-    <div class="profile-pic"><img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" onerror="this.src='https://via.placeholder.com/150'"></div>
-    <h2>Raj Malviya</h2>
-    <p>Founder, Ujjain Animal Rescue</p>
-  </div>
-
-  <div id="home" class="page active">
-    <div class="nav-grid">
-      <div class="nav-card" id="btn-rescue"><i class="fas fa-notes-medical"></i><h3>Rescue Request</h3></div>
-      <div class="nav-card" id="btn-history"><i class="fas fa-history"></i><h3>Rescue History</h3></div>
-      <div class="nav-card" id="btn-live"><i class="fas fa-broadcast-tower"></i><h3>Live Requests</h3></div>
-      <div class="nav-card" id="btn-team"><i class="fas fa-users"></i><h3>Our Team</h3></div>
-      <div class="nav-card" id="btn-dashboard"><i class="fas fa-chart-line"></i><h3>Impact Dashboard</h3></div>
-      <div class="nav-card admin-card" id="admin-nav-card"><i class="fas fa-user-shield"></i><h3>Admin Panel</h3></div>
-    </div>
-  </div>
-
-  <!-- RESCUE FORM -->
-  <div id="rescue-form" class="page">
-    <button class="back-btn" id="back1"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px;font-size:20px">New Rescue Request</h2>
-    <form id="main-rescue-form">
-      <label>Aapka Naam*</label>
-      <input type="text" id="reporter-name" placeholder="Apna pura naam">
-      <label>Pashu ka Prakar*</label>
-      <select id="animal-type">
-        <option value="">Chuniye...</option>
-        <option value="cow">Gai (Cow)</option>
-        <option value="calf">Bachhda (Calf)</option>
-      </select>
-      <label>Photo (AI Vision Scan)*</label>
-      <div class="preview-container" id="animal-photos-container">
-        <div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" id="photo-input"></div>
-      </div>
-      
-      <!-- AI Vision Feedback Box -->
-      <div id="aiVisionBox" class="ai-vision-box">
-        <p style="margin:0;font-size:12px;font-weight:600;color:#166534;"><i class="fas fa-robot mr-1"></i> AI विश्लेषण:</p>
-        <p id="aiVisionText" style="margin:4px 0 0;font-size:11px;color:#15803d;">फोटो तैयार है।</p>
-      </div>
-      <input type="hidden" id="aiPriority" value="Normal">
-      <input type="hidden" id="aiSummary" value="">
-
-      <label>Location*</label>
-      <button type="button" id="init-gps-btn" class="btn-trigger-gps"><i class="fas fa-map-marker-alt"></i> Share Location</button>
-      <div id="sub-loc-options" class="whatsapp-loc-container">
-        <div class="loc-option live" id="loc-live"><div class="icon-circle"><i class="fas fa-location-dot"></i></div><div><h4 style="margin:0;font-size:14px">Live Location</h4><p style="margin:2px 0 0;font-size:11px;color:#6b7280">Dynamic</p></div></div>
-        <div class="loc-option current" id="loc-current"><div class="icon-circle"><i class="fas fa-crosshairs"></i></div><div><h4 style="margin:0;font-size:14px">Current Location</h4><p style="margin:2px 0 0;font-size:11px;color:#6b7280">Fixed</p></div></div>
-      </div>
-      <div id="whatsapp-map-preview" class="whatsapp-map-card">
-        <div class="map-static-visual"><i class="fas fa-map-pin map-pin-center"></i></div>
-        <div class="map-card-details">
-          <div><div class="map-card-title" id="card-status-title">📍 Location</div><div class="map-card-subtitle" id="card-status-subtitle">Ready</div></div>
-          <a id="map-redirect-link" href="#" target="_blank" class="map-card-action-btn">Open Maps</a>
-        </div>
-      </div>
-      <input type="hidden" id="lat-long-data">
-      <input type="hidden" id="selected-loc-type">
-      <label>Mobile Number*</label>
-      <input type="tel" id="user-phone" placeholder="10 Digits">
-      <button type="button" class="btn-submit" id="submit-btn">Submit Request</button>
-    </form>
-  </div>
-
-  <!-- HISTORY -->
-  <div id="history" class="page">
-    <button class="back-btn" id="back2"><i class="fas fa-arrow-left"></i> Back</button>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-      <h2 style="color:var(--primary-red); margin:0;">Rescue History</h2>
-      <button onclick="downloadMonthlyPDF()" style="background:#1f2937; color:white; border:none; padding:7px 12px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fas fa-file-pdf mr-1"></i> PDF रिपोर्ट</button>
-    </div>
-    <input type="text" class="search-box" id="history-search" placeholder="Search naam / number..." style="margin-top:12px;">
-    <div id="history-list-container"><p style="color:#6b7280">Loading...</p></div>
-  </div>
-
-  <!-- LIVE -->
-  <div id="live-req" class="page">
-    <button class="back-btn" id="back3"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">Live Requests</h2>
-    <div id="live-list-container"><p style="color:#6b7280">Loading...</p></div>
-  </div>
-
-  <!-- TEAM -->
-  <div id="team" class="page">
-    <button class="back-btn" id="back4"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">Our Team</h2>
-    <div id="team-list-container"><p style="color:#6b7280;text-align:center">Loading...</p></div>
-    <button class="team-join-btn" id="btn-join"><i class="fas fa-user-plus"></i> हमसे जुड़ें</button>
-  </div>
-
-  <!-- JOIN -->
-  <div id="join-team" class="page">
-    <button class="back-btn" id="back5"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">हमसे जुड़ें</h2>
-    <label>Aapka Naam*</label><input type="text" id="join-name">
-    <label>Mobile Number*</label><input type="tel" id="join-phone">
-    <label>Address*</label><textarea id="join-address" rows="3"></textarea>
-    <button type="button" class="btn-submit" id="join-submit">Request Bhejein</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="page">
-    <button class="back-btn" id="back6"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">Impact Dashboard</h2>
-    <div class="dashboard-grid">
-      <div class="dash-card"><h3 id="dash-total">0</h3><p>Total</p></div>
-      <div class="dash-card"><h3 id="dash-pending">0</h3><p>Pending</p></div>
-      <div class="dash-card"><h3 id="dash-completed">0</h3><p>Completed</p></div>
-      <div class="dash-card"><h3 id="dash-team">2</h3><p>Team</p></div>
-    </div>
-  </div>
-
-  <!-- ADMIN LOGIN -->
-  <div id="admin-login" class="page">
-    <button class="back-btn" id="back7"><i class="fas fa-arrow-left"></i> Back</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">Admin Login</h2>
-    <div class="admin-login-box">
-      <label>Password</label>
-      <input type="password" id="admin-password" placeholder="Password">
-      <p style="font-size:12px;color:#6b7280">3 galat attempts = 30 sec lock</p>
-      <button class="btn-submit" id="admin-login-btn">Login</button>
-    </div>
-  </div>
-
-  <!-- ADMIN PANEL -->
-  <div id="admin-panel" class="page">
-    <button class="back-btn" id="back8"><i class="fas fa-arrow-left"></i> Logout</button>
-    <h2 style="color:var(--primary-red);margin-top:10px">Admin Panel</h2>
-    <div class="admin-stats">
-      <div class="stat-box"><h3 id="stat-pending">0</h3><p>Pending</p></div>
-      <div class="stat-box"><h3 id="stat-completed">0</h3><p>Completed</p></div>
-    </div>
-    <input type="text" class="search-box" id="admin-search" placeholder="Search...">
-    <h3 style="font-size:15px;margin:12px 0 8px">Live Requests</h3>
-    <div id="admin-live-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="font-size:15px;margin:20px 0 8px">Members Request</h3>
-    <div id="admin-members-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="font-size:15px;margin:20px 0 8px">Team Members</h3>
-    <div id="admin-team-container"><p style="color:#6b7280">Loading...</p></div>
-    <h3 style="font-size:15px;margin:20px 0 8px">History</h3>
-    <div id="admin-history-container"><p style="color:#6b7280">Loading...</p></div>
-  </div>
-</div>
-
-<!-- API Key Setting Modal -->
-<div id="apiKeyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999999; justify-content:center; align-items:center;">
-  <div class="modal-content" style="text-align:left;">
-    <h3 style="margin-top:0; font-size:16px; color:#1f2937;"><i class="fas fa-key text-emerald-600"></i> Gemini API Key सेट करें</h3>
-    <p style="font-size:11px; color:#6b7280;">फोटो का एआई विश्लेषण (AI Vision) करने के लिए अपनी फ्री Gemini API Key यहाँ डालें।</p>
-    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="margin-bottom:12px;">
-    <div style="display:flex; justify-content:flex-end; gap:8px;">
-      <button onclick="closeApiKeyModal()" style="padding:8px 12px; background:#f3f4f6; border:none; border-radius:8px; font-size:12px; cursor:pointer;">रद्द करें</button>
-      <button onclick="saveApiKey()" style="padding:8px 12px; background:#e11d48; color:white; border:none; border-radius:8px; font-size:12px; cursor:pointer; font-weight:600;">सेव करें</button>
-    </div>
-  </div>
-</div>
-
-<div id="customAlert">
-  <div class="modal-content">
-    <div class="modal-icon" id="modalIcon">⚠️</div>
-    <div class="modal-title" id="modalTitle">Alert</div>
-    <div class="modal-text" id="errorMsg"></div>
-    <button class="btn-ok" id="alert-ok">OK</button>
-  </div>
-</div>
-
-<!-- Audio Element for Sound Alert -->
-<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-<script>
-(function(){
-  var firebaseConfig = {
-    apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
-    authDomain: "ujjainanimalrescue.firebaseapp.com",
-    projectId: "ujjainanimalrescue",
-    storageBucket: "ujjainanimalrescue.firebasestorage.app",
-    messagingSenderId: "686634974496",
-    appId: "1:686634974496:web:8b56642568a257e49fab45"
-  };
-  firebase.initializeApp(firebaseConfig);
-  var db = firebase.firestore();
-
-  var TEAM_WA = ["916263895427","918319229059","919977926920"];
-  var ADMIN_PASS = "raj@123";
-  var PERMANENT = [
-    {name:"Ankit Thakur", phone:"8319229059", address:"Ujjain", photo:"ankit.jpg"},
-    {name:"Aashish Pal", phone:"9977926920", address:"Ujjain", photo:"aashish.jpg"}
-  ];
-
-  var watchId = null, selectedPhotos = [], photoBase64 = null;
-  var liveUnsub = null, adminLiveUnsub = null, countdowns = {};
-  var isAdmin = false, pendingMembers = [], historyData = [], adminLiveData = [];
-  var loginTries = 0, lockUntil = 0, clickCount = 0;
-
-  function $(id){ return document.getElementById(id); }
-  function showPage(id){
-    var pages = document.querySelectorAll('.page');
-    for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
-    $(id).classList.add('active');
-    window.scrollTo(0,0);
-    if(id !== 'live-req' && liveUnsub){ liveUnsub(); liveUnsub = null; }
-  }
-  function alertBox(title, msg, isErr){
-    $('modalTitle').innerText = title;
-    $('errorMsg').innerText = msg;
-    $('modalIcon').innerText = isErr ? "❌" : "✅";
-    $('customAlert').style.display = 'flex';
-  }
-  function formatTime(ts){
-    if(!ts) return "Abhi";
-    return ts.toDate().toLocaleString('hi-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-  }
-  function statusBadge(s){
-    if(s==='accepted') return '<span class="status-badge s-accepted">Accepted</span>';
-    if(s==='onway') return '<span class="status-badge s-onway">On the Way</span>';
-    if(s==='completed') return '<span class="status-badge s-completed">Completed</span>';
-    return '<span class="status-badge s-pending">Pending</span>';
-  }
-  function startCD(id, created, elId){
-    if(countdowns[id]) clearInterval(countdowns[id]);
-    var end = created.toDate().getTime() + 7200000;
-    countdowns[id] = setInterval(function(){
-      var diff = end - Date.now();
-      var el = $(elId);
-      if(!el){ clearInterval(countdowns[id]); return; }
-      if(diff <= 0){ el.innerHTML = "⏰ Time Over"; el.classList.add('urgent'); clearInterval(countdowns[id]); return; }
-      var h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-      el.innerHTML = "⏳ " + h + "h " + m + "m " + s + "s";
-      if(diff < 1800000) el.classList.add('urgent');
-    }, 1000);
-  }
-
-  // API Key Modal triggers
-  $('apiBtn').onclick = function(){
-    $('apiKeyModal').style.display = 'flex';
-    $('apiKeyInput').value = localStorage.getItem('gemini_api_key') || '';
-  };
-  window.closeApiKeyModal = function(){
-    $('apiKeyModal').style.display = 'none';
-  };
-  window.saveApiKey = function(){
-    const key = $('apiKeyInput').value.trim();
-    localStorage.setItem('gemini_api_key', key);
-    closeApiKeyModal();
-    alertBox("Success", "API Key सफलतापूर्वक सहेज ली गई है!", false);
-  };
-
-  // Sound Alert
-  function triggerSoundAlert(){
-    const audio = $('alertSound');
-    if(audio) audio.play().catch(e => console.log("Audio blocked"));
-  }
-
-  // Navigation
-  $('btn-rescue').onclick = function(){ showPage('rescue-form'); };
-  $('btn-history').onclick = function(){ showPage('history'); loadHistory(); };
-  $('btn-live').onclick = function(){ showPage('live-req'); loadLive(); };
-  $('btn-team').onclick = function(){ showPage('team'); loadTeam(); };
-  $('btn-dashboard').onclick = function(){ showPage('dashboard'); loadDash(); };
-  $('admin-nav-card').onclick = function(){ showPage('admin-panel'); loadAdmin(); };
-  $('btn-join').onclick = function(){ showPage('join-team'); };
-  $('back1').onclick = function(){ showPage('home'); };
-  $('back2').onclick = function(){ showPage('home'); };
-  $('back3').onclick = function(){ showPage('home'); };
-  $('back4').onclick = function(){ showPage('home'); };
-  $('back5').onclick = function(){ showPage('team'); loadTeam(); };
-  $('back6').onclick = function(){ showPage('home'); };
-  $('back7').onclick = function(){ showPage('home'); };
-  $('back8').onclick = function(){ isAdmin=false; $('admin-nav-card').style.display='none'; showPage('home'); };
-  $('alert-ok').onclick = function(){ $('customAlert').style.display='none'; };
-  $('darkBtn').onclick = function(e){
-    e.stopPropagation();
-    document.body.classList.toggle('dark');
-    localStorage.setItem('dark', document.body.classList.contains('dark') ? '1' : '0');
-  };
-  if(localStorage.getItem('dark')==='1') document.body.classList.add('dark');
-
-  // Secret Admin (5 clicks)
-  $('founder-header').onclick = function(e){
-    if(e.target.closest('.dark-btn') || e.target.closest('.api-btn')) return;
-    clickCount++;
-    if(clickCount >= 5){ clickCount=0; showPage('admin-login'); }
-    setTimeout(function(){ clickCount=0; }, 2000);
-  };
-
-  // Photo & AI Vision Integration
-  $('photo-input').onchange = async function(){
-    var input = this;
-    if(!input.files || !input.files[0]) return;
-    var file = input.files[0];
-    selectedPhotos.push(file);
-    
-    var reader = new FileReader();
-    reader.onload = async function(e){
-      photoBase64 = e.target.result;
-      var slot = document.createElement('div');
-      slot.className = 'image-preview-slot';
-      slot.innerHTML = '<img src="'+e.target.result+'"><div class="remove-photo">×</div>';
-      slot.querySelector('.remove-photo').onclick = function(){
-        var slots = document.querySelectorAll('.image-preview-slot');
-        var idx = Array.prototype.indexOf.call(slots, slot);
-        selectedPhotos.splice(idx,1);
-        if(selectedPhotos.length===0){ photoBase64=null; $('aiVisionBox').style.display = 'none'; }
-        slot.remove();
-      };
-      $('animal-photos-container').insertBefore(slot, $('animal-photos-container').querySelector('.add-photo-btn'));
-
-      // Run Gemini AI Vision Analysis if API key exists
-      const apiKey = localStorage.getItem('gemini_api_key');
-      const aiBox = $('aiVisionBox');
-      const aiText = $('aiVisionText');
-      aiBox.style.display = 'block';
-
-      if(apiKey){
-        aiText.innerText = "AI विश्लेषण जारी है...";
-        try {
-          const base64Data = photoBase64.split(',')[1];
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { text: "Analyze this injured animal photo. Give a short 1-line summary in Hindi/English and specify priority: HIGH or NORMAL." },
-                  { inlineData: { mimeType: file.type, data: base64Data } }
-                ]
-              }]
-            })
-          });
-          const data = await response.json();
-          const resultText = data.candidates[0].content.parts[0].text;
-          aiText.innerText = resultText;
-          $('aiSummary').value = resultText;
-          if(resultText.toUpperCase().includes('HIGH') || resultText.toUpperCase().includes('SEVERE') || resultText.toUpperCase().includes('BLOOD')){
-            $('aiPriority').value = 'High';
-          } else {
-            $('aiPriority').value = 'Normal';
-          }
-        } catch(err) {
-          console.error(err);
-          aiText.innerText = "एआई कनेक्ट नहीं हो सका, सामान्य मोड सक्रिय।";
-          $('aiPriority').value = 'Normal';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujjain Animal Rescue - Bejuban ki Pukar</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9b1c31',
+                        secondary: '#1d4ed8',
+                    }
+                }
+            }
         }
-      } else {
-        aiText.innerText = "फोटो अपलोड सफल (API Key सेट करें ताकि एआई विश्लेषण हो सके)।";
-        $('aiPriority').value = 'Normal';
-      }
-    };
-    reader.readAsDataURL(file);
-    input.value = '';
-  };
+    </script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- jsPDF for History Report Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Leaflet for Heatmap & Tracking -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #9b1c31, #4a0e18);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
 
-  // Location
-  $('init-gps-btn').onclick = function(){
-    if(!navigator.geolocation){ alertBox("Error","GPS nahi hai",true); return; }
-    var btn = $('init-gps-btn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
-    btn.disabled = true;
-    navigator.geolocation.getCurrentPosition(function(){
-      btn.style.display = 'none';
-      $('sub-loc-options').style.display = 'block';
-      btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Share Location';
-      btn.disabled = false;
-    }, function(err){
-      btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Share Location';
-      btn.disabled = false;
-      var msg = "Location nahi mili.";
-      if(err.code===1) msg = "Location permission Allow karein.";
-      alertBox("Location", msg, true);
-    }, {enableHighAccuracy:true, timeout:12000, maximumAge:20000});
-  };
-  $('loc-live').onclick = function(){ doLoc('live'); };
-  $('loc-current').onclick = function(){ doLoc('current'); };
-  function doLoc(type){
-    if(watchId) navigator.geolocation.clearWatch(watchId);
-    $('card-status-subtitle').innerText = "Fetching...";
-    $('whatsapp-map-preview').style.display = 'block';
-    $('selected-loc-type').value = type;
-    var opt = {enableHighAccuracy:true, timeout:15000, maximumAge:0};
-    var ok = function(p){
-      var lat=p.coords.latitude, lng=p.coords.longitude;
-      $('lat-long-data').value = lat+","+lng;
-      $('card-status-title').innerText = type==='live' ? "🟢 Live Location" : "Current Location";
-      $('card-status-subtitle').innerText = type==='live' ? "Tracking" : "Fixed";
-      $('map-redirect-link').href = "https://www.google.com/maps?q="+lat+","+lng;
-    };
-    var fail = function(){ alertBox("Error","Location nahi mili",true); };
-    if(type==='current') navigator.geolocation.getCurrentPosition(ok, fail, opt);
-    else watchId = navigator.geolocation.watchPosition(ok, fail, opt);
-  }
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="text-center p-6">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <i class="fa-solid fa-shield-dog text-5xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-wider mb-2">UJJAIN ANIMAL RESCUE</h1>
+            <p class="text-lg text-red-200 italic font-medium">"Bejuban ki Pukar"</p>
+        </div>
+    </div>
 
-  // Team
-  function loadTeam(){
-    var box = $('team-list-container');
-    var html = '';
-    for(var i=0;i<PERMANENT.length;i++){
-      var m = PERMANENT[i];
-      html += '<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="'+m.photo+'" onerror="this.src=\'https://via.placeholder.com/70\'"></div><div class="id-details"><h3>'+m.name+'</h3><p><i class="fas fa-phone"></i> +91'+m.phone+'</p><p><i class="fas fa-map-marker-alt"></i> '+m.address+'</p><a href="https://wa.me/91'+m.phone+'" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>';
-    }
-    db.collection("team_members").get().then(function(snap){
-      snap.forEach(function(doc){
-        var d = doc.data();
-        var skip = false;
-        for(var j=0;j<PERMANENT.length;j++) if(PERMANENT[j].phone===d.phone || PERMANENT[j].name===d.name) skip=true;
-        if(skip) return;
-        var ph = (d.phone||'').replace(/\D/g,'');
-        if(ph.indexOf('91')===0) ph=ph.slice(2);
-        html += '<div class="id-card"><div class="id-card-header">गौ सेवक</div><div class="id-card-body"><div class="id-photo"><img src="'+(d.photo||'member.jpg')+'" onerror="this.src=\'https://via.placeholder.com/70\'"></div><div class="id-details"><h3>'+d.name+'</h3><p><i class="fas fa-phone"></i> +91'+ph+'</p><p><i class="fas fa-map-marker-alt"></i> '+(d.address||'Ujjain')+'</p><a href="https://wa.me/91'+ph+'" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></div></div></div>';
-      });
-      box.innerHTML = html;
-    }).catch(function(){ box.innerHTML = html; });
-  }
+    <!-- Main Container -->
+    <div class="max-w-md mx-auto min-h-screen bg-white dark:bg-gray-800 shadow-xl flex flex-col relative pb-16">
+        
+        <!-- Header with Founder Profile & Dark Mode Toggle -->
+        <header class="bg-primary text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+            <div class="absolute top-4 right-4 flex items-center gap-2">
+                <button onclick="toggleDarkMode()" class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                    <i id="darkModeIcon" class="fa-solid fa-moon text-white"></i>
+                </button>
+            </div>
 
-  // Live
-  function loadLive(){
-    var box = $('live-list-container');
-    box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
-    if(liveUnsub) liveUnsub();
-    liveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
-      .onSnapshot(function(snap){
-        if(snap.empty){ box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi Live Request nahi</p>'; return; }
-        var html = '';
-        snap.forEach(function(doc){
-          var d = doc.data();
-          var photo = d.tempPhoto ? '<img class="live-photo" src="'+d.tempPhoto+'">' : '';
-          var aiSummaryHtml = d.aiSummary ? `<p style="font-size:11px; color:#10b981; margin-top:2px;"><strong>AI:</strong> ${d.aiSummary}</p>` : '';
-          var priorityHtml = d.priority === 'High' ? '<span class="status-badge" style="background:#fee2e2; color:#b91c1c;">🔴 High Priority</span>' : '';
-          html += '<div class="id-card"><div class="id-card-header">गो सेवक • LIVE</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p>'+statusBadge(d.status||'pending')+' '+priorityHtml+aiSummaryHtml+(d.photoCount?'<div class="photo-badge">📷 '+d.photoCount+' Photo</div>':'')+'<div class="countdown" id="cd-'+doc.id+'">...</div>'+photo+'</div></div></div>';
-        });
-        box.innerHTML = html;
-        snap.forEach(function(doc){ if(doc.data().createdAt) startCD(doc.id, doc.data().createdAt, 'cd-'+doc.id); });
-      });
-  }
+            <div class="flex flex-col items-center text-center">
+                <!-- 5-Click Secret Admin Trigger on Founder Image -->
+                <div onclick="handleFounderClick()" class="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden shadow-md mb-3 cursor-pointer relative group">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300" alt="Founder Raj Malviya" class="w-full h-full object-cover">
+                </div>
+                <h2 id="founderName" class="text-xl font-bold tracking-wide">Raj Malviya</h2>
+                <p class="text-xs text-red-100 font-medium tracking-wider uppercase mt-0.5">Founder, Ujjain Animal Rescue</p>
+            </div>
+        </header>
 
-  // History & jsPDF Export
-  function loadHistory(){
-    var box = $('history-list-container');
-    box.innerHTML = '<p style="color:#6b7280">Loading...</p>';
-    db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(40).get()
-      .then(function(snap){
-        historyData = [];
-        snap.forEach(function(doc){ historyData.push(doc.data()); });
-        renderHistory(historyData);
-      });
-  }
-  function renderHistory(data){
-    var box = $('history-list-container');
-    if(!data.length){ box.innerHTML = '<p style="color:#6b7280;text-align:center;margin-top:40px">Koi History nahi</p>'; return; }
-    var html = '';
-    for(var i=0;i<data.length;i++){
-      var d = data[i];
-      html += '<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p></div></div></div>';
-    }
-    box.innerHTML = html;
-  }
-  $('history-search').oninput = function(){
-    var q = (this.value||'').toLowerCase();
-    var filtered = historyData.filter(function(d){
-      return (d.reporterName||'').toLowerCase().indexOf(q)>=0 || (d.phone||'').indexOf(q)>=0;
-    });
-    renderHistory(filtered);
-  };
+        <!-- Dynamic Content Area -->
+        <main class="flex-1 p-4 space-y-4">
+            
+            <!-- Dashboard Home View -->
+            <div id="homeView" class="space-y-4">
+                
+                <!-- Impact Counters -->
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-red-50 dark:bg-gray-700 p-3 rounded-xl border border-red-100 dark:border-gray-600">
+                        <span id="totalCount" class="block text-xl font-black text-primary dark:text-red-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Total Calls</span>
+                    </div>
+                    <div class="bg-yellow-50 dark:bg-gray-700 p-3 rounded-xl border border-yellow-100 dark:border-gray-600">
+                        <span id="pendingCount" class="block text-xl font-black text-yellow-600 dark:text-yellow-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Pending</span>
+                    </div>
+                    <div class="bg-green-50 dark:bg-gray-700 p-3 rounded-xl border border-green-100 dark:border-gray-600">
+                        <span id="completedCount" class="block text-xl font-black text-green-600 dark:text-green-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Rescued</span>
+                    </div>
+                </div>
 
-  window.downloadMonthlyPDF = function(){
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Ujjain Animal Rescue - History Report", 14, 20);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+                <!-- Action Cards Navigation -->
+                <div class="space-y-3 pt-2">
+                    <button onclick="switchView('requestView')" class="w-full bg-gradient-to-r from-red-600 to-primary text-white p-4 rounded-2xl shadow-md flex items-center justify-between hover:opacity-95 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-bullhorn text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">New Rescue Request</h3>
+                                <p class="text-[11px] text-red-100">Report an injured cow/calf instantly</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
 
-    let yPos = 38;
-    if(historyData.length === 0){
-      doc.text("No records found.", 14, yPos);
-    } else {
-      historyData.forEach((c, idx) => {
-        if(yPos > 270){ doc.addPage(); yPos = 20; }
-        doc.text(`${idx + 1}. Name: ${c.reporterName} | Phone: ${c.phone}`, 14, yPos);
-        doc.text(`   Animal: ${c.animalType} | Loc: ${c.location}`, 14, yPos + 6);
-        yPos += 16;
-      });
-    }
-    doc.save("Ujjain_Animal_Rescue_Report.pdf");
-  };
+                    <button onclick="switchView('liveView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 dark:bg-gray-600 text-primary dark:text-red-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-tower-broadcast text-lg animate-pulse"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Live Requests & Timeline</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Track ongoing cases & statuses</p>
+                            </div>
+                        </div>
+                        <span id="liveBadge" class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                    </button>
 
-  // Dashboard
-  function loadDash(){
-    db.collection("rescue_requests").get().then(function(snap){
-      var total=0, pending=0, completed=0;
-      snap.forEach(function(doc){
-        total++;
-        if(doc.data().status==='completed') completed++; else pending++;
-      });
-      $('dash-total').innerText = total;
-      $('dash-pending').innerText = pending;
-      $('dash-completed').innerText = completed;
-    });
-    db.collection("team_members").get().then(function(s){ $('dash-team').innerText = 2 + s.size; });
-  }
+                    <button onclick="switchView('trackingView'); initTrackingMap();" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-100 dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-map-location-dot text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Live Team Tracking & Heatmap</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">GPS Sevaks location & case density</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
 
-  // Join
-  $('join-submit').onclick = function(){
-    var name = $('join-name').value.trim();
-    var phone = $('join-phone').value.trim();
-    var address = $('join-address').value.trim();
-    if(!name||!phone||!address){ alertBox("Error","Sab fields bharo",false); return; }
-    if(!/^[6-9]\d{9}$/.test(phone)){ alertBox("Error","Sahi number dalein",true); return; }
-    db.collection("join_requests").add({
-      name:name, phone:phone, address:address, status:"pending",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function(){
-      alertBox("Success","Request bhej di gayi",false);
-      $('join-name').value=''; $('join-phone').value=''; $('join-address').value='';
-      showPage('team'); loadTeam();
-    }).catch(function(e){ alertBox("Error",e.message,true); });
-  };
+                    <button onclick="switchView('donationView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-gray-600 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-hand-holding-heart text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Donation & Support</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Contribute for fodder & medicines</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
 
-  // Admin Login
-  $('admin-login-btn').onclick = function(){
-    if(Date.now() < lockUntil){ alertBox("Locked","30 sec baad try karo",true); return; }
-    if($('admin-password').value === ADMIN_PASS){
-      isAdmin = true; loginTries = 0;
-      $('admin-nav-card').style.display = 'block';
-      showPage('admin-panel'); loadAdmin();
-    } else {
-      loginTries++;
-      if(loginTries >= 3){ lockUntil = Date.now()+30000; loginTries=0; alertBox("Locked","3 galat attempts. 30 sec wait.",true); }
-      else alertBox("Error","Galat Password ("+loginTries+"/3)",true);
-    }
-  };
+                    <button onclick="switchView('historyView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Rescue History</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Past missions & Monthly PDF reports</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
 
-  // Admin Panel
-  function loadAdmin(){
-    db.collection("rescue_requests").where("status","==","pending").get().then(function(s){ $('stat-pending').innerText=s.size; });
-    db.collection("rescue_requests").where("status","==","completed").get().then(function(s){ $('stat-completed').innerText=s.size; });
+                    <button onclick="switchView('teamView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 dark:bg-gray-600 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-users text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Our Team & Join Us</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Gau sevaks directory & registration</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
 
-    var liveBox = $('admin-live-container');
-    if(adminLiveUnsub) adminLiveUnsub();
-    adminLiveUnsub = db.collection("rescue_requests").where("status","==","pending").orderBy("createdAt","desc")
-      .onSnapshot(function(snap){
-        adminLiveData = [];
-        snap.forEach(function(doc){ adminLiveData.push({id:doc.id, data:doc.data()}); });
-        renderAdminLive(adminLiveData);
-      });
+            <!-- New Rescue Request Form View -->
+            <div id="requestView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">New Rescue Request</h3>
+                    <div></div>
+                </div>
 
-    var memBox = $('admin-members-container');
-    db.collection("join_requests").get().then(function(snap){
-      pendingMembers = [];
-      snap.forEach(function(doc){
-        var d = doc.data();
-        if(d.status==="pending") pendingMembers.push({id:doc.id, name:d.name||'', phone:d.phone||'', address:d.address||''});
-      });
-      if(!pendingMembers.length){ memBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi request nahi</p>'; return; }
-      var html = '';
-      for(var i=0;i<pendingMembers.length;i++){
-        var item = pendingMembers[i];
-        html += '<div class="id-card"><div class="id-card-header">MEMBER REQUEST</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>'+item.name+'</h3><p>'+item.phone+'</p><p>'+item.address+'</p></div></div><div class="card-actions"><button class="btn-complete" data-idx="'+i+'" data-act="accept">Accept</button><button class="btn-delete" data-idx="'+i+'" data-act="decline"><i class="fas fa-times"></i></button></div></div>';
-      }
-      memBox.innerHTML = html;
-      memBox.onclick = function(e){
-        var btn = e.target.closest('button');
-        if(!btn) return;
-        var idx = parseInt(btn.getAttribute('data-idx'));
-        var act = btn.getAttribute('data-act');
-        if(act==='accept') acceptMember(idx);
-        if(act==='decline') declineMember(idx);
-      };
-    });
+                <form id="rescueForm" onsubmit="submitRescue(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Aapka Naam*</label>
+                        <input type="text" id="reqName" required placeholder="Apna pura naam" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                    </div>
 
-    var teamBox = $('admin-team-container');
-    db.collection("team_members").get().then(function(snap){
-      if(snap.empty){ teamBox.innerHTML='<p style="color:#6b7280;text-align:center">Koi extra member nahi</p>'; return; }
-      var html = '';
-      snap.forEach(function(doc){
-        var d = doc.data();
-        html += '<div class="id-card"><div class="id-card-header">TEAM MEMBER</div><div class="id-card-body"><div class="id-photo">👤</div><div class="id-details"><h3>'+d.name+'</h3><p>'+d.phone+'</p><p>'+(d.address||'')+'</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" data-id="'+doc.id+'" data-act="delteam"><i class="fas fa-trash"></i> Hatao</button></div></div>';
-      });
-      teamBox.innerHTML = html;
-      teamBox.onclick = function(e){
-        var btn = e.target.closest('button');
-        if(!btn || btn.getAttribute('data-act')!=='delteam') return;
-        if(!confirm("Hataayein?")) return;
-        db.collection("team_members").doc(btn.getAttribute('data-id')).delete().then(function(){
-          alertBox("Deleted","Member hata diya",false); loadAdmin(); loadTeam();
-        });
-      };
-    });
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Pashu Ka Prakaar*</label>
+                        <select id="reqType" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                            <option value="Gay (Cow)">Gay (Cow)</option>
+                            <option value="Bachhada (Calf)">Bachhada (Calf)</option>
+                            <option value="Nandi (Bull)">Nandi (Bull)</option>
+                            <option value="Other Animal">Other Animal</option>
+                        </select>
+                    </div>
 
-    var histBox = $('admin-history-container');
-    db.collection("rescue_requests").where("status","==","completed").orderBy("createdAt","desc").limit(12).get()
-      .then(function(snap){
-        var html = '';
-        snap.forEach(function(doc){
-          var d = doc.data();
-          html += '<div class="id-card"><div class="id-card-header">COMPLETED</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+' • '+formatTime(d.createdAt)+'</p></div></div><div class="card-actions"><button class="btn-delete" style="width:100%" data-id="'+doc.id+'" data-act="delreq"><i class="fas fa-trash"></i> Delete</button></div></div>';
-        });
-        histBox.innerHTML = html || '<p style="color:#6b7280;text-align:center">Koi history nahi</p>';
-        histBox.onclick = function(e){
-          var btn = e.target.closest('button');
-          if(!btn || btn.getAttribute('data-act')!=='delreq') return;
-          if(!confirm("Delete?")) return;
-          db.collection("rescue_requests").doc(btn.getAttribute('data-id')).delete().then(function(){
-            alertBox("Deleted","Delete ho gaya",false); loadAdmin();
-          });
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Photo (AI Vision Scan)*</label>
+                        <div class="flex items-center gap-2 overflow-x-auto py-1" id="photoContainer">
+                            <label class="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary shrink-0">
+                                <i class="fa-solid fa-camera text-gray-400 text-lg mb-1"></i>
+                                <span class="text-[10px] text-gray-400">Add Photo</span>
+                                <input type="file" accept="image/*" id="reqPhotoInput" onchange="handleImageUpload(event)" class="hidden">
+                            </label>
+                        </div>
+                        <div id="aiAnalysisBox" class="mt-2 p-2.5 bg-green-50 dark:bg-gray-700 border border-green-200 dark:border-gray-600 rounded-xl text-xs text-green-700 dark:text-green-300 hidden">
+                            <i class="fa-solid fa-robot mr-1"></i> <span id="aiAnalysisText">AI analysis pending...</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Stable Location (1-Touch)*</label>
+                        <button type="button" onclick="getStableLocation()" class="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-emerald-700 transition">
+                            <i class="fa-solid fa-location-crosshairs"></i> <span id="locationText">Capture Stable GPS Location</span>
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Mobile Number*</label>
+                        <input type="tel" id="reqMobile" required pattern="[0-9]{10}" placeholder="10 Digits Mobile Number" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-primary text-white rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition">
+                        Submit Request & Auto Assign
+                    </button>
+                </form>
+            </div>
+
+            <!-- Live Requests & Timeline View -->
+            <div id="liveView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Live Calls & Timeline</h3>
+                    <div></div>
+                </div>
+
+                <!-- Multiple WhatsApp Group Broadcast Bar -->
+                <div class="bg-emerald-50 dark:bg-gray-700 p-3 rounded-2xl border border-emerald-200 dark:border-gray-600 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-xs text-emerald-800 dark:text-emerald-300">Broadcast to All Core Sevaks</h4>
+                        <p class="text-[10px] text-gray-600 dark:text-gray-300">Send emergency alert to Raj, Ankit & Aashish simultaneously</p>
+                    </div>
+                    <button onclick="broadcastToAllWhatsApp()" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1 shrink-0">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Broadcast
+                    </button>
+                </div>
+
+                <div id="liveRequestsList" class="space-y-3">
+                    <!-- Dynamic Live Items with Timeline -->
+                </div>
+            </div>
+
+            <!-- Live Team Tracking & Heatmap View -->
+            <div id="trackingView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Tracking & Heatmap</h3>
+                    <button onclick="toggleMyGpsTracking()" id="gpsTrackBtn" class="text-xs bg-indigo-600 text-white px-2.5 py-1.5 rounded-lg font-bold">Start GPS</button>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded-xl text-[11px] text-gray-600 dark:text-gray-300 text-center">
+                    🟢 Live Sevaks location pins & 🔴 Case Density Heatmap across Ujjain
+                </div>
+                <div id="mapContainer" class="w-full h-80 rounded-2xl border border-gray-300 dark:border-gray-600 shadow-inner z-0"></div>
+            </div>
+
+            <!-- Donation & Support View -->
+            <div id="donationView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Donation & Support</h3>
+                    <div></div>
+                </div>
+
+                <div class="bg-amber-50 dark:bg-gray-700 p-4 rounded-2xl border border-amber-200 dark:border-gray-600 space-y-3 text-center">
+                    <div class="w-16 h-16 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto text-2xl shadow">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                    <h4 class="font-bold text-sm text-amber-900 dark:text-amber-200">Support Gau Seva in Ujjain</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300">Your contribution directly helps in providing green fodder, medicines, and emergency ambulance services for injured stray cattle.</p>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-amber-100 dark:border-gray-600 text-left text-xs space-y-1">
+                        <p><strong>UPI ID:</strong> <span class="text-primary font-bold">ujjainanimalrescue@upi</span></p>
+                        <p><strong>Google Pay / PhonePe:</strong> <span class="font-bold">6263895427</span></p>
+                        <p><strong>Account Name:</strong> Raj Malviya (Nandi Homestay)</p>
+                    </div>
+
+                    <a href="upi://pay?pa=ujjainanimalrescue@upi&pn=UjjainAnimalRescue&cu=INR" class="block w-full py-3 bg-amber-600 text-white rounded-xl font-bold text-xs shadow hover:bg-amber-700 transition text-center">
+                        Donate via UPI App
+                    </a>
+                </div>
+            </div>
+
+            <!-- In-App Chat View -->
+            <div id="chatView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('liveView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 id="chatCaseTitle" class="font-bold text-sm">Rescue Case Chat</h3>
+                    <div></div>
+                </div>
+
+                <div id="chatMessagesList" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-2xl h-72 overflow-y-auto space-y-2 border border-gray-200 dark:border-gray-600 text-xs">
+                    <!-- Dynamic chat messages -->
+                </div>
+
+                <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                    <input type="text" id="chatInputMessage" required placeholder="Type message for team..." class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                    <button type="submit" class="px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow shrink-0">Send</button>
+                </form>
+            </div>
+
+            <!-- History View -->
+            <div id="historyView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Rescue History</h3>
+                    <button onclick="downloadPDFReport()" class="text-xs bg-blue-600 text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-file-pdf"></i> Monthly PDF
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="searchHistory" oninput="filterHistory()" placeholder="Search by name or mobile..." class="w-full p-2.5 pl-9 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+                </div>
+
+                <div id="historyList" class="space-y-2.5">
+                    <!-- Dynamic History Items -->
+                </div>
+            </div>
+
+            <!-- Team & Join Us View -->
+            <div id="teamView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Our Gau Sevak Team</h3>
+                    <div></div>
+                </div>
+
+                <!-- Static Core Team Members -->
+                <div class="space-y-2.5">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 text-primary dark:text-red-400 flex items-center justify-center font-bold">RM</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Raj Malviya</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Founder & Chief Coordinator</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/916263895427" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">AT</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Ankit Thakur</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Senior Rescue Worker</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/919000000000" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold">AP</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Aashish Pal</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Medical Coordinator</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/919000000001" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dynamic Approved Team List from Firebase -->
+                <div id="approvedTeamList" class="space-y-2.5"></div>
+
+                <!-- Join Us Form -->
+                <div class="pt-2 border-t dark:border-gray-700">
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Join As Gau Sevak</h4>
+                    <form onsubmit="submitJoinRequest(event)" class="space-y-2.5">
+                        <input type="text" id="joinName" required placeholder="Full Name" class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                        <input type="tel" id="joinMobile" required pattern="[0-9]{10}" placeholder="10 Digits Mobile Number" class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                        <button type="submit" class="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow hover:bg-emerald-700 transition">
+                            Submit Join Application
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Secret Admin Panel View -->
+            <div id="adminView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Exit Admin
+                    </button>
+                    <h3 class="font-bold text-base text-red-600">👑 Admin Control Panel</h3>
+                    <div></div>
+                </div>
+
+                <!-- Secure Gemini API Key Settings Box -->
+                <div class="bg-red-50 dark:bg-gray-700 p-3.5 rounded-2xl border border-red-200 dark:border-gray-600 space-y-2">
+                    <h4 class="font-bold text-xs text-primary dark:text-red-300 uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-key"></i> Gemini API Key Management
+                    </h4>
+                    <p class="text-[11px] text-gray-600 dark:text-gray-300">Set custom Gemini API key for AI Vision analysis.</p>
+                    <div class="flex gap-2">
+                        <input type="password" id="adminApiKeyInput" placeholder="Enter Gemini API Key..." class="w-full p-2 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl">
+                        <button onclick="saveAdminApiKey()" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow shrink-0">Save</button>
+                    </div>
+                </div>
+
+                <!-- Admin Pending Member Approvals -->
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Pending Join Requests</h4>
+                    <div id="adminJoinRequestsList" class="space-y-2">
+                        <p class="text-xs text-gray-400 italic">No pending member requests.</p>
+                    </div>
+                </div>
+
+                <!-- Admin Delete Team Member Power -->
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Manage Active Team Members</h4>
+                    <div id="adminTeamManagementList" class="space-y-2">
+                        <!-- Dynamic team member delete items -->
+                    </div>
+                </div>
+
+                <!-- Admin Live Controls & Timeline Status Powers -->
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Manage All Rescue Records & Timeline</h4>
+                    <div id="adminControlList" class="space-y-2">
+                        <!-- Dynamic Control items -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer Branding -->
+        <footer class="p-4 text-center border-t dark:border-gray-700 mt-auto">
+            <p class="text-[11px] text-gray-400">Ujjain Animal Rescue © 2026 | Designed for Gau Seva</p>
+        </footer>
+
+    </div>
+
+    <!-- Password Modal for Admin Access -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl w-full max-w-xs shadow-2xl space-y-3">
+            <h3 class="font-bold text-sm text-center">🔐 Admin Authentication</h3>
+            <p class="text-xs text-center text-gray-500 dark:text-gray-300">Enter security password to access control panel.</p>
+            <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+            <div class="flex gap-2">
+                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-primary text-white rounded-xl text-xs font-bold">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            databaseURL: "https://ujjain-animal-rescue-default-rtdb.firebaseio.com/"
         };
-      });
-  }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-  function renderAdminLive(data){
-    var box = $('admin-live-container');
-    if(!data.length){ box.innerHTML='<p style="color:#6b7280;text-align:center">Koi pending nahi</p>'; return; }
-    var html = '';
-    for(var i=0;i<data.length;i++){
-      var item = data[i];
-      var d = item.data;
-      var photo = d.tempPhoto ? '<img class="live-photo" src="'+d.tempPhoto+'">' : '';
-      html += '<div class="id-card"><div class="id-card-header">ADMIN • LIVE</div><div class="id-card-body"><div class="id-photo">'+(d.animalType==='cow'?'🐄':'🐮')+'</div><div class="id-details"><h3>'+d.reporterName+'</h3><p>'+d.phone+'</p><p>'+formatTime(d.createdAt)+'</p><p><a href="https://www.google.com/maps?q='+d.location+'" target="_blank" class="map-link">Location</a></p>'+statusBadge(d.status||'pending')+photo+'</div></div><div class="card-actions"><button class="btn-status" data-id="'+item.id+'" data-st="accepted">Accept</button><button class="btn-status" data-id="'+item.id+'" data-st="onway">On Way</button><button class="btn-complete" data-id="'+item.id+'" data-act="complete">Complete</button><button class="btn-delete" data-id="'+item.id+'" data-act="del"><i class="fas fa-trash"></i></button></div></div>';
-    }
-    box.innerHTML = html;
-    box.onclick = function(e){
-      var btn = e.target.closest('button');
-      if(!btn) return;
-      var id = btn.getAttribute('data-id');
-      var st = btn.getAttribute('data-st');
-      var act = btn.getAttribute('data-act');
-      if(st){ db.collection("rescue_requests").doc(id).update({status:st}).then(function(){ alertBox("Updated","Status badal gaya",false); }); }
-      if(act==='complete'){
-        if(!confirm("Complete?")) return;
-        db.collection("rescue_requests").doc(id).update({status:"completed", completedAt:firebase.firestore.FieldValue.serverTimestamp(), tempPhoto:firebase.firestore.FieldValue.delete()}).then(function(){
-          alertBox("Done","Complete ho gaya",false); loadAdmin();
-        });
-      }
-      if(act==='del'){
-        if(!confirm("Delete?")) return;
-        db.collection("rescue_requests").doc(id).delete().then(function(){ alertBox("Deleted","Delete ho gaya",false); loadAdmin(); });
-      }
-    };
-  }
-  $('admin-search').oninput = function(){
-    var q = (this.value||'').toLowerCase();
-    var filtered = adminLiveData.filter(function(item){
-      var d = item.data;
-      return (d.reporterName||'').toLowerCase().indexOf(q)>=0 || (d.phone||'').indexOf(q)>=0;
-    });
-    renderAdminLive(filtered);
-  };
+        // Application State Variables
+        let currentLatLng = null;
+        let base64Image = "";
+        let clickCount = 0;
+        let clickTimer = null;
+        let wrongAttempts = 0;
+        let lockoutUntil = 0;
+        let allRescuesData = [];
+        let activeChatCaseId = null;
+        let mapInstance = null;
+        let heatLayerInstance = null;
+        let gpsWatchId = null;
 
-  function acceptMember(idx){
-    var item = pendingMembers[idx];
-    if(!item) return;
-    if(!confirm("Accept?")) return;
-    db.collection("team_members").add({
-      name:item.name, phone:item.phone, address:item.address, role:"गौ सेवक",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function(){
-      return db.collection("join_requests").doc(item.id).update({status:"accepted"});
-    }).then(function(){
-      alertBox("Accepted","Member add ho gaya",false); loadAdmin(); loadTeam();
-    }).catch(function(e){ alertBox("Error",e.message,true); });
-  }
-  function declineMember(idx){
-    var item = pendingMembers[idx];
-    if(!item) return;
-    if(!confirm("Decline?")) return;
-    db.collection("join_requests").doc(item.id).update({status:"declined"}).then(function(){
-      alertBox("Declined","Decline ho gaya",false); loadAdmin();
-    });
-  }
+        // Pre-configured secure Gemini API Key provided by admin
+        let savedApiKey = localStorage.getItem("admin_gemini_key") || "AQ.Ab8RN6IzPniJ9qbtrLF39qQvB__IaEhGJ8Rih3D61clXjOzBzQ";
 
-  // Submit Request with Sound & AI Data
-  $('submit-btn').onclick = function(){
-    var name = $('reporter-name').value.trim();
-    var animal = $('animal-type').value;
-    var phone = $('user-phone').value.trim();
-    var loc = $('lat-long-data').value;
-    if(!name){ alertBox("Error","Naam likhein",false); return; }
-    if(!animal){ alertBox("Error","Animal chunein",false); return; }
-    if(selectedPhotos.length===0){ alertBox("Error","Photo select karein",false); return; }
-    if(!/^[6-9]\d{9}$/.test(phone)){ alertBox("Error","Sahi number dalein",true); return; }
-    if(!loc){ alertBox("Error","Location share karein",false); return; }
+        // Initialize App on Window Load
+        window.onload = function() {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.remove(), 500);
+                }
+            }, 1500);
 
-    $('loading-overlay').style.display = 'flex';
-    var data = {
-      reporterName: name, animalType: animal, phone: phone, location: loc,
-      locationType: $('selected-loc-type').value || "current",
-      photoCount: selectedPhotos.length, status: "pending",
-      priority: $('aiPriority').value || 'Normal',
-      aiSummary: $('aiSummary').value || '',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if(photoBase64 && photoBase64.length < 850000) data.tempPhoto = photoBase64;
-
-    db.collection("rescue_requests").add(data).then(function(){
-      $('loading-overlay').style.display = 'none';
-      triggerSoundAlert();
-      alertBox("Success","Request bhej di gayi!",false);
-
-      var msg = "🚨 *New Rescue Request*%0A%0A*Name:* "+name+"%0A*Animal:* "+(animal==='cow'?'Gai':'Bachhda')+"%0A*Phone:* "+phone+"%0A*Location:* https://www.google.com/maps?q="+loc;
-      for(var i=0;i<TEAM_WA.length;i++){
-        (function(num, delay){ setTimeout(function(){ window.open("https://wa.me/"+num+"?text="+msg,'_blank'); }, delay); })(TEAM_WA[i], i*700);
-      }
-      $('main-rescue-form').reset();
-      selectedPhotos = []; photoBase64 = null;
-      $('animal-photos-container').innerHTML = '<div class="add-photo-btn"><i class="fas fa-camera"></i><input type="file" accept="image/*" capture="camera" id="photo-input"></div>';
-      $('aiVisionBox').style.display = 'none';
-      $('init-gps-btn').style.display = 'block';
-      $('sub-loc-options').style.display = 'none';
-      $('whatsapp-map-preview').style.display = 'none';
-      $('lat-long-data').value = '';
-      if(watchId){ navigator.geolocation.clearWatch(watchId); watchId=null; }
-    }).catch(function(e){
-      $('loading-overlay').style.display = 'none';
-      alertBox("Error", e.message, true);
-    });
-  };
-
-})();
-</script>
-</body>
-</html>
+            
