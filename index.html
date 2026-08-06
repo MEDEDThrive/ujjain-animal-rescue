@@ -497,26 +497,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let currentLatLng = null;
-        let base64Image = "";
-        let clickCount = 0;
-        let clickTimer = null;
-        let wrongAttempts = 0;
-        let lockoutUntil = 0;
-        let allRescuesData = [];
-        let activeChatCaseId = null;
-        let mapInstance = null;
-        let heatLayerInstance = null;
-        let markersLayer = null;
-        let myLocationMarker = null;
-        let gpsWatchId = null;
-        let liveLocWatchId = null;
-        let submitTimeoutId = null;
-        let approvedTeamCache = [];
-        let isLiveLocationActive = false;
-
+        
         window.onload = function() {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
