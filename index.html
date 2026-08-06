@@ -479,7 +479,8 @@
 
     <script>
 
-        const firebaseConfig = {
+        // 1. सही और पूरी कॉन्फिगरेशन सिर्फ एक बार लिखें
+const firebaseConfig = {
     apiKey: "AIzaSyCXuCd6j3wGlmfsqDjQeyBTOQ4YCDI",
     authDomain: "ujjainanimalrescue.firebaseapp.com",
     databaseURL: "https://ujjainanimalrescue-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -488,11 +489,15 @@
     messagingSenderId: "686634974496",
     appId: "1:686634974496:web:8b56642568a257e49fab45"
 };
+
+// 2. Firebase को इनिशियलाइज करें (यह होना जरूरी है)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+// 3. डेटाबेस को कॉल करें
+const db = firebase.database();
         
-        const firebaseConfig = {
-    databaseURL: "https://ujjain-animal-rescue-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
-        const db = firebase.database();
         let currentLatLng = null;
         let base64Image = "";
         let clickCount = 0;
