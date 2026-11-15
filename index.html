@@ -60,8 +60,7 @@
             </div>
             <div class="flex flex-col items-center text-center">
                 <div onclick="handleFounderClick()" class="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden shadow-md mb-3 cursor-pointer relative group">
-                    <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" 
-                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300';" 
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" 
                          alt="Founder Raj Malviya" class="w-full h-full object-cover">
                 </div>
                 <h2 class="text-xl font-bold tracking-wide">Raj Malviya</h2>
@@ -148,7 +147,7 @@
                             </div>
                             <div class="text-left">
                                 <h3 class="font-bold text-sm">Rescue History</h3>
-                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Past missions & Monthly PDF reports</p>
+                                <p class="text-[11px] text-gray-400">Past missions & Monthly PDF reports</p>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
@@ -274,8 +273,6 @@
                         <i class="fa-brands fa-whatsapp text-sm"></i> Broadcast
                     </button>
                 </div>
-                <div id="liveRequestsList" class="space-y-3"></div>
-            </div>
 
             <!-- TRACKING -->
             <div id="trackingView" class="hidden space-y-4">
@@ -385,7 +382,7 @@
                                 <p class="text-[11px] text-gray-500 dark:text-gray-300">Core Sevak</p>
                             </div>
                         </div>
-                        <a href="https://wa.me/91" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow opacity-60">
+                        <a href="https://wa.me/916263895427" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                     </div>
@@ -398,7 +395,7 @@
                                 <p class="text-[11px] text-gray-500 dark:text-gray-300">Core Sevak</p>
                             </div>
                         </div>
-                        <a href="https://wa.me/91" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow opacity-60">
+                        <a href="https://wa.me/916263895427" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                     </div>
@@ -445,7 +442,7 @@
                 <div>
                     <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Pending Member Requests</h4>
                     <div id="adminJoinRequestsList" class="space-y-2">
-                        <p class="text-xs text-gray-400 italic">No pending requests.</p>
+         <p class="text-xs text-gray-400 italic">No pending requests.</p>
                     </div>
                 </div>
                 <div>
@@ -478,25 +475,21 @@
     </div>
 
     <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXuCd6j3wGlmfsqDjQeyBTOQ4YCDI",
+            authDomain: "ujjainanimalrescue.firebaseapp.com",
+            databaseURL: "https://ujjainanimalrescue-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ujjainanimalrescue",
+            storageBucket: "ujjainanimalrescue.appspot.com",
+            messagingSenderId: "686634974496",
+            appId: "1:686634974496:web:8b56642568a257e49fab45"
+        };
 
-        // 1. सही और पूरी कॉन्फिगरेशन सिर्फ एक बार लिखें
-const firebaseConfig = {
-    apiKey: "AIzaSyCXuCd6j3wGlmfsqDjQeyBTOQ4YCDI",
-    authDomain: "ujjainanimalrescue.firebaseapp.com",
-    databaseURL: "https://ujjainanimalrescue-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "ujjainanimalrescue",
-    storageBucket: "ujjainanimalrescue.appspot.com",
-    messagingSenderId: "686634974496",
-    appId: "1:686634974496:web:8b56642568a257e49fab45"
-};
-
-// 2. Firebase को इनिशियलाइज करें (यह होना जरूरी है)
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-
-// 3. डेटाबेस को कॉल करें
-const db = firebase.database();
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
         
         let currentLatLng = null;
         let base64Image = "";
@@ -516,7 +509,17 @@ const db = firebase.database();
         let approvedTeamCache = [];
         let isLiveLocationActive = false;
 
-        
+        // Simple HTML escape to prevent XSS / broken HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         window.onload = function() {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
@@ -625,7 +628,7 @@ const db = firebase.database();
         }
 
         function captureCurrentLocation() {
-            if(isLiveLocationActive) stopLiveLocation();
+           if(isLiveLocationActive) stopLiveLocation();
 
             document.getElementById('locationText').innerText = "Current location fetch ho rahi hai...";
             document.getElementById('btnCurrentLoc').classList.add('ring-2', 'ring-emerald-300');
@@ -704,7 +707,7 @@ const db = firebase.database();
             document.getElementById('locPreviewLabel').innerText = label || "Location Captured!";
             const box = document.getElementById('locationMapPreviewBox');
             const iframe = document.getElementById('locationMapIframe');
-            iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+            iframe.src = `https://maps.google.com/maps?q=\( {lat}, \){lng}&z=16&output=embed`;
             box.classList.remove('hidden');
         }
 
@@ -787,7 +790,7 @@ const db = firebase.database();
             }
         }
 
-        function playAlertSound() {
+      function playAlertSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
@@ -988,13 +991,16 @@ const db = firebase.database();
                 if(data) {
                     Object.keys(data).forEach(key => {
                         const r = data[key];
+                        const safeName = escapeHtml(r.name || '');
+                        const safeMobile = escapeHtml(r.mobile || '');
+                        const safeAddress = escapeHtml(r.address || 'N/A');
                         el.innerHTML += `
                             <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-600 space-y-1 text-xs">
-                                <p><strong>Name:</strong> ${r.name||''}</p>
-                                <p><strong>Mobile:</strong> ${r.mobile||''}</p>
-                                <p><strong>Address:</strong> ${r.address||'N/A'}</p>
+                                <p><strong>Name:</strong> ${safeName}</p>
+                                <p><strong>Mobile:</strong> ${safeMobile}</p>
+                                <p><strong>Address:</strong> ${safeAddress}</p>
                                 <div class="flex gap-2 pt-2">
-                                    <button onclick="approveMember('${key}','${(r.name||'').replace(/'/g,"\\'")}', '${r.mobile||''}', '${(r.address||'').replace(/'/g,"\\'")}')" class="px-3 py-1 bg-green-600 text-white rounded-lg font-bold">Accept</button>
+                                    <button onclick="approveMember('\( {key}',' \){safeName.replace(/'/g, "\\'")}','\( {safeMobile}',' \){safeAddress.replace(/'/g, "\\'")}')" class="px-3 py-1 bg-green-600 text-white rounded-lg font-bold">Accept</button>
                                     <button onclick="deleteData('joinRequests','${key}')" class="px-3 py-1 bg-red-600 text-white rounded-lg font-bold">Reject</button>
                                 </div>
                             </div>`;
@@ -1016,23 +1022,26 @@ const db = firebase.database();
                     Object.keys(data).forEach(key => {
                         const m = data[key];
                         approvedTeamCache.push(m);
+                        const safeName = escapeHtml(m.name || '');
+                        const safeAddress = escapeHtml(m.address || 'Gau Sevak');
+                        const safeMobile = (m.mobile || '').replace(/\D/g, '');
                         if(teamEl) {
                             teamEl.innerHTML += `
                                 <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">${(m.name||'XX').substring(0,2).toUpperCase()}</div>
                                         <div>
-                                            <h4 class="font-bold text-sm">${m.name||''}</h4>
-                                            <p class="text-[11px] text-gray-500">${m.address||'Gau Sevak'}</p>
+                                            <h4 class="font-bold text-sm">${safeName}</h4>
+                                            <p class="text-[11px] text-gray-500">${safeAddress}</p>
                                         </div>
                                     </div>
-                                    <a href="https://wa.me/91${m.mobile||''}" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="https://wa.me/91${safeMobile}" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow"><i class="fa-brands fa-whatsapp"></i></a>
                                 </div>`;
-                        }
+                      }
                         if(adminEl) {
                             adminEl.innerHTML += `
                                 <div class="bg-white dark:bg-gray-800 p-2.5 rounded-xl border flex items-center justify-between text-xs">
-                                    <div><p class="font-bold">${m.name} (${m.mobile})</p><p class="text-[10px] text-gray-400">${m.address||''}</p></div>
+                                    <div><p class="font-bold">\( {safeName} ( \){escapeHtml(m.mobile || '')})</p><p class="text-[10px] text-gray-400">${safeAddress}</p></div>
                                     <button onclick="deleteTeamMember('${key}')" class="px-2.5 py-1 bg-red-600 text-white rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button>
                                 </div>`;
                         }
@@ -1054,18 +1063,27 @@ const db = firebase.database();
             }
             pending.forEach(item => {
                 const step = item.timelineStep || 1;
+                const safeType = escapeHtml(item.type || 'Animal');
+                const safeName = escapeHtml(item.name || '');
+                const safeMobile = escapeHtml(item.mobile || '');
+                const safeAssigned = escapeHtml(item.assignedSevak || 'Raj Malviya');
+                const safeLoc = encodeURIComponent(item.location || '');
+                const photoHtml = item.photo 
+                    ? `<img src="${item.photo}" class="w-16 h-16 rounded-xl object-cover shadow border" onerror="this.onerror=null;this.src='';this.parentElement.innerHTML='<div class=\\'w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center text-[10px] text-gray-400\\'>No Photo</div>';">`
+                    : '<div class="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center text-[10px] text-gray-400">No Photo</div>';
+
                 list.innerHTML += `
                     <div class="bg-white dark:bg-gray-700 p-3 rounded-2xl border border-gray-200 dark:border-gray-600 shadow-sm space-y-2.5">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-primary dark:text-red-400">${item.type||'Animal'}</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-bold">${item.status||'Pending'}</span>
+                            <span class="text-xs font-bold text-primary dark:text-red-400">${safeType}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-bold">${escapeHtml(item.status || 'Pending')}</span>
                         </div>
                         <div class="flex gap-3 items-center">
-                            ${item.photo ? `<img src="${item.photo}" class="w-16 h-16 rounded-xl object-cover shadow border" onerror="this.parentElement.innerHTML='<div class=\\'w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center text-[10px]\\'>No Photo</div>'">` : '<div class="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center text-[10px] text-gray-400">No Photo</div>'}
+                            ${photoHtml}
                             <div class="text-xs space-y-1 flex-1">
-                                <p><strong class="text-gray-500">By:</strong> ${item.name||''} (${item.mobile||''})</p>
-                                <p><strong class="text-gray-500">Assigned:</strong> ${item.assignedSevak||'Raj Malviya'}</p>
-                                <p><strong class="text-gray-500">Location:</strong> <a href="https://maps.google.com/?q=${item.location||''}" target="_blank" class="text-blue-600 underline">Open Map</a></p>
+                                <p><strong class="text-gray-500">By:</strong> \( {safeName} ( \){safeMobile})</p>
+                                <p><strong class="text-gray-500">Assigned:</strong> ${safeAssigned}</p>
+                                <p><strong class="text-gray-500">Location:</strong> <a href="https://maps.google.com/?q=${safeLoc}" target="_blank" class="text-blue-600 underline">Open Map</a></p>
                             </div>
                         </div>
                         <div class="pt-1 border-t dark:border-gray-600 flex justify-between text-[10px] font-bold text-gray-500">
@@ -1078,7 +1096,7 @@ const db = firebase.database();
                             <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded text-[10px] font-bold">Accept</button>
                             <button onclick="updateTimeline('${item.id}',3,'On the Way')" class="px-2 py-1 bg-yellow-500 text-white rounded text-[10px] font-bold">On Way</button>
                             <button onclick="updateTimeline('${item.id}',4,'Completed')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Complete</button>
-                            <button onclick="openInAppChat('${item.id}','${(item.type||'')+' - '+(item.name||'')}')" class="px-2 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold"><i class="fa-solid fa-comments"></i> Chat</button>
+                            <button onclick="openInAppChat('\( {item.id}',' \){safeType} - ${safeName}')" class="px-2 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold"><i class="fa-solid fa-comments"></i> Chat</button>
                         </div>
                     </div>`;
             });
@@ -1104,7 +1122,7 @@ const db = firebase.database();
                 if(data) {
                     Object.keys(data).forEach(k => {
                         const m = data[k];
-                        list.innerHTML += `<div class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm"><p class="font-bold text-[10px] text-primary">${m.sender||'Sevak'}</p><p class="text-xs">${m.text||''}</p></div>`;
+                        list.innerHTML += `<div class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm"><p class="font-bold text-[10px] text-primary">\( {escapeHtml(m.sender||'Sevak')}</p><p class="text-xs"> \){escapeHtml(m.text||'')}</p></div>`;
                     });
                     list.scrollTop = list.scrollHeight;
                 } else list.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4">No messages yet.</p>';
@@ -1143,7 +1161,7 @@ const db = firebase.database();
                     if(!isNaN(lat) && !isNaN(lng)) {
                         heatPoints.push([lat, lng, 1]);
                         if(markersLayer) {
-                            markersLayer.addLayer(L.marker([lat,lng]).bindPopup(`<b>${item.type||''}</b><br>${item.name||''}<br>${item.status||''}`));
+                            markersLayer.addLayer(L.marker([lat,lng]).bindPopup(`<b>\( {escapeHtml(item.type||'')}</b><br> \){escapeHtml(item.name||'')}<br>${escapeHtml(item.status||'')}`));
                         }
                     }
                 }
@@ -1197,8 +1215,8 @@ const db = firebase.database();
                 list.innerHTML += `
                     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
                         <div>
-                            <p class="font-bold">${item.type||''} - ${item.name||''}</p>
-                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${item.mobile||''}</p>
+                            <p class="font-bold">${escapeHtml(item.type||'')} - ${escapeHtml(item.name||'')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${escapeHtml(item.mobile||'')}</p>
                         </div>
                         <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
                     </div>`;
@@ -1215,8 +1233,8 @@ const db = firebase.database();
                 list.innerHTML += `
                     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
                         <div>
-                            <p class="font-bold">${item.type||''} - ${item.name||''}</p>
-                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${item.mobile||''}</p>
+                            <p class="font-bold">${escapeHtml(item.type||'')} - ${escapeHtml(item.name||'')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${escapeHtml(item.mobile||'')}</p>
                         </div>
                         <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
                     </div>`;
@@ -1235,11 +1253,11 @@ const db = firebase.database();
                 list.innerHTML += `
                     <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border space-y-2 text-xs">
                         <div class="flex justify-between items-center">
-                            <span class="font-bold text-primary">${item.type||''} (${item.status||''})</span>
+                            <span class="font-bold text-primary">\( {escapeHtml(item.type||'')} ( \){escapeHtml(item.status||'')})</span>
                             <button onclick="deleteData('rescues','${item.id}')" class="text-red-600 font-bold"><i class="fa-solid fa-trash"></i></button>
                         </div>
-                        <p><strong>By:</strong> ${item.name||''} | ${item.mobile||''}</p>
-                        <p><strong>Assigned:</strong> ${item.assignedSevak||''}</p>
+                        <p><strong>By:</strong> ${escapeHtml(item.name||'')} | ${escapeHtml(item.mobile||'')}</p>
+                        <p><strong>Assigned:</strong> ${escapeHtml(item.assignedSevak||'')}</p>
                         <div class="flex flex-wrap gap-1.5">
                             <button onclick="updateTimeline('${item.id}',1,'Pending')" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded font-bold">Pending</button>
                             <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded font-bold">Accept</button>
@@ -1247,7 +1265,7 @@ const db = firebase.database();
                             <button onclick="updateTimeline('${item.id}',4,'Completed')" class="px-2 py-1 bg-green-600 text-white rounded font-bold">Complete</button>
                         </div>
                     </div>`;
-            });
+           });
         }
 
         function updateTimeline(id, step, status) {
@@ -1262,7 +1280,7 @@ const db = firebase.database();
 
         function deleteData(path, id) {
             if(confirm("Delete this record?")) {
-                db.ref(`${path}/${id}`).remove(err => {
+                db.ref(`\( {path}/ \){id}`).remove(err => {
                     if(!err) alert("Deleted");
                     else alert("Fail: " + (err.message||""));
                 });
@@ -1300,7 +1318,7 @@ const db = firebase.database();
                 else {
                     done.forEach((item, idx) => {
                         if(y > 270) { doc.addPage(); y = 20; }
-                        doc.text(`${idx+1}. ${item.type||''} - ${item.name||''} (${item.mobile||''})`, 14, y);
+                        doc.text(`${idx+1}. ${item.type||''} - \( {item.name||''} ( \){item.mobile||''})`, 14, y);
                         doc.text(`   Loc: ${item.location||''} | ${new Date(item.timestamp||0).toLocaleDateString()}`, 14, y+6);
                         y += 14;
                     });
