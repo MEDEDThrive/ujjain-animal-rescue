@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ujjain Animal Rescue - Bejuban ki Pukar</title>
+    <title>Ujjain Animal Rescue - Bejub recomendar ki Pukar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,6 +31,13 @@
             align-items: center; justify-content: center; color: white;
             transition: opacity 0.5s ease;
         }
+        .toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: #1f2937; color: white; padding: 10px 18px; border-radius: 12px;
+            font-size: 13px; z-index: 99999; opacity: 0; transition: opacity 0.3s;
+            pointer-events: none; max-width: 90%; text-align: center;
+        }
+        .toast.show { opacity: 1; }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
@@ -45,6 +52,8 @@
             <p class="text-lg text-red-200 italic font-medium">"Bejuban ki Pukar"</p>
         </div>
     </div>
+
+    <div id="toast" class="toast"></div>
 
     <div class="max-w-md mx-auto min-h-screen bg-white dark:bg-gray-800 shadow-xl flex flex-col relative pb-16">
         
@@ -86,7 +95,6 @@
                         <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Rescued</span>
                     </div>
                 </div>
-
                 <div class="space-y-3 pt-2">
                     <button onclick="switchView('requestView')" class="w-full bg-gradient-to-r from-red-600 to-primary text-white p-4 rounded-2xl shadow-md flex items-center justify-between hover:opacity-95 transition">
                         <div class="flex items-center gap-3">
@@ -111,6 +119,7 @@
                         </div>
                         <span id="liveBadge" class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </button>
+
                     <button onclick="switchView('trackingView'); initTrackingMap();" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-indigo-100 dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
@@ -164,7 +173,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- REQUEST FORM -->
             <div id="requestView" class="hidden space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
@@ -213,6 +221,7 @@
                             <i class="fa-solid fa-robot mr-1"></i> <span id="aiAnalysisText">AI analysis pending...</span>
                         </div>
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2">Location* (WhatsApp style)</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -248,7 +257,6 @@
                     <p id="submitStatusMsg" class="text-xs text-center hidden"></p>
                 </form>
             </div>
-
             <!-- LIVE VIEW -->
             <div id="liveView" class="hidden space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
@@ -285,6 +293,7 @@
                 </div>
                 <div id="mapContainer" class="w-full h-80 rounded-2xl border border-gray-300 dark:border-gray-600 shadow-inner z-0"></div>
             </div>
+
             <!-- DONATION -->
             <div id="donationView" class="hidden space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
@@ -310,7 +319,6 @@
                     </a>
                 </div>
             </div>
-
             <!-- CHAT -->
             <div id="chatView" class="hidden space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
@@ -344,6 +352,7 @@
                 </div>
                 <div id="historyList" class="space-y-2.5"></div>
             </div>
+
             <!-- TEAM VIEW -->
             <div id="teamView" class="hidden space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
@@ -425,7 +434,7 @@
                     <h4 class="font-bold text-xs text-primary dark:text-red-300 uppercase flex items-center gap-1.5">
                         <i class="fa-solid fa-key"></i> Secure Gemini API Key Setting
                     </h4>
-                    <p class="text-[11px] text-gray-600 dark:text-gray-300">Enter your private API key here.</p>
+                    <p class="text-[11px] text-gray-600 dark:text-gray-300">Enter your private API key here. (Only stored on this device)</p>
                     <div class="flex gap-2">
                         <input type="password" id="adminApiKeyInput" placeholder="Enter private Gemini API Key..." class="w-full p-2 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl">
                         <button onclick="saveAdminApiKey()" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow shrink-0">Save Key</button>
@@ -466,9 +475,8 @@
             </div>
         </div>
     </div>
-
     <script>
-        // ========== LOCAL STORAGE VERSION (No Firebase) ==========
+        // ========== LOCAL STORAGE ONLY VERSION (No Firebase / No paid services) ==========
         let currentLatLng = null;
         let base64Image = "";
         let clickCount = 0;
@@ -486,9 +494,9 @@
         let approvedTeamCache = [];
         let isLiveLocationActive = false;
 
-        // Simple HTML escape
+        // Safer HTML escape
         function escapeHtml(str) {
-            if (!str) return '';
+            if (str === null || str === undefined) return '';
             return String(str)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -497,46 +505,59 @@
                 .replace(/'/g, '&#39;');
         }
 
+        // Simple toast instead of too many alerts
+        function showToast(msg, duration = 2500) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), duration);
+        }
+
         // ========== LOCAL STORAGE HELPERS ==========
         function getRescues() {
-            return JSON.parse(localStorage.getItem('uar_rescues') || '[]');
+            try { return JSON.parse(localStorage.getItem('uar_rescues') || '[]'); } 
+            catch(e) { return []; }
         }
         function saveRescues(data) {
             localStorage.setItem('uar_rescues', JSON.stringify(data));
         }
         function getJoinRequests() {
-            return JSON.parse(localStorage.getItem('uar_joinRequests') || '[]');
+            try { return JSON.parse(localStorage.getItem('uar_joinRequests') || '[]'); } 
+            catch(e) { return []; }
         }
         function saveJoinRequests(data) {
             localStorage.setItem('uar_joinRequests', JSON.stringify(data));
         }
         function getApprovedTeam() {
-            return JSON.parse(localStorage.getItem('uar_approvedTeam') || '[]');
+            try { return JSON.parse(localStorage.getItem('uar_approvedTeam') || '[]'); } 
+            catch(e) { return []; }
         }
         function saveApprovedTeam(data) {
             localStorage.setItem('uar_approvedTeam', JSON.stringify(data));
         }
         function getChats(caseId) {
-            return JSON.parse(localStorage.getItem('uar_chats_' + caseId) || '[]');
+            try { return JSON.parse(localStorage.getItem('uar_chats_' + caseId) || '[]'); } 
+            catch(e) { return []; }
         }
         function saveChat(caseId, messages) {
             localStorage.setItem('uar_chats_' + caseId, JSON.stringify(messages));
         }
+
         window.onload = function() {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
-                if(splash) {
+                if (splash) {
                     splash.style.opacity = '0';
                     setTimeout(() => splash.remove(), 500);
                 }
             }, 1400);
 
-            if(localStorage.getItem('theme') === 'dark') {
+            if (localStorage.getItem('theme') === 'dark') {
                 document.documentElement.classList.add('dark');
                 document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-white';
             }
 
-            // Load data from localStorage
             allRescuesData = getRescues();
             approvedTeamCache = getApprovedTeam();
             updateDashboard();
@@ -565,22 +586,21 @@
         }
 
         function switchView(viewId) {
-            if(viewId !== 'requestView' && isLiveLocationActive) {
+            if (viewId !== 'requestView' && isLiveLocationActive) {
                 stopLiveLocation();
             }
             ['homeView','requestView','liveView','trackingView','donationView','chatView','historyView','teamView','adminView'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
+                if (el) el.classList.add('hidden');
             });
             const target = document.getElementById(viewId);
-            if(target) target.classList.remove('hidden');
+            if (target) target.classList.remove('hidden');
             window.scrollTo(0, 0);
         }
-
         function handleFounderClick() {
             clickCount++;
-            if(clickCount === 1) clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
-            if(clickCount >= 5) {
+            if (clickCount === 1) clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+            if (clickCount >= 5) {
                 clearTimeout(clickTimer);
                 clickCount = 0;
                 checkLockoutAndOpenModal();
@@ -588,12 +608,13 @@
         }
 
         function checkLockoutAndOpenModal() {
-            if(Date.now() < lockoutUntil) {
-                alert(`Locked for ${Math.ceil((lockoutUntil - Date.now())/1000)} seconds.`);
+            if (Date.now() < lockoutUntil) {
+                showToast(`Locked for ${Math.ceil((lockoutUntil - Date.now())/1000)} seconds`);
                 return;
             }
             document.getElementById('passwordModal').classList.remove('hidden');
             document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').focus();
         }
 
         function closePasswordModal() {
@@ -601,9 +622,10 @@
         }
 
         function verifyAdminPassword() {
-            if(Date.now() < lockoutUntil) return;
+            if (Date.now() < lockoutUntil) return;
             const pwd = document.getElementById('adminPasswordInput').value;
-            if(pwd === "raj@123") {
+            // Note: Still client-side only. Change this password to something stronger.
+            if (pwd === "raj@123") {
                 wrongAttempts = 0;
                 closePasswordModal();
                 switchView('adminView');
@@ -611,33 +633,37 @@
                 renderJoinRequests();
                 renderApprovedTeam();
                 renderAdminControls(allRescuesData);
+                showToast("Admin panel opened");
             } else {
                 wrongAttempts++;
-                if(wrongAttempts >= 3) {
+                if (wrongAttempts >= 3) {
                     lockoutUntil = Date.now() + 30000;
-                    alert("3 galat attempts. 30 second lock.");
+                    showToast("3 galat attempts. 30 second lock.");
                     closePasswordModal();
                 } else {
-                    alert(`Incorrect! Attempt ${wrongAttempts}/3`);
+                    showToast(`Incorrect! Attempt ${wrongAttempts}/3`);
                 }
             }
         }
 
         function saveAdminApiKey() {
             const key = document.getElementById('adminApiKeyInput').value.trim();
-            if(key) {
+            if (key) {
                 localStorage.setItem("admin_gemini_key", key);
-                alert("API Key saved!");
-            } else alert("Valid key enter karein.");
-                               }
+                showToast("API Key saved on this device");
+            } else {
+                showToast("Valid key enter karein");
+            }
+        }
+
         function captureCurrentLocation() {
-            if(isLiveLocationActive) stopLiveLocation();
+            if (isLiveLocationActive) stopLiveLocation();
 
             document.getElementById('locationText').innerText = "Current location fetch ho rahi hai...";
             document.getElementById('btnCurrentLoc').classList.add('ring-2', 'ring-emerald-300');
             document.getElementById('btnLiveLoc').classList.remove('ring-2', 'ring-blue-300');
 
-            if(!navigator.geolocation) {
+            if (!navigator.geolocation) {
                 useDefaultLocation("Browser GPS support nahi karta");
                 return;
             }
@@ -651,12 +677,12 @@
                 (err) => {
                     useDefaultLocation("GPS permission / error: " + (err.message || "unknown"));
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
             );
         }
 
         function toggleLiveLocation() {
-            if(isLiveLocationActive) {
+            if (isLiveLocationActive) {
                 stopLiveLocation();
                 return;
             }
@@ -666,7 +692,7 @@
             document.getElementById('liveLocText').innerText = "Stop Live";
             document.getElementById('locationText').innerText = "Live location start ho rahi hai...";
 
-            if(!navigator.geolocation) {
+            if (!navigator.geolocation) {
                 useDefaultLocation("Browser GPS support nahi karta");
                 return;
             }
@@ -687,14 +713,14 @@
         }
 
         function stopLiveLocation() {
-            if(liveLocWatchId) {
+            if (liveLocWatchId) {
                 navigator.geolocation.clearWatch(liveLocWatchId);
                 liveLocWatchId = null;
             }
             isLiveLocationActive = false;
             document.getElementById('liveLocText').innerText = "Live Location";
             document.getElementById('btnLiveLoc').classList.remove('ring-2', 'ring-blue-300');
-            if(currentLatLng) {
+            if (currentLatLng) {
                 document.getElementById('locationText').innerText = `Last Live: ${currentLatLng.lat.toFixed(5)}, ${currentLatLng.lng.toFixed(5)} (stopped)`;
                 showLocationPreview(currentLatLng.lat, currentLatLng.lng, "Live Location stopped ✓");
             }
@@ -704,6 +730,7 @@
             currentLatLng = { lat: 23.1793, lng: 75.7849 };
             showLocationPreview(currentLatLng.lat, currentLatLng.lng, "Default Ujjain (GPS fail)");
             document.getElementById('locationText').innerText = msg + " → Default Ujjain set";
+            showToast(msg + " → Default Ujjain use ho raha hai");
         }
 
         function showLocationPreview(lat, lng, label) {
@@ -712,11 +739,10 @@
             const iframe = document.getElementById('locationMapIframe');
             iframe.src = `https://maps.google.com/maps?q=\( {lat}, \){lng}&z=16&output=embed`;
             box.classList.remove('hidden');
-        }
-
+                                    }
         function handleImageUpload(event) {
             const file = event.target.files[0];
-            if(!file) return;
+            if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -756,6 +782,7 @@
             document.getElementById('cameraInput').value = "";
             document.getElementById('galleryInput').value = "";
         }
+
         async function analyzeImageWithGemini(imageBase64) {
             const box = document.getElementById('aiAnalysisBox');
             const textEl = document.getElementById('aiAnalysisText');
@@ -765,7 +792,7 @@
             try {
                 const base64Data = imageBase64.split(',')[1];
                 const apiKey = localStorage.getItem("admin_gemini_key");
-                if(!apiKey) {
+                if (!apiKey) {
                     textEl.innerText = "AI Vision: Standard mode (Admin panel se Gemini API key set karein).";
                     return;
                 }
@@ -782,12 +809,12 @@
                     })
                 });
                 const data = await res.json();
-                if(data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
                     textEl.innerText = "AI: " + data.candidates[0].content.parts[0].text.trim();
                 } else {
                     textEl.innerText = "AI analysis done.";
                 }
-            } catch(e) {
+            } catch (e) {
                 textEl.innerText = "AI connection issue. Photo saved.";
             }
         }
@@ -802,7 +829,7 @@
                 gain.gain.setValueAtTime(0.12, ctx.currentTime);
                 osc.connect(gain); gain.connect(ctx.destination);
                 osc.start(); osc.stop(ctx.currentTime + 0.35);
-            } catch(e){}
+            } catch (e) {}
         }
 
         function submitRescue(e) {
@@ -813,21 +840,21 @@
             const btn = document.getElementById('submitRescueBtn');
             const msg = document.getElementById('submitStatusMsg');
 
-            if(!name || mobile.length !== 10) {
-                alert("Naam aur 10 digit mobile zaroori hai.");
+            if (!name || mobile.length !== 10) {
+                showToast("Naam aur 10 digit mobile zaroori hai");
                 return;
             }
-            if(!currentLatLng) {
-                alert("Pehle Current Location ya Live Location capture karein.");
+            if (!currentLatLng) {
+                showToast("Pehle Current Location ya Live Location capture karein");
                 return;
             }
 
-            if(isLiveLocationActive) stopLiveLocation();
+            if (isLiveLocationActive) stopLiveLocation();
 
             let sevaks = ["Raj Malviya", "Ankit Thakur", "Aashish Pal"];
-            if(approvedTeamCache.length > 0) {
+            if (approvedTeamCache.length > 0) {
                 const names = approvedTeamCache.map(m => m.name).filter(Boolean);
-                if(names.length) sevaks = ["Raj Malviya", ...names];
+                if (names.length) sevaks = ["Raj Malviya", ...names];
             }
             const assigned = sevaks[Math.floor(Math.random() * sevaks.length)];
 
@@ -848,7 +875,6 @@
             msg.className = "text-xs text-center text-blue-600";
             msg.innerText = "Saving locally...";
 
-            // Save to localStorage
             allRescuesData.unshift(record);
             saveRescues(allRescuesData);
             updateDashboard();
@@ -859,8 +885,8 @@
             playAlertSound();
             msg.className = "text-xs text-center text-green-600";
             msg.innerText = "✓ Successfully submitted!";
-            alert(`Submitted!\nAssigned to: ${assigned}`);
-            
+            showToast(`Submitted! Assigned to: ${assigned}`);
+
             document.getElementById('rescueForm').reset();
             removeSelectedPhoto();
             currentLatLng = null;
@@ -887,8 +913,8 @@
             const btn = document.getElementById('joinSubmitBtn');
             const statusMsg = document.getElementById('joinStatusMsg');
 
-            if(!name || mobile.length !== 10 || !address) {
-                alert("Naam, 10 digit mobile aur address sab zaroori hai.");
+            if (!name || mobile.length !== 10 || !address) {
+                showToast("Naam, 10 digit mobile aur address sab zaroori hai");
                 return;
             }
 
@@ -903,7 +929,7 @@
             statusMsg.classList.remove('hidden');
             statusMsg.className = "text-xs text-center mt-2 text-green-600";
             statusMsg.innerText = "✓ Request successfully bhej di gayi!";
-            alert("Join request successfully submit ho gayi!");
+            showToast("Join request successfully submit ho gayi!");
             document.getElementById('joinForm').reset();
             btn.innerText = "Submit Join Request";
             btn.disabled = false;
@@ -912,13 +938,13 @@
                 switchView('homeView');
             }, 1500);
             renderJoinRequests();
-        }
+                        }
         function renderLiveRequests(data) {
             const list = document.getElementById('liveRequestsList');
-            if(!list) return;
-            const pending = (data||[]).filter(i => i.status !== 'Completed');
+            if (!list) return;
+            const pending = (data || []).filter(i => i.status !== 'Completed');
             list.innerHTML = '';
-            if(!pending.length) {
+            if (!pending.length) {
                 list.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No active emergency requests.</p>';
                 return;
             }
@@ -948,10 +974,10 @@
                             </div>
                         </div>
                         <div class="pt-1 border-t dark:border-gray-600 flex justify-between text-[10px] font-bold text-gray-500">
-                            <span class="${step>=1?'text-primary dark:text-red-400':''}">1. Pending</span>
-                            <span class="${step>=2?'text-primary dark:text-red-400':''}">2. Accepted</span>
-                            <span class="${step>=3?'text-primary dark:text-red-400':''}">3. On Way</span>
-                            <span class="${step>=4?'text-green-600':''}">4. Completed</span>
+                            <span class="${step >= 1 ? 'text-primary dark:text-red-400' : ''}">1. Pending</span>
+                            <span class="${step >= 2 ? 'text-primary dark:text-red-400' : ''}">2. Accepted</span>
+                            <span class="${step >= 3 ? 'text-primary dark:text-red-400' : ''}">3. On Way</span>
+                            <span class="${step >= 4 ? 'text-green-600' : ''}">4. Completed</span>
                         </div>
                         <div class="flex flex-wrap gap-1.5 pt-1">
                             <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded text-[10px] font-bold">Accept</button>
@@ -965,22 +991,24 @@
 
         function openInAppChat(caseId, title) {
             const pass = prompt("Team Secret Code:");
-            if(pass === "raj@123" || pass === "sevak123") {
+            if (pass === "raj@123" || pass === "sevak123") {
                 activeChatCaseId = caseId;
                 document.getElementById('chatCaseTitle').innerText = "Chat: " + title;
                 switchView('chatView');
                 loadChatMessages(caseId);
-            } else alert("Incorrect code!");
+            } else {
+                showToast("Incorrect code!");
+            }
         }
 
         function loadChatMessages(caseId) {
             const list = document.getElementById('chatMessagesList');
-            if(!list) return;
+            if (!list) return;
             list.innerHTML = '';
             const messages = getChats(caseId);
-            if(messages.length) {
+            if (messages.length) {
                 messages.forEach(m => {
-                    list.innerHTML += `<div class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm"><p class="font-bold text-[10px] text-primary">\( {escapeHtml(m.sender||'Sevak')}</p><p class="text-xs"> \){escapeHtml(m.text||'')}</p></div>`;
+                    list.innerHTML += `<div class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm"><p class="font-bold text-[10px] text-primary">\( {escapeHtml(m.sender || 'Sevak')}</p><p class="text-xs"> \){escapeHtml(m.text || '')}</p></div>`;
                 });
                 list.scrollTop = list.scrollHeight;
             } else {
@@ -991,7 +1019,7 @@
         function sendChatMessage(e) {
             e.preventDefault();
             const text = document.getElementById('chatInputMessage').value.trim();
-            if(text && activeChatCaseId) {
+            if (text && activeChatCaseId) {
                 const messages = getChats(activeChatCaseId);
                 messages.push({ sender: "Verified Gau Sevak", text, timestamp: Date.now() });
                 saveChat(activeChatCaseId, messages);
@@ -1002,7 +1030,7 @@
 
         function initTrackingMap() {
             setTimeout(() => {
-                if(!mapInstance) {
+                if (!mapInstance) {
                     mapInstance = L.map('mapContainer').setView([23.1793, 75.7849], 13);
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
                     markersLayer = L.layerGroup().addTo(mapInstance);
@@ -1013,62 +1041,62 @@
         }
 
         function updateHeatmapAndMarkers(data) {
-            if(!mapInstance) return;
-            if(markersLayer) markersLayer.clearLayers();
+            if (!mapInstance) return;
+            if (markersLayer) markersLayer.clearLayers();
             const heatPoints = [];
-            (data||[]).forEach(item => {
-                if(item.location && item.location.includes(',')) {
+            (data || []).forEach(item => {
+                if (item.location && item.location.includes(',')) {
                     const [lat, lng] = item.location.split(',').map(Number);
-                    if(!isNaN(lat) && !isNaN(lng)) {
+                    if (!isNaN(lat) && !isNaN(lng)) {
                         heatPoints.push([lat, lng, 1]);
-                        if(markersLayer) {
-                            markersLayer.addLayer(L.marker([lat,lng]).bindPopup(`<b>\( {escapeHtml(item.type||'')}</b><br> \){escapeHtml(item.name||'')}<br>${escapeHtml(item.status||'')}`));
+                        if (markersLayer) {
+                            markersLayer.addLayer(L.marker([lat, lng]).bindPopup(`<b>\( {escapeHtml(item.type || '')}</b><br> \){escapeHtml(item.name || '')}<br>${escapeHtml(item.status || '')}`));
                         }
                     }
                 }
             });
-            if(heatLayerInstance) { mapInstance.removeLayer(heatLayerInstance); heatLayerInstance = null; }
-            if(L.heatLayer && heatPoints.length) {
-                heatLayerInstance = L.heatLayer(heatPoints, {radius:25, blur:15, maxZoom:17}).addTo(mapInstance);
+            if (heatLayerInstance) { mapInstance.removeLayer(heatLayerInstance); heatLayerInstance = null; }
+            if (L.heatLayer && heatPoints.length) {
+                heatLayerInstance = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 }).addTo(mapInstance);
             }
         }
 
         function toggleMyGpsTracking() {
-            if(!navigator.geolocation) { alert("GPS not supported"); return; }
-            if(gpsWatchId) {
+            if (!navigator.geolocation) { showToast("GPS not supported"); return; }
+            if (gpsWatchId) {
                 navigator.geolocation.clearWatch(gpsWatchId);
                 gpsWatchId = null;
-                if(myLocationMarker && mapInstance) { mapInstance.removeLayer(myLocationMarker); myLocationMarker = null; }
+                if (myLocationMarker && mapInstance) { mapInstance.removeLayer(myLocationMarker); myLocationMarker = null; }
                 document.getElementById('gpsTrackBtn').innerText = "Start GPS";
-                alert("GPS stopped");
+                showToast("GPS stopped");
             } else {
                 gpsWatchId = navigator.geolocation.watchPosition(pos => {
                     const lat = pos.coords.latitude, lng = pos.coords.longitude;
-                    if(mapInstance) {
-                        mapInstance.setView([lat,lng], 15);
-                        if(myLocationMarker) myLocationMarker.setLatLng([lat,lng]);
+                    if (mapInstance) {
+                        mapInstance.setView([lat, lng], 15);
+                        if (myLocationMarker) myLocationMarker.setLatLng([lat, lng]);
                         else {
-                            myLocationMarker = L.marker([lat,lng], {
+                            myLocationMarker = L.marker([lat, lng], {
                                 icon: L.divIcon({
-                                    className:'',
-                                    html:'<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(37,99,235,0.7);"></div>',
-                                    iconSize:[16,16], iconAnchor:[8,8]
+                                    className: '',
+                                    html: '<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(37,99,235,0.7);"></div>',
+                                    iconSize: [16, 16], iconAnchor: [8, 8]
                                 })
                             }).addTo(mapInstance).bindPopup("<b>You are here</b>");
                         }
                     }
-                }, err => alert("GPS error: " + (err.message||"")), {enableHighAccuracy:true});
+                }, err => showToast("GPS error: " + (err.message || "")), { enableHighAccuracy: true });
                 document.getElementById('gpsTrackBtn').innerText = "Stop GPS";
-                alert("Live GPS started");
+                showToast("Live GPS started");
             }
         }
 
         function renderHistory(data) {
             const list = document.getElementById('historyList');
-            if(!list) return;
-            const done = (data||[]).filter(i => i.status === 'Completed');
+            if (!list) return;
+            const done = (data || []).filter(i => i.status === 'Completed');
             list.innerHTML = '';
-            if(!done.length) {
+            if (!done.length) {
                 list.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No completed history yet.</p>';
                 return;
             }
@@ -1076,8 +1104,8 @@
                 list.innerHTML += `
                     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
                         <div>
-                            <p class="font-bold">${escapeHtml(item.type||'')} - ${escapeHtml(item.name||'')}</p>
-                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${escapeHtml(item.mobile||'')}</p>
+                            <p class="font-bold">${escapeHtml(item.type || '')} - ${escapeHtml(item.name || '')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp || 0).toLocaleDateString()} | ${escapeHtml(item.mobile || '')}</p>
                         </div>
                         <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
                     </div>`;
@@ -1085,17 +1113,17 @@
         }
 
         function filterHistory() {
-            const q = (document.getElementById('searchHistory').value||'').toLowerCase();
-            const done = allRescuesData.filter(i => i.status === 'Completed' && ((i.name||'').toLowerCase().includes(q) || (i.mobile||'').includes(q)));
+            const q = (document.getElementById('searchHistory').value || '').toLowerCase();
+            const done = allRescuesData.filter(i => i.status === 'Completed' && ((i.name || '').toLowerCase().includes(q) || (i.mobile || '').includes(q)));
             const list = document.getElementById('historyList');
             list.innerHTML = '';
-            if(!done.length) { list.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">No match.</p>'; return; }
+            if (!done.length) { list.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">No match.</p>'; return; }
             done.forEach(item => {
                 list.innerHTML += `
                     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
                         <div>
-                            <p class="font-bold">${escapeHtml(item.type||'')} - ${escapeHtml(item.name||'')}</p>
-                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp||0).toLocaleDateString()} | ${escapeHtml(item.mobile||'')}</p>
+                            <p class="font-bold">${escapeHtml(item.type || '')} - ${escapeHtml(item.name || '')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp || 0).toLocaleDateString()} | ${escapeHtml(item.mobile || '')}</p>
                         </div>
                         <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
                     </div>`;
@@ -1104,9 +1132,9 @@
 
         function renderAdminControls(data) {
             const list = document.getElementById('adminControlList');
-            if(!list) return;
+            if (!list) return;
             list.innerHTML = '';
-            if(!data || !data.length) {
+            if (!data || !data.length) {
                 list.innerHTML = '<p class="text-xs text-gray-400 italic">No records.</p>';
                 return;
             }
@@ -1114,11 +1142,11 @@
                 list.innerHTML += `
                     <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border space-y-2 text-xs">
                         <div class="flex justify-between items-center">
-                            <span class="font-bold text-primary">\( {escapeHtml(item.type||'')} ( \){escapeHtml(item.status||'')})</span>
+                            <span class="font-bold text-primary">\( {escapeHtml(item.type || '')} ( \){escapeHtml(item.status || '')})</span>
                             <button onclick="deleteRescue('${item.id}')" class="text-red-600 font-bold"><i class="fa-solid fa-trash"></i></button>
                         </div>
-                        <p><strong>By:</strong> ${escapeHtml(item.name||'')} | ${escapeHtml(item.mobile||'')}</p>
-                        <p><strong>Assigned:</strong> ${escapeHtml(item.assignedSevak||'')}</p>
+                        <p><strong>By:</strong> ${escapeHtml(item.name || '')} | ${escapeHtml(item.mobile || '')}</p>
+                        <p><strong>Assigned:</strong> ${escapeHtml(item.assignedSevak || '')}</p>
                         <div class="flex flex-wrap gap-1.5">
                             <button onclick="updateTimeline('${item.id}',1,'Pending')" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded font-bold">Pending</button>
                             <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded font-bold">Accept</button>
@@ -1131,42 +1159,42 @@
 
         function updateTimeline(id, step, status) {
             const idx = allRescuesData.findIndex(r => r.id === id);
-            if(idx === -1) return;
+            if (idx === -1) return;
             allRescuesData[idx].timelineStep = step;
             allRescuesData[idx].status = status;
-            if(status === 'Completed') allRescuesData[idx].photo = "";
+            if (status === 'Completed') allRescuesData[idx].photo = ""; // storage save
             saveRescues(allRescuesData);
             updateDashboard();
             renderLiveRequests(allRescuesData);
             renderHistory(allRescuesData);
             renderAdminControls(allRescuesData);
-            alert(status === 'Completed' ? "Completed + photo cleared" : "Updated: " + status);
+            showToast(status === 'Completed' ? "Completed + photo cleared" : "Updated: " + status);
         }
 
         function deleteRescue(id) {
-            if(confirm("Delete this record?")) {
+            if (confirm("Delete this record?")) {
                 allRescuesData = allRescuesData.filter(r => r.id !== id);
                 saveRescues(allRescuesData);
                 updateDashboard();
                 renderLiveRequests(allRescuesData);
                 renderHistory(allRescuesData);
                 renderAdminControls(allRescuesData);
-                alert("Deleted");
+                showToast("Deleted");
             }
         }
 
         function renderJoinRequests() {
             const el = document.getElementById('adminJoinRequestsList');
-            if(!el) return;
+            if (!el) return;
             const data = getJoinRequests();
             el.innerHTML = '';
-            if(data.length) {
+            if (data.length) {
                 data.forEach(r => {
                     el.innerHTML += `
                         <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-600 space-y-1 text-xs">
-                            <p><strong>Name:</strong> ${escapeHtml(r.name||'')}</p>
-                            <p><strong>Mobile:</strong> ${escapeHtml(r.mobile||'')}</p>
-                            <p><strong>Address:</strong> ${escapeHtml(r.address||'N/A')}</p>
+                            <p><strong>Name:</strong> ${escapeHtml(r.name || '')}</p>
+                            <p><strong>Mobile:</strong> ${escapeHtml(r.mobile || '')}</p>
+                            <p><strong>Address:</strong> ${escapeHtml(r.address || 'N/A')}</p>
                             <div class="flex gap-2 pt-2">
                                 <button onclick="approveMember('${r.id}')" class="px-3 py-1 bg-green-600 text-white rounded-lg font-bold">Accept</button>
                                 <button onclick="rejectJoin('${r.id}')" class="px-3 py-1 bg-red-600 text-white rounded-lg font-bold">Reject</button>
@@ -1181,7 +1209,7 @@
         function approveMember(id) {
             const requests = getJoinRequests();
             const req = requests.find(r => r.id === id);
-            if(!req) return;
+            if (!req) return;
             const team = getApprovedTeam();
             team.push({ name: req.name, mobile: req.mobile, address: req.address });
             saveApprovedTeam(team);
@@ -1190,21 +1218,21 @@
             saveJoinRequests(newRequests);
             renderJoinRequests();
             renderApprovedTeam();
-            alert(req.name + " team mein add ho gaya!");
+            showToast(req.name + " team mein add ho gaya!");
         }
 
         function rejectJoin(id) {
             const requests = getJoinRequests().filter(r => r.id !== id);
             saveJoinRequests(requests);
             renderJoinRequests();
-            alert("Rejected");
+            showToast("Rejected");
         }
 
         function renderApprovedTeam() {
             const teamEl = document.getElementById('approvedTeamList');
             const adminEl = document.getElementById('adminTeamManagementList');
-            if(teamEl) teamEl.innerHTML = '';
-            if(adminEl) adminEl.innerHTML = '';
+            if (teamEl) teamEl.innerHTML = '';
+            if (adminEl) adminEl.innerHTML = '';
             const data = getApprovedTeam();
             approvedTeamCache = data;
 
@@ -1212,11 +1240,11 @@
                 const safeName = escapeHtml(m.name || '');
                 const safeAddress = escapeHtml(m.address || 'Gau Sevak');
                 const safeMobile = (m.mobile || '').replace(/\D/g, '');
-                if(teamEl) {
+                if (teamEl) {
                     teamEl.innerHTML += `
                         <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">${(m.name||'XX').substring(0,2).toUpperCase()}</div>
+                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">${(m.name || 'XX').substring(0,2).toUpperCase()}</div>
                                 <div>
                                     <h4 class="font-bold text-sm">${safeName}</h4>
                                     <p class="text-[11px] text-gray-500">${safeAddress}</p>
@@ -1225,7 +1253,7 @@
                             <a href="https://wa.me/91${safeMobile}" target="_blank" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow"><i class="fa-brands fa-whatsapp"></i></a>
                         </div>`;
                 }
-                if(adminEl) {
+                if (adminEl) {
                     adminEl.innerHTML += `
                         <div class="bg-white dark:bg-gray-800 p-2.5 rounded-xl border flex items-center justify-between text-xs">
                             <div><p class="font-bold">\( {safeName} ( \){escapeHtml(m.mobile || '')})</p><p class="text-[10px] text-gray-400">${safeAddress}</p></div>
@@ -1233,19 +1261,19 @@
                         </div>`;
                 }
             });
-            if(adminEl && !data.length) {
+            if (adminEl && !data.length) {
                 adminEl.innerHTML = '<p class="text-xs text-gray-400 italic">No custom members.</p>';
             }
         }
 
         function deleteTeamMember(index) {
-            if(confirm("Remove member?")) {
+            if (confirm("Remove member?")) {
                 const team = getApprovedTeam();
                 team.splice(index, 1);
                 saveApprovedTeam(team);
                 approvedTeamCache = team;
                 renderApprovedTeam();
-                alert("Removed");
+                showToast("Removed");
             }
         }
 
@@ -1253,25 +1281,29 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                doc.setFont("helvetica","bold");
+                doc.setFont("helvetica", "bold");
                 doc.setFontSize(16);
                 doc.text("Ujjain Animal Rescue - Monthly Report", 14, 20);
                 doc.setFontSize(10);
-                doc.setFont("helvetica","normal");
+                doc.setFont("helvetica", "normal");
                 doc.text("Generated: " + new Date().toLocaleString(), 14, 28);
                 let y = 40;
                 const done = allRescuesData.filter(i => i.status === 'Completed');
-                if(!done.length) doc.text("No completed records.", 14, y);
-                else {
+                if (!done.length) {
+                    doc.text("No completed records.", 14, y);
+                } else {
                     done.forEach((item, idx) => {
-                        if(y > 270) { doc.addPage(); y = 20; }
-                        doc.text(`${idx+1}. ${item.type||''} - \( {item.name||''} ( \){item.mobile||''})`, 14, y);
-                        doc.text(`   Loc: ${item.location||''} | ${new Date(item.timestamp||0).toLocaleDateString()}`, 14, y+6);
+                        if (y > 270) { doc.addPage(); y = 20; }
+                        doc.text(`${idx + 1}. ${item.type || ''} - \( {item.name || ''} ( \){item.mobile || ''})`, 14, y);
+                        doc.text(`   Loc: ${item.location || ''} | ${new Date(item.timestamp || 0).toLocaleDateString()}`, 14, y + 6);
                         y += 14;
                     });
                 }
                 doc.save("ujjain-animal-rescue-report.pdf");
-            } catch(e) { alert("PDF error"); }
+                showToast("PDF downloaded");
+            } catch (e) {
+                showToast("PDF error");
+            }
         }
     </script>
 </body>
