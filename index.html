@@ -1,72 +1,859 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#701b2a">
-<title>Ujjain Animal Rescue V3 | Bejuban ki Pukar</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#9b1c31">
+<title>Ujjain Animal Rescue - Bejuban Ki Pukar</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#9b1c31'}}}};
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+
 <style>
-:root{--red:#7b1e2d;--red2:#a52b40;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--bg:#f3f5f9;--card:#fff;--green:#15803d;--amber:#b45309;--blue:#1d4ed8;--shadow:0 10px 30px #1720330d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Noto Sans Devanagari',sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1380px;margin:auto;padding:18px}.hero{background:linear-gradient(115deg,#501321,#8e2438 58%,#c64b53);color:#fff;border-radius:22px;padding:22px 25px;display:flex;justify-content:space-between;align-items:center;gap:14px;box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:13px}.logo{width:54px;height:54px;border-radius:17px;background:#ffffff22;display:grid;place-items:center;font-size:28px}.hero h1{font-size:clamp(20px,3vw,29px);margin:0}.hero p{margin:4px 0 0;color:#ffe3e7;font-size:12px}.hero-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{border:0;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}.primary{background:var(--red);color:#fff}.light{background:#fff;color:var(--red)}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}.danger{background:#fee2e2;color:#991b1b}.green{background:#dcfce7;color:#166534}.notice{margin:14px 0;padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;line-height:1.6}.tabs{display:flex;gap:7px;overflow:auto;padding:4px 0 13px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;white-space:nowrap;font-size:12px;font-weight:800;color:#475569}.tab.active{background:var(--red);border-color:var(--red);color:#fff}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:3px 0 15px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.stat{padding:14px}.stat small{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase}.stat strong{display:block;font-size:26px;margin-top:5px}.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:14px}.panel{padding:17px;margin-bottom:14px}.panel h2{font-size:15px;margin:0 0 12px}.sub{font-size:11px;color:var(--muted);margin:-6px 0 13px;line-height:1.5}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#475569}.field input,.field select,.field textarea,.filters input,.filters select{border:1px solid #d6dce5;border-radius:10px;padding:10px;background:#fff;min-width:0;color:var(--ink);font-size:12px}.field textarea{min-height:75px;resize:vertical}.hint{font-size:10px;color:var(--muted)}
-  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.filters input,.filters select{flex:1;min-width:120px}.case{border:1px solid var(--line);border-radius:13px;padding:12px;margin:9px 0;background:#fff}.casehead{display:flex;justify-content:space-between;gap:10px}.case h3{font-size:13px;margin:0}.case p{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0}.pill{font-size:9px;font-weight:900;padding:5px 8px;border-radius:99px;background:#fef3c7;color:#92400e;white-space:nowrap}.pill.green{background:#dcfce7;color:#166534}.pill.blue{background:#dbeafe;color:#1e40af}.pill.gray{background:#e2e8f0;color:#334155}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.actions button{border:1px solid var(--line);background:#f8fafc;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800}.map{height:360px;border-radius:12px;border:1px solid var(--line);overflow:hidden}.hidden{display:none!important}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.chatbox{height:230px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:#f8fafc;margin:8px 0}.msg{max-width:85%;background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:10px;margin:6px 0;font-size:11px}.msg.mine{margin-left:auto;background:#fce7eb;border-color:#f4c6cf}.msg small{display:block;color:var(--muted);font-size:9px;margin-top:4px}.metric{padding:12px;border:1px solid var(--line);border-radius:12px}.metric b{font-size:20px;display:block}.list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:11px;padding:10px;font-size:11px}.footer{text-align:center;color:#94a3b8;font-size:10px;padding:15px}.toast{position:fixed;z-index:9999;bottom:18px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;padding:11px 15px;border-radius:10px;font-size:12px;max-width:90vw;box-shadow:var(--shadow)}.tag{font-size:9px;font-weight:900;border-radius:99px;padding:4px 7px;background:#fff1f2;color:#9f1239}.small{font-size:10px;color:var(--muted)}.photo{max-width:130px;max-height:100px;object-fit:cover;border-radius:9px}.section{display:none}.section.active{display:block}.progress{height:6px;background:#e5e7eb;border-radius:9px;overflow:hidden}.progress span{display:block;height:100%;background:#16a34a}.dangertext{color:#b91c1c}.qr{width:145px;height:145px;object-fit:contain;border:1px dashed #cbd5e1;border-radius:10px;padding:6px}.footer a{color:inherit}@media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:580px){.shell{padding:10px}.hero{align-items:flex-start;flex-direction:column;padding:17px}.hero-actions{width:100%}.hero-actions .btn{flex:1}.stats{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.panel{padding:13px}.map{height:300px}}
+*{box-sizing:border-box}
+body{margin:0}
+.splash-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#9b1c31,#390b16);display:flex;align-items:center;justify-content:center;color:white;text-align:center;transition:.5s}
+#mapContainer{height:340px;width:100%;border-radius:16px}
+button:disabled{opacity:.55;cursor:not-allowed}
+.safe-wrap{overflow-wrap:anywhere}
 </style>
 </head>
-<body><div class="shell">
-<header class="hero"><div class="brand"><div class="logo">🐄</div><div><h1>Ujjain Animal Rescue</h1><p>Bejuban ki Pukar · Rescue Management System V3</p></div></div><div class="hero-actions"><button class="btn light" id="backupBtn">⬇ Backup</button><button class="btn light" id="restoreBtn">⬆ Restore</button><input id="restoreFile" type="file" accept="application/json" hidden></div></header>
-<div class="notice"><b>V3 Demo Mode:</b> Ye complete front-end demonstration hai. Data is browser mein Local Storage par save hota hai. Multi-phone cloud sync, secure login, real WhatsApp API broadcast, AI analysis aur payment verification live karne ke liye Supabase/WhatsApp/AI/payment credentials aur server deployment zaroori hain. Koi fake live cloud connection nahi dikhaya gaya hai.</div>
-<nav class="tabs" id="tabs"><button class="tab active" data-tab="dashboard">🏠 Dashboard</button><button class="tab" data-tab="cases">🚨 Rescue Cases</button><button class="tab" data-tab="team">👥 Volunteers</button><button class="tab" data-tab="chat">💬 Case Chat</button><button class="tab" data-tab="tracking">📍 Live GPS</button><button class="tab" data-tab="insights">🔥 Heatmap & Reports</button><button class="tab" data-tab="donation">❤️ Donation</button><button class="tab" data-tab="admin">⚙️ Admin & AI</button></nav>
-<section class="section active" id="dashboard"><div class="stats"><div class="stat"><small>Total cases</small><strong id="total">0</strong></div><div class="stat"><small>Open cases</small><strong id="open">0</strong></div><div class="stat"><small>Urgent</small><strong id="urgent">0</strong></div><div class="stat"><small>Rescued</small><strong id="rescued">0</strong></div><div class="stat"><small>Volunteers</small><strong id="volCount">0</strong></div></div><div class="grid"><div>
-<section class="panel"><h2>🚨 नया Rescue Request</h2><p class="sub">Reporter, animal, priority, photo aur actual GPS location enter karein.</p><form id="caseForm" class="formgrid"><div class="field"><label>आपका नाम *</label><input id="reporter" maxlength="80" required></div><div class="field"><label>मोबाइल नंबर *</label><input id="mobile" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required></div><div class="field"><label>पशु का प्रकार *</label><select id="animal"><option>गाय</option><option>बछड़ा</option><option>बैल / नंदी</option><option>कुत्ता</option><option>अन्य</option></select></div><div class="field"><label>Priority *</label><select id="priority"><option>Urgent</option><option>High</option><option selected>Normal</option></select></div><div class="field full"><label>समस्या / Landmark</label><textarea id="details" maxlength="1200" placeholder="चोट, स्थिति, landmark..."></textarea></div><div class="field"><label>फोटो (5 MB तक)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><span class="hint">Local demo में compressed photo save होगी.</span><img id="photoPreview" class="photo hidden" alt="Preview"></div><div class="field"><label>Rescue location *</label><div class="row"><button class="btn outline" type="button" id="gpsBtn">◎ GPS लोकेशन</button><button class="btn outline" type="button" id="clearGps">Clear</button></div><span class="hint" id="gpsLabel">Location set नहीं है</span><input id="lat" type="hidden"><input id="lng" type="hidden"></div><div class="field full"><button class="btn primary" type="submit">Submit Rescue Case</button></div></form></section>
-<section class="panel"><h2>📋 Recent Rescue Cases</h2><div id="recentCases"></div><button class="btn outline" data-go="cases">सभी cases देखें →</button></section></div><aside><section class="panel"><h2>🗺️ Rescue Map</h2><p class="sub">Saved rescue locations. Map markers are local demo data.</p><div class="map" id="mainMap"></div></section><section class="panel"><h2>⚡ Quick Actions</h2><div class="list"><button class="btn outline" data-go="team">Volunteer application / approval</button><button class="btn outline" data-go="chat">Rescue case chat</button><button class="btn outline" data-go="insights">Heatmap & monthly PDF</button><button class="btn outline" data-go="donation">Donation / UPI settings</button></div></section></aside></div></section>
-<section class="section" id="cases"><div class="panel"><h2>🚨 Rescue Case Management</h2><div class="filters"><input id="caseSearch" placeholder="Case ID, name, mobile, animal..."><select id="statusFilter"><option value="all">All statuses</option><option>Received</option><option>Verified</option><option>Assigned</option><option>Accepted</option><option>On the Way</option><option>Arrived</option><option>Rescued</option><option>Closed</option></select><select id="priorityFilter"><option value="all">All priorities</option><option>Urgent</option><option>High</option><option>Normal</option></select></div><div id="caseList"></div></div></section>
-<section class="section" id="team"><div class="grid"><section class="panel"><h2>🙋 Volunteer Application</h2><form id="volForm" class="formgrid"><div class="field"><label>नाम *</label><input id="volName" required maxlength="80"></div><div class="field"><label>मोबाइल *</label><input id="volMobile" required maxlength="10" pattern="[0-9]{10}"></div><div class="field full"><label>Area / Address *</label><textarea id="volArea" required maxlength="500"></textarea></div><div class="field full"><button class="btn primary">Apply as Volunteer</button></div></form></section><section class="panel"><h2>🛡️ Volunteer Review (Demo)</h2><p class="sub">Local demo approval. Production approval admin role se server-side hogi.</p><div id="volList"></div></section></div></section>
-<section class="section" id="chat"><div class="grid"><section class="panel"><h2>💬 Rescue Case Chat</h2><p class="sub">Case-wise local chat demo. Production mein authenticated realtime chat connect hoga.</p><div class="field"><label>Case select karein</label><select id="chatCase"></select></div><div class="chatbox" id="chatMessages"></div><form id="chatForm" class="row"><input id="chatSender" placeholder="आपका नाम" required maxlength="60"><input id="chatText" placeholder="Message likhein..." required maxlength="1000"><button class="btn primary">Send</button></form></section><section class="panel"><h2>📣 WhatsApp Communication</h2><p class="sub">Yahan se case details ka WhatsApp share link khulega. Ye bulk broadcast/API nahi hai.</p><div class="field"><label>Case select karein</label><select id="waCase"></select></div><div class="field"><label>Volunteer / recipient mobile (country code ke saath)</label><input id="waMobile" placeholder="919876543210" inputmode="numeric"></div><button class="btn green" id="waSend">Open WhatsApp Message</button><hr style="border:0;border-top:1px solid var(--line);margin:15px 0"><div class="notice">Actual WhatsApp Business broadcast ke liye Meta WhatsApp Business Platform, approved templates, opt-in consent aur server-side token required hain.</div></section></div></section>
-<section class="section" id="tracking"><div class="grid"><section class="panel"><h2>📍 Volunteer GPS Sharing</h2><p class="sub">Is device ki location ko foreground mein local demo map par share karein. Permission aur HTTPS required. Browser band hone par tracking ruk sakti hai.</p><div class="field"><label>Volunteer name</label><input id="trackName" placeholder="Volunteer name"></div><div class="row" style="margin:10px 0"><button class="btn primary" id="startTrack">Start GPS sharing</button><button class="btn danger" id="stopTrack">Stop sharing</button></div><p class="small" id="trackState">Tracking stopped.</p><div class="notice">Ye location is browser mein hi dikhegi; doosre phones/admin ko live dikhane ke liye secure Supabase Realtime backend chahiye. Sharing sirf consent se karein.</div></section><section class="panel"><h2>🗺️ Volunteer / Rescue Locations</h2><div class="map" id="trackMap"></div><div id="trackList" class="list" style="margin-top:9px"></div></section></div></section>
-<section class="section" id="insights"><div class="grid"><section class="panel"><h2>🔥 Rescue Hotspot Heatmap</h2><p class="sub">Case coordinates se local heat layer. Accurate hotspot analysis ke liye sufficient real cases zaroori hain.</p><div class="map" id="heatMap"></div><div class="small" id="heatSummary" style="margin-top:8px"></div></section><section class="panel"><h2>📊 Monthly Rescue Report</h2><div class="row"><div class="field"><label>Month</label><input type="month" id="reportMonth"></div><button class="btn primary" id="pdfBtn">Download PDF Report</button></div><div id="reportStats" class="list" style="margin-top:12px"></div><p class="small">PDF current local demo records se generate hogi. Cloud report ke liye backend query connect karni hogi.</p></section></div></section>
-<section class="section" id="donation"><div class="grid"><section class="panel"><h2>❤️ Support Animal Rescue</h2><p class="sub">Donation details admin yahan configure kar sakta hai. Payment manually verify karein.</p><div class="field"><label>UPI ID</label><input id="upiId" placeholder="yourname@upi"></div><div class="field"><label>Donation display name</label><input id="donationName" placeholder="Ujjain Animal Rescue"></div><div class="field"><label>QR image (optional)</label><input id="qrFile" type="file" accept="image/*"></div><img id="qrPreview" class="qr hidden" alt="Donation QR"><div class="row" style="margin-top:10px"><button class="btn primary" id="saveDonation">Save Donation Details</button><button class="btn outline" id="payUpi">Open UPI App</button></div><p class="small">No payment is collected or verified by this demo. UPI app availability varies by device.</p></section><section class="panel"><h2>🧾 Donation Record (Manual Demo)</h2><form id="donationForm" class="formgrid"><div class="field"><label>Donor name</label><input id="donorName" required></div><div class="field"><label>Amount (₹)</label><input id="donorAmount" type="number" min="1" max="1000000" required></div><div class="field full"><label>UTR / Reference (optional)</label><input id="donorRef" maxlength="80"></div><div class="field full"><button class="btn primary">Add unverified record</button></div></form><div id="donationList" class="list" style="margin-top:10px"></div></section></div></section>
-<section class="section" id="admin"><div class="grid"><section class="panel"><h2>⚙️ Admin & Security</h2><p class="sub">Prototype admin controls. This is not a secure login or authorization system.</p><div class="notice">Production admin panel ko Supabase Auth + role-based RLS + server-side checks se protect karna hoga. Browser Local Storage ko security boundary na samjhein.</div><div class="metric"><b id="pendingVol">0</b><span class="small">Pending volunteer applications</span></div><div class="metric" style="margin-top:8px"><b id="unverifiedDonations">0</b><span class="small">Unverified donation records</span></div><div class="row" style="margin-top:10px"><button class="btn outline" id="exportCsv">Export cases CSV</button><button class="btn danger" id="clearDemo">Clear all local demo data</button></div></section><section class="panel"><h2>🤖 AI Photo Analysis</h2><p class="sub">Gemini integration scaffold. Is demo mein AI diagnosis active nahi hai.</p><div class="notice">Animal photo se AI sirf preliminary observation de sakta hai, diagnosis nahi. Real integration ke liye API key server-side Edge Function mein rakhein; browser mein kabhi nahi.</div><input id="aiPhoto" type="file" accept="image/*"><button class="btn primary" id="aiBtn" style="margin-top:9px">Check AI integration status</button><p id="aiResult" class="small">AI analysis not configured.</p></section></div></section>
-<div class="footer">Ujjain Animal Rescue V3 · Bejuban ki Pukar · Demo build — HTTPS, backend security and field testing required before public launch.</div></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+
+<div id="splashScreen" class="splash-screen">
+ <div>
+  <i class="fa-solid fa-shield-dog text-6xl mb-4"></i>
+  <h1 class="text-2xl font-black">UJJAIN ANIMAL RESCUE</h1>
+  <p class="text-red-200 italic mt-2">"Bejuban Ki Pukar"</p>
+  <p class="text-xs mt-5">Helping the voiceless</p>
+ </div>
+</div>
+
+<div class="max-w-md mx-auto min-h-screen bg-white dark:bg-gray-800 shadow-xl flex flex-col pb-16">
+
+<header class="bg-primary text-white p-6 rounded-b-3xl shadow-lg relative">
+ <button onclick="toggleDarkMode()" class="absolute top-4 right-4 bg-white/20 rounded-full w-9 h-9">
+  <i id="darkModeIcon" class="fa-solid fa-moon"></i>
+ </button>
+ <div class="flex flex-col items-center text-center">
+  <div onclick="handleFounderClick()" class="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden mb-3">
+   <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg"
+    onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300';"
+    alt="Founder" class="w-full h-full object-cover">
+  </div>
+  <h2 class="text-xl font-bold">Raj Malviya</h2>
+  <p class="text-xs text-red-100 uppercase">Founder, Ujjain Animal Rescue</p>
+ </div>
+</header>
+
+<main class="flex-1 p-4 space-y-4">
+
+<section id="homeView" class="space-y-4">
+ <div id="statusBar" class="hidden text-center text-xs p-2 rounded-lg"></div>
+
+ <div class="grid grid-cols-3 gap-2 text-center">
+  <div class="bg-red-50 dark:bg-gray-700 p-3 rounded-xl">
+   <b id="totalCount" class="block text-xl text-primary">0</b>
+   <small>Total Calls</small>
+  </div>
+  <div class="bg-yellow-50 dark:bg-gray-700 p-3 rounded-xl">
+   <b id="pendingCount" class="block text-xl text-yellow-600">0</b>
+   <small>Pending</small>
+  </div>
+  <div class="bg-green-50 dark:bg-gray-700 p-3 rounded-xl">
+   <b id="completedCount" class="block text-xl text-green-600">0</b>
+   <small>Rescued</small>
+  </div>
+ </div>
+
+ <div class="space-y-3">
+  <button onclick="switchView('requestView')" class="w-full bg-primary text-white p-4 rounded-2xl flex justify-between items-center">
+   <span><i class="fa-solid fa-bullhorn mr-3"></i><b>New Rescue Request</b></span>
+   <i class="fa-solid fa-chevron-right"></i>
+  </button>
+
+  <button onclick="switchView('liveView')" class="w-full p-4 rounded-2xl border dark:border-gray-600 flex justify-between items-center">
+   <span><i class="fa-solid fa-tower-broadcast text-primary mr-3"></i><b>Live Requests & Timeline</b></span>
+   <span id="liveBadge" class="bg-red-600 text-white rounded-full px-2 text-xs">0</span>
+  </button>
+
+  <button onclick="switchView('trackingView');initTrackingMap()" class="w-full p-4 rounded-2xl border dark:border-gray-600 text-left">
+   <i class="fa-solid fa-map-location-dot text-indigo-600 mr-3"></i><b>Live Team Tracking & Heatmap</b>
+  </button>
+
+  <button onclick="switchView('donationView')" class="w-full p-4 rounded-2xl border dark:border-gray-600 text-left">
+   <i class="fa-solid fa-hand-holding-heart text-amber-600 mr-3"></i><b>Donation & Support</b>
+  </button>
+
+  <button onclick="switchView('historyView')" class="w-full p-4 rounded-2xl border dark:border-gray-600 text-left">
+   <i class="fa-solid fa-clock-rotate-left text-blue-600 mr-3"></i><b>Rescue History & PDF</b>
+  </button>
+
+  <button onclick="switchView('teamView')" class="w-full p-4 rounded-2xl border dark:border-gray-600 text-left">
+   <i class="fa-solid fa-users text-green-600 mr-3"></i><b>Our Team & Join Us</b>
+  </button>
+ </div>
+</section>
+<section id="requestView" class="hidden space-y-4">
+ <div class="flex justify-between items-center border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>New Rescue Request</b><span></span>
+ </div>
+
+ <form id="rescueForm" onsubmit="submitRescue(event)" class="space-y-3">
+  <input id="reqName" required maxlength="60" placeholder="Your Full Name *" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+  <select id="reqType" required class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+   <option value="">Select Animal *</option>
+   <option>Dog</option><option>Cow</option><option>Cat</option>
+   <option>Buffalo</option><option>Bird</option><option>Monkey</option>
+   <option>Other Animal</option>
+  </select>
+  <input id="reqMobile" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required placeholder="10 Digit Mobile Number *" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+  <textarea id="reqDetails" rows="3" maxlength="500" placeholder="Animal ki condition / injury details" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600"></textarea>
+
+  <div class="grid grid-cols-2 gap-2">
+   <button type="button" id="btnCurrentLoc" onclick="captureCurrentLocation()" class="p-3 rounded-xl bg-emerald-600 text-white text-xs font-bold">
+    <i class="fa-solid fa-location-crosshairs"></i> Current Location
+   </button>
+   <button type="button" id="btnLiveLoc" onclick="toggleLiveLocation()" class="p-3 rounded-xl bg-blue-600 text-white text-xs font-bold">
+    <i class="fa-solid fa-satellite-dish"></i> <span id="liveLocText">Live Location</span>
+   </button>
+  </div>
+
+  <p id="locationText" class="text-xs text-gray-500">Location abhi set nahi hui</p>
+  <div id="locationMapPreviewBox" class="hidden space-y-1">
+   <p id="locPreviewLabel" class="text-xs text-green-600 font-bold"></p>
+   <iframe id="locationMapIframe" title="Location preview" class="w-full h-40 rounded-xl border" loading="lazy"></iframe>
+  </div>
+
+  <div class="border border-dashed rounded-xl p-3 space-y-2">
+   <b class="text-sm">Animal Photo</b>
+   <div class="grid grid-cols-2 gap-2">
+    <label class="bg-gray-100 dark:bg-gray-700 p-3 rounded-xl text-center text-xs">
+     <i class="fa-solid fa-camera"></i> Camera
+     <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
+    </label>
+    <label class="bg-gray-100 dark:bg-gray-700 p-3 rounded-xl text-center text-xs">
+     <i class="fa-solid fa-images"></i> Gallery
+     <input id="galleryInput" type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+    </label>
+   </div>
+   <div id="imagePreviewBox" class="hidden relative">
+    <img id="previewImg" class="w-full max-h-52 object-contain rounded-xl">
+    <button type="button" onclick="removeSelectedPhoto()" class="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-lg">Remove</button>
+   </div>
+   <div id="aiAnalysisBox" class="hidden bg-blue-50 dark:bg-gray-700 p-3 rounded-xl text-xs">
+    <b>AI Image Note</b><p id="aiAnalysisText"></p>
+   </div>
+  </div>
+
+  <button id="submitRescueBtn" class="w-full bg-primary text-white p-4 rounded-xl font-bold">
+   Submit Request
+  </button>
+  <p id="submitStatusMsg" class="hidden text-center text-xs"></p>
+ </form>
+</section>
+<section id="liveView" class="hidden space-y-3">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>Live Rescue Requests</b><span></span>
+ </div>
+ <p class="text-xs text-gray-500">Rescue requests aur unka status yahan dikhega.</p>
+ <div id="liveRequestsList" class="space-y-3"></div>
+</section>
+
+<section id="chatView" class="hidden space-y-3">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="switchView('liveView')" class="text-primary font-bold">← Back</button>
+  <b id="chatCaseTitle">Rescue Chat</b><span></span>
+ </div>
+ <div id="chatMessagesList" class="h-80 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-3 rounded-xl space-y-2"></div>
+ <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+  <input id="chatInputMessage" required maxlength="500" placeholder="Type message..." class="flex-1 p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+  <button class="bg-primary text-white px-4 rounded-xl">Send</button>
+ </form>
+</section>
+
+<section id="trackingView" class="hidden space-y-3">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>Rescue Map</b><span></span>
+ </div>
+ <div id="mapContainer"></div>
+ <button onclick="toggleMyGpsTracking()" id="myGpsButton" class="w-full p-3 rounded-xl bg-indigo-600 text-white font-bold">
+  Start My GPS Tracking
+ </button>
+ <p id="gpsStatus" class="text-xs text-gray-500">GPS tracking is off.</p>
+</section>
+<section id="donationView" class="hidden space-y-4">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>Donation & Support</b><span></span>
+ </div>
+ <div class="bg-red-50 dark:bg-gray-700 p-4 rounded-2xl">
+  <i class="fa-solid fa-heart text-3xl text-red-600"></i>
+  <h3 class="font-bold mt-2">Support Animal Rescue</h3>
+  <p class="text-sm mt-2">Aapka support injured animals ke food, treatment aur rescue work mein madad karega.</p>
+ </div>
+ <div class="space-y-2 text-sm">
+  <p><b>UPI ID:</b> Add your verified UPI ID here</p>
+  <p class="text-xs text-gray-500">Donation karne se pehle UPI details verify karein.</p>
+ </div>
+</section>
+
+<section id="historyView" class="hidden space-y-3">
+ <div class="flex justify-between items-center border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>Rescue History</b>
+  <button onclick="downloadPDFReport()" class="bg-blue-600 text-white px-2 py-1 rounded-lg text-xs">PDF</button>
+ </div>
+ <input id="searchHistory" oninput="filterHistory()" placeholder="Search name or mobile..." class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+ <div id="historyList" class="space-y-2"></div>
+</section>
+
+<section id="teamView" class="hidden space-y-4">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="switchView('homeView')" class="text-primary font-bold">← Back</button>
+  <b>Our Gau Sevak Team</b><span></span>
+ </div>
+ <div id="approvedTeamList" class="space-y-2"></div>
+ <form id="joinForm" onsubmit="submitJoinRequest(event)" class="space-y-3 border-t pt-4">
+  <h3 class="font-bold">Join As Gau Sevak</h3>
+  <input id="joinName" required maxlength="60" placeholder="Full Name *" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+  <input id="joinMobile" required type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10 Digit Mobile *" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+  <textarea id="joinAddress" required maxlength="300" placeholder="Full Address *" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600"></textarea>
+  <button id="joinSubmitBtn" class="w-full p-3 rounded-xl bg-indigo-600 text-white font-bold">Submit Join Request</button>
+  <p id="joinStatusMsg" class="hidden text-xs text-center"></p>
+ </form>
+</section>
+<section id="adminView" class="hidden space-y-4">
+ <div class="flex justify-between border-b pb-3">
+  <button onclick="logoutAdmin()" class="text-red-600 font-bold">Logout</button>
+  <b>Admin Control Panel</b><span></span>
+ </div>
+
+ <div class="bg-red-50 dark:bg-gray-700 p-3 rounded-xl space-y-2">
+  <h3 class="font-bold text-sm">Admin Account</h3>
+  <p id="adminIdentity" class="text-xs"></p>
+ </div>
+
+ <div>
+  <h3 class="font-bold text-sm mb-2">Pending Member Requests</h3>
+  <div id="adminJoinRequestsList" class="space-y-2"></div>
+ </div>
+
+ <div>
+  <h3 class="font-bold text-sm mb-2">Manage Team Members</h3>
+  <div id="adminTeamManagementList" class="space-y-2"></div>
+ </div>
+
+ <div>
+  <h3 class="font-bold text-sm mb-2">Manage Rescue Records</h3>
+  <div id="adminControlList" class="space-y-2"></div>
+ </div>
+</section>
+
+</main>
+
+<footer class="p-4 text-center border-t dark:border-gray-700">
+ <p class="text-xs text-gray-400">Ujjain Animal Rescue © 2026 | Designed by Raj Malviya</p>
+ <p class="text-xs text-gray-400 mt-1">Be kind to every living being.</p>
+</footer>
+</div>
+
+<div id="passwordModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+ <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 w-full max-w-sm space-y-3">
+  <h3 class="font-bold text-center">Admin Login</h3>
+  <input id="adminEmailInput" type="email" placeholder="Admin Email" class="w-full p-3 border rounded-xl dark:bg-gray-700">
+  <input id="adminPasswordInput" type="password" placeholder="Admin Password" class="w-full p-3 border rounded-xl dark:bg-gray-700">
+  <button onclick="verifyAdminPassword()" class="w-full p-3 bg-primary text-white rounded-xl font-bold">Login</button>
+  <button onclick="closePasswordModal()" class="w-full p-2 text-sm">Cancel</button>
+  <p id="adminLoginMessage" class="text-xs text-center text-red-600"></p>
+ </div>
+</div>
 <script>
-'use strict';
-const $=id=>document.getElementById(id), STATUSES=['Received','Verified','Assigned','Accepted','On the Way','Arrived','Rescued','Closed'];
-const KEY='uar_v3_demo_data';let db={cases:[],volunteers:[],chats:{},locations:[],donations:[],settings:{upi:'',donationName:'Ujjain Animal Rescue',qr:''}};let maps={},watchId=null,photoData='',qrData='';
-function toast(s){const n=document.createElement('div');n.className='toast';n.textContent=s;document.body.append(n);setTimeout(()=>n.remove(),2600)}
-function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function save(){localStorage.setItem(KEY,JSON.stringify(db))}function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');db={...db,...x};db.settings={...{upi:'',donationName:'Ujjain Animal Rescue',qr:''},...(x.settings||{})}}catch(e){toast('Saved data could not be read')}}
-function id(prefix){return prefix+'-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase()}
-function fmt(t){return new Date(t).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}function caseBy(id){return db.cases.find(c=>c.id===id)}
-function nav(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===tab));if(tab==='insights'){setTimeout(()=>{initMap('heatMap');renderHeat()},50);renderReport()}if(tab==='tracking'){setTimeout(()=>initMap('trackMap'),50);renderTracking()}if(tab==='dashboard')setTimeout(()=>initMap('mainMap'),50)}
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.go)));
-function readImage(file,max=5*1024*1024){return new Promise((resolve,reject)=>{if(!file)return resolve('');if(!/^image\/(jpeg|png|webp)$/.test(file.type))return reject(Error('JPEG, PNG ya WebP image select karein'));if(file.size>max)return reject(Error('Image 5 MB se chhoti honi chahiye'));const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const scale=Math.min(1,1200/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.78))};im.onerror=()=>reject(Error('Image read nahi hui'));im.src=r.result};r.onerror=()=>reject(Error('File read failed'));r.readAsDataURL(file)})}
-  $('photo').addEventListener('change',async e=>{try{photoData=await readImage(e.target.files[0]);$('photoPreview').src=photoData;$('photoPreview').classList.toggle('hidden',!photoData)}catch(err){toast(err.message);e.target.value=''}});
-$('gpsBtn').onclick=()=>{if(!navigator.geolocation)return toast('GPS supported nahi hai');$('gpsLabel').textContent='GPS location le rahe hain...';navigator.geolocation.getCurrentPosition(p=>{$('lat').value=p.coords.latitude;$('lng').value=p.coords.longitude;$('gpsLabel').textContent=`${p.coords.latitude.toFixed(5)}, ${p.coords.longitude.toFixed(5)} (±${Math.round(p.coords.accuracy)}m)`},e=>{$('gpsLabel').textContent='Location nahi mili: '+e.message;toast('GPS permission/location check karein')},{enableHighAccuracy:true,timeout:15000,maximumAge:0})};$('clearGps').onclick=()=>{$('lat').value='';$('lng').value='';$('gpsLabel').textContent='Location set nahi hai'};
-$('caseForm').onsubmit=async e=>{e.preventDefault();const mobile=$('mobile').value.trim(),lat=$('lat').value,lng=$('lng').value;if(!/^\d{10}$/.test(mobile))return toast('10 digit mobile number dalein');if(!lat||!lng)return toast('Actual GPS location required hai');const c={id:id('UAR'),reporter:$('reporter').value.trim(),mobile,animal:$('animal').value,priority:$('priority').value,details:$('details').value.trim(),lat:+lat,lng:+lng,photo:photoData,status:'Received',assignedTo:'',createdAt:Date.now(),updatedAt:Date.now(),history:[{status:'Received',at:Date.now(),by:'Reporter'}]};db.cases.unshift(c);photoData='';e.target.reset();$('photoPreview').classList.add('hidden');$('gpsLabel').textContent='Location set nahi hai';save();renderAll();toast('Rescue case created: '+c.id)};
-function renderStats(){$('total').textContent=db.cases.length;$('open').textContent=db.cases.filter(c=>!['Rescued','Closed'].includes(c.status)).length;$('urgent').textContent=db.cases.filter(c=>c.priority==='Urgent'&&!['Rescued','Closed'].includes(c.status)).length;$('rescued').textContent=db.cases.filter(c=>['Rescued','Closed'].includes(c.status)).length;$('volCount').textContent=db.volunteers.filter(v=>v.status==='Approved').length;$('pendingVol').textContent=db.volunteers.filter(v=>v.status==='Pending').length;$('unverifiedDonations').textContent=db.donations.filter(d=>!d.verified).length}
-function caseHtml(c){const i=STATUSES.indexOf(c.status),cls=c.status==='Rescued'||c.status==='Closed'?'green':c.priority==='Urgent'?'':'blue';return `<article class="case"><div class="casehead"><div><h3>${safe(c.id)} · ${safe(c.animal)}</h3><p>${safe(c.reporter)} · ${safe(c.mobile)} · ${fmt(c.createdAt)}</p></div><span class="pill ${cls}">${safe(c.priority)} / ${safe(c.status)}</span></div><p>${safe(c.details||'No extra details')} ${c.assignedTo?' · Volunteer: '+safe(c.assignedTo):''}</p>${c.photo?`<img class="photo" src="${c.photo}" alt="Rescue photo">`:''}<div class="progress" style="margin:9px 0"><span style="width:${(i+1)/STATUSES.length*100}%"></span></div><div class="actions"><button data-act="next" data-id="${safe(c.id)}">Next status</button><button data-act="assign" data-id="${safe(c.id)}">Assign volunteer</button><button data-act="chat" data-id="${safe(c.id)}">Open chat</button><button data-act="delete" data-id="${safe(c.id)}">Delete</button></div></article>`}
-function renderCases(){const q=($('caseSearch')?.value||'').toLowerCase(),s=$('statusFilter')?.value||'all',p=$('priorityFilter')?.value||'all';const a=db.cases.filter(c=>(s==='all'||c.status===s)&&(p==='all'||c.priority===p)&&[c.id,c.reporter,c.mobile,c.animal,c.details].join(' ').toLowerCase().includes(q));$('caseList').innerHTML=a.length?a.map(caseHtml).join(''):'<div class="item">No matching rescue cases.</div>';const recent=db.cases.slice(0,4);$('recentCases').innerHTML=recent.length?recent.map(caseHtml).join(''):'<div class="item">Abhi koi rescue case nahi hai.</div>'}
-function renderAll(){renderStats();renderCases();renderVolunteers();renderChatSelectors();renderDonations();renderReport();renderMap('mainMap');renderTracking()}
-$('caseSearch').oninput=renderCases;$('statusFilter').onchange=renderCases;$('priorityFilter').onchange=renderCases;
-document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const c=caseBy(b.dataset.id);if(!c)return;const a=b.dataset.act;if(a==='next'){const i=STATUSES.indexOf(c.status);if(i<STATUSES.length-1){c.status=STATUSES[i+1];c.updatedAt=Date.now();c.history.push({status:c.status,at:Date.now(),by:'Local demo admin'});save();renderAll();toast('Status updated')}else toast('Case closed')}if(a==='assign'){const n=prompt('Volunteer name:');if(n?.trim()){c.assignedTo=n.trim().slice(0,80);if(c.status==='Received')c.status='Assigned';c.updatedAt=Date.now();c.history.push({status:c.status,at:Date.now(),by:'Assignment'});save();renderAll()}}if(a==='chat'){nav('chat');$('chatCase').value=c.id;renderChat()}if(a==='delete'&&confirm('Case delete karein?')){db.cases=db.cases.filter(x=>x.id!==c.id);save();renderAll()}});
-$('volForm').onsubmit=e=>{e.preventDefault();const mobile=$('volMobile').value.trim();if(!/^\d{10}$/.test(mobile))return toast('10 digit mobile number dalein');db.volunteers.unshift({id:id('VOL'),name:$('volName').value.trim(),mobile,area:$('volArea').value.trim(),status:'Pending',createdAt:Date.now()});save();e.target.reset();renderAll();toast('Volunteer application saved (local demo)')};
-function renderVolunteers(){$('volList').innerHTML=db.volunteers.length?db.volunteers.map(v=>`<div class="item"><b>${safe(v.name)}</b> · ${safe(v.mobile)}<p>${safe(v.area)} · ${safe(v.status)}</p>${v.status==='Pending'?`<button class="btn green" data-vol="approve" data-id="${safe(v.id)}">Approve</button> <button class="btn danger" data-vol="reject" data-id="${safe(v.id)}">Reject</button>`:''}</div>`).join(''):'<div class="item">No volunteer applications yet.</div>'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-vol]');if(!b)return;const v=db.volunteers.find(x=>x.id===b.dataset.id);if(v){v.status=b.dataset.vol==='approve'?'Approved':'Rejected';save();renderAll()}});
-function renderChatSelectors(){const opts=db.cases.map(c=>`<option value="${safe(c.id)}">${safe(c.id)} · ${safe(c.animal)}</option>`).join('');$('chatCase').innerHTML=opts||'<option value="">No cases</option>';$('waCase').innerHTML=opts||'<option value="">No cases</option>';renderChat()}
-function renderChat(){const cid=$('chatCase').value,arr=db.chats[cid]||[];$('chatMessages').innerHTML=arr.length?arr.map(m=>`<div class="msg ${m.mine?'mine':''}"><b>${safe(m.sender)}</b><div>${safe(m.text)}</div><small>${fmt(m.at)}</small></div>`).join(''):'<div class="small">Is case ke liye abhi message nahi hai.</div>';$('chatMessages').scrollTop=$('chatMessages').scrollHeight}
-$('chatCase').onchange=renderChat;$('chatForm').onsubmit=e=>{e.preventDefault();const cid=$('chatCase').value;if(!cid)return toast('Pehle case create karein');(db.chats[cid]??=[]).push({sender:$('chatSender').value.trim(),text:$('chatText').value.trim(),at:Date.now(),mine:true});$('chatText').value='';save();renderChat()};
-$('waSend').onclick=()=>{const c=caseBy($('waCase').value);if(!c)return toast('Case select karein');const phone=$('waMobile').value.replace(/\D/g,'');if(phone.length<10)return toast('Recipient mobile with country code dalein');const msg=`Ujjain Animal Rescue Alert\nCase: ${c.id}\nAnimal: ${c.animal}\nPriority: ${c.priority}\nStatus: ${c.status}\nLocation: https://maps.google.com/?q=${c.lat},${c.lng}\nDetails: ${c.details||'Please contact rescue team.'}`;window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener');};
-function initMap(id){if(!window.L||maps[id]||!$(id))return;const m=L.map(id).setView([23.1765,75.7885],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(m);maps[id]=m;setTimeout(()=>m.invalidateSize(),100)}
-function renderMap(id){initMap(id);const m=maps[id];if(!m)return;m.eachLayer(l=>{if(l instanceof L.Marker) m.removeLayer(l)});db.cases.filter(c=>Number.isFinite(c.lat)&&Number.isFinite(c.lng)).forEach(c=>L.marker([c.lat,c.lng]).addTo(m).bindPopup(`<b>${safe(c.id)}</b><br>${safe(c.animal)} · ${safe(c.priority)}<br>${safe(c.status)}`))}
-function renderHeat(){initMap('heatMap');const m=maps.heatMap;if(!m)return;m.eachLayer(l=>{if(l instanceof L.Marker||l._heat)m.removeLayer(l)});const pts=db.cases.filter(c=>Number.isFinite(c.lat)&&Number.isFinite(c.lng)).map(c=>[c.lat,c.lng,c.priority==='Urgent'?1:.6]);if(L.heatLayer&&pts.length)L.heatLayer(pts,{radius:28,blur:20}).addTo(m);db.cases.filter(c=>Number.isFinite(c.lat)&&Number.isFinite(c.lng)).forEach(c=>L.circleMarker([c.lat,c.lng],{radius:4}).addTo(m).bindPopup(safe(c.id)));$('heatSummary').textContent=`Mapped rescue locations: ${pts.length}. Heatmap local records se generate hui hai.`}
-function renderTracking(){if(!maps.trackMap)initMap('trackMap');const m=maps.trackMap;if(!m)return;m.eachLayer(l=>{if(l instanceof L.Marker)m.removeLayer(l)});db.locations.forEach(v=>L.marker([v.lat,v.lng]).addTo(m).bindPopup(`${safe(v.name)} · this device`));$('trackList').innerHTML=db.locations.map(v=>`<div class="item"><b>${safe(v.name)}</b><br>${v.lat.toFixed(5)}, ${v.lng.toFixed(5)} · ${fmt(v.at)}</div>`).join('')||'<div class="small">No volunteer location shared.</div>'}
-$('startTrack').onclick=()=>{if(!navigator.geolocation)return toast('GPS unavailable');if(watchId!==null)return toast('Tracking already running');const name=$('trackName').value.trim();if(!name)return toast('Volunteer name enter karein');watchId=navigator.geolocation.watchPosition(p=>{db.locations=[{name,lat:p.coords.latitude,lng:p.coords.longitude,at:Date.now()}];save();$('trackState').textContent=`Sharing this device location: ${p.coords.latitude.toFixed(5)}, ${p.coords.longitude.toFixed(5)}`;renderTracking()},e=>{$('trackState').textContent='GPS error: '+e.message;toast('GPS error')},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});toast('Local GPS sharing started')};$('stopTrack').onclick=()=>{if(watchId!==null)navigator.geolocation.clearWatch(watchId);watchId=null;db.locations=[];save();$('trackState').textContent='Tracking stopped.';renderTracking()};
-function renderReport(){if(!$('reportMonth'))return;if(!$('reportMonth').value)$('reportMonth').value=new Date().toISOString().slice(0,7);const month=$('reportMonth').value,a=db.cases.filter(c=>new Date(c.createdAt).toISOString().slice(0,7)===month);const counts={Total:a.length,Urgent:a.filter(c=>c.priority==='Urgent').length,Rescued:a.filter(c=>['Rescued','Closed'].includes(c.status)).length,Pending:a.filter(c=>!['Rescued','Closed'].includes(c.status)).length,Volunteers:db.volunteers.filter(v=>v.status==='Approved').length};$('reportStats').innerHTML=Object.entries(counts).map(([k,v])=>`<div class="metric"><b>${v}</b><span class="small">${k}</span></div>`).join('')}
-$('reportMonth').onchange=renderReport;$('pdfBtn').onclick=()=>{if(!window.jspdf?.jsPDF)return toast('PDF library load nahi hui; internet check karein');renderReport();const {jsPDF}=window.jspdf,doc=new jsPDF();const month=$('reportMonth').value,a=db.cases.filter(c=>new Date(c.createdAt).toISOString().slice(0,7)===month);doc.setFontSize(18);doc.text('Ujjain Animal Rescue',14,18);doc.setFontSize(12);doc.text('Monthly Rescue Report: '+month,14,28);doc.setFontSize(10);const lines=[`Total cases: ${a.length}`,`Urgent: ${a.filter(c=>c.priority==='Urgent').length}`,`Rescued / Closed: ${a.filter(c=>['Rescued','Closed'].includes(c.status)).length}`,`Pending: ${a.filter(c=>!['Rescued','Closed'].includes(c.status)).length}`];lines.forEach((x,i)=>doc.text(x,14,42+i*8));let y=82;doc.text('Case ID | Animal | Priority | Status',14,y);y+=8;a.slice(0,30).forEach(c=>{if(y>275){doc.addPage();y=20}doc.text(`${c.id} | ${c.animal} | ${c.priority} | ${c.status}`.slice(0,100),14,y);y+=7});doc.save(`Ujjain-Rescue-${month}.pdf`)};
-$('saveDonation').onclick=()=>{db.settings.upi=$('upiId').value.trim();db.settings.donationName=$('donationName').value.trim()||'Ujjain Animal Rescue';db.settings.qr=qrData;save();toast('Donation details saved locally')};$('qrFile').onchange=async e=>{try{qrData=await readImage(e.target.files[0],5*1024*1024);$('qrPreview').src=qrData;$('qrPreview').classList.toggle('hidden',!qrData)}catch(err){toast(err.message)}};$('payUpi').onclick=()=>{const upi=$('upiId').value.trim()||db.settings.upi;if(!upi)return toast('UPI ID set karein');location.href='upi://pay?pa='+encodeURIComponent(upi)+'&pn='+encodeURIComponent($('donationName').value||db.settings.donationName)+'&cu=INR'};
-$('donationForm').onsubmit=e=>{e.preventDefault();db.donations.unshift({id:id('DON'),name:$('donorName').value.trim(),amount:+$('donorAmount').value,ref:$('donorRef').value.trim(),verified:false,at:Date.now()});save();e.target.reset();renderAll();toast('Unverified donation record added')};function renderDonations(){$('donationList').innerHTML=db.donations.map(d=>`<div class="item"><b>${safe(d.name)}</b> · ₹${d.amount}<p>Ref: ${safe(d.ref||'Not supplied')} · ${d.verified?'Verified':'Unverified'} · ${fmt(d.at)}</p><button class="btn ${d.verified?'outline':'green'}" data-don="${safe(d.id)}">${d.verified?'Verified':'Mark verified'}</button></div>`).join('')||'<div class="small">No donation records.</div>';if(db.settings.upi)$('upiId').value=db.settings.upi;if(db.settings.donationName)$('donationName').value=db.settings.donationName;if(db.settings.qr){qrData=db.settings.qr;$('qrPreview').src=db.settings.qr;$('qrPreview').classList.remove('hidden')}}document.addEventListener('click',e=>{const b=e.target.closest('[data-don]');if(!b)return;const d=db.donations.find(x=>x.id===b.dataset.don);if(d){d.verified=true;save();renderAll()}});
-$('aiBtn').onclick=()=>{$('aiResult').textContent='AI photo analysis is not connected. Configure a secure server-side Gemini Edge Function; do not place an API key in this HTML.';toast('AI integration not configured')};
-$('backupBtn').onclick=()=>{const blob=new Blob([JSON.stringify({schemaVersion:3,exportedAt:new Date().toISOString(),...db},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ujjain-animal-rescue-v3-backup.json';a.click();URL.revokeObjectURL(a.href)};$('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>20*1024*1024)throw Error('Backup too large');const x=JSON.parse(await f.text());if(!Array.isArray(x.cases)||!Array.isArray(x.volunteers))throw Error('Invalid backup');if(!confirm('Existing local data replace hoga. Continue?'))return;db={...db,...x};save();renderAll();toast('Backup restored')}catch(err){toast('Restore failed: '+err.message)}finally{e.target.value=''}};
-$('exportCsv').onclick=()=>{const rows=[['Case ID','Reporter','Mobile','Animal','Priority','Status','Volunteer','Created'],...db.cases.map(c=>[c.id,c.reporter,c.mobile,c.animal,c.priority,c.status,c.assignedTo,new Date(c.createdAt).toISOString()])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='uar-cases.csv';a.click();URL.revokeObjectURL(a.href)};$('clearDemo').onclick=()=>{if(confirm('All local demo cases, chats, volunteers and donations delete ho jayenge. Continue?')){localStorage.removeItem(KEY);location.reload()}};
-load();renderAll();initMap('mainMap');initMap('trackMap');initMap('heatMap');
-</script></body></html>
+"use strict";
+
+/* Firebase configuration */
+const firebaseConfig={
+ apiKey:"AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+ authDomain:"ujjainanimalrescue.firebaseapp.com",
+ databaseURL:"https://ujjainanimalrescue-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"ujjainanimalrescue",
+ storageBucket:"ujjainanimalrescue.firebasestorage.app",
+ messagingSenderId:"686634974496",
+ appId:"1:686634974496:web:8b56642568a257e49fab45"
+};
+
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const auth=firebase.auth();
+
+let currentLatLng=null,base64Image="";
+let allRescuesData=[],approvedTeamCache=[];
+let activeChatCaseId=null;
+let mapInstance=null,markersLayer=null,heatLayerInstance=null;
+let gpsWatchId=null,liveLocWatchId=null;
+let isLiveLocationActive=false;
+let adminUser=null;
+
+const $=id=>document.getElementById(id);
+
+function escapeHtml(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function showMessage(message,type="info"){
+ const bar=$("statusBar");
+ if(!bar)return;
+ bar.textContent=message;
+ bar.className="text-center text-xs p-2 rounded-lg "+
+  (type==="error"?"bg-red-100 text-red-700":
+   type==="success"?"bg-green-100 text-green-700":"bg-blue-100 text-blue-700");
+}
+
+window.addEventListener("load",()=>{
+ setTimeout(()=>{
+  const s=$("splashScreen");
+  if(s){s.style.opacity="0";setTimeout(()=>s.remove(),500);}
+ },900);
+
+ if(localStorage.getItem("theme")==="dark"){
+  document.documentElement.classList.add("dark");
+  $("darkModeIcon").className="fa-solid fa-sun";
+ }
+
+ listenRescues();
+ listenApprovedTeam();
+});
+
+function toggleDarkMode(){
+ const dark=document.documentElement.classList.toggle("dark");
+ localStorage.setItem("theme",dark?"dark":"light");
+ $("darkModeIcon").className=dark?"fa-solid fa-sun":"fa-solid fa-moon";
+}
+
+function switchView(id){
+ if(id!=="requestView")stopLiveLocation();
+ document.querySelectorAll("main section").forEach(el=>el.classList.add("hidden"));
+ const target=$(id);
+ if(target)target.classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+let founderClicks=0,founderTimer=null;
+function handleFounderClick(){
+ founderClicks++;
+ clearTimeout(founderTimer);
+ founderTimer=setTimeout(()=>founderClicks=0,1800);
+ if(founderClicks>=5){
+  founderClicks=0;
+  $("passwordModal").classList.remove("hidden");
+ }
+}
+
+function closePasswordModal(){
+ $("passwordModal").classList.add("hidden");
+ $("adminLoginMessage").textContent="";
+}
+
+async function verifyAdminPassword(){
+ const email=$("adminEmailInput").value.trim();
+ const password=$("adminPasswordInput").value;
+ try{
+  const result=await auth.signInWithEmailAndPassword(email,password);
+  adminUser=result.user;
+  closePasswordModal();
+  switchView("adminView");
+  $("adminIdentity").textContent=adminUser.email||"Authenticated admin";
+  renderJoinRequests();
+  renderAdminControls(allRescuesData);
+  renderApprovedTeam();
+ }catch(error){
+  $("adminLoginMessage").textContent="Login failed: "+error.message;
+ }
+}
+
+async function logoutAdmin(){
+ try{await auth.signOut();}catch(e){}
+ adminUser=null;
+ switchView("homeView");
+}
+
+function requireAdmin(){
+ if(!adminUser)throw new Error("Admin login required.");
+}
+  function showLocationPreview(lat,lng,label){
+ $("locPreviewLabel").textContent=label;
+ $("locationMapIframe").src=
+  `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+ $("locationMapPreviewBox").classList.remove("hidden");
+}
+
+function setLocation(lat,lng,label){
+ currentLatLng={lat:Number(lat),lng:Number(lng)};
+ $("locationText").textContent=
+  `${label}: ${currentLatLng.lat.toFixed(5)}, ${currentLatLng.lng.toFixed(5)}`;
+ showLocationPreview(currentLatLng.lat,currentLatLng.lng,label);
+}
+
+function captureCurrentLocation(){
+ if(!navigator.geolocation){
+  showMessage("GPS supported nahi hai.","error");return;
+ }
+ $("locationText").textContent="GPS location fetching...";
+ navigator.geolocation.getCurrentPosition(pos=>{
+  setLocation(pos.coords.latitude,pos.coords.longitude,"Current GPS");
+ },err=>{
+  $("locationText").textContent="GPS failed. Location manually verify karein.";
+  showMessage(err.message,"error");
+ },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+
+function toggleLiveLocation(){
+ if(isLiveLocationActive){stopLiveLocation();return;}
+ if(!navigator.geolocation){showMessage("GPS not supported.","error");return;}
+ isLiveLocationActive=true;
+ $("liveLocText").textContent="Stop Live";
+ liveLocWatchId=navigator.geolocation.watchPosition(pos=>{
+  setLocation(pos.coords.latitude,pos.coords.longitude,"Live GPS");
+ },err=>{
+  showMessage("Live GPS error: "+err.message,"error");
+  stopLiveLocation();
+ },{enableHighAccuracy:true,timeout:15000,maximumAge:3000});
+}
+
+function stopLiveLocation(){
+ if(liveLocWatchId!==null){
+  navigator.geolocation.clearWatch(liveLocWatchId);
+  liveLocWatchId=null;
+ }
+ isLiveLocationActive=false;
+ if($("liveLocText"))$("liveLocText").textContent="Live Location";
+}
+
+function handleImageUpload(event){
+ const file=event.target.files?.[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")){alert("Please select an image.");return;}
+ if(file.size>8*1024*1024){alert("Image must be under 8 MB.");event.target.value="";return;}
+
+ const reader=new FileReader();
+ reader.onload=()=>{
+  const img=new Image();
+  img.onload=()=>{
+   const max=700,scale=Math.min(1,max/Math.max(img.width,img.height));
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.round(img.width*scale);
+   canvas.height=Math.round(img.height*scale);
+   canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+   base64Image=canvas.toDataURL("image/jpeg",0.62);
+   $("previewImg").src=base64Image;
+   $("imagePreviewBox").classList.remove("hidden");
+   $("aiAnalysisBox").classList.add("hidden");
+  };
+  img.src=reader.result;
+ };
+ reader.readAsDataURL(file);
+}
+
+function removeSelectedPhoto(){
+ base64Image="";
+ $("previewImg").src="";
+ $("imagePreviewBox").classList.add("hidden");
+ $("aiAnalysisBox").classList.add("hidden");
+ $("cameraInput").value="";
+ $("galleryInput").value="";
+}
+
+function playAlertSound(){
+ try{
+  const C=window.AudioContext||window.webkitAudioContext;
+  const ctx=new C(),osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.frequency.value=587;gain.gain.value=.1;
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start();osc.stop(ctx.currentTime+.3);
+ }catch(e){}
+}
+
+async function submitRescue(event){
+ event.preventDefault();
+ const name=$("reqName").value.trim();
+ const type=$("reqType").value;
+ const mobile=$("reqMobile").value.trim();
+ const details=$("reqDetails").value.trim();
+ const btn=$("submitRescueBtn"),msg=$("submitStatusMsg");
+
+ if(!/^\d{10}$/.test(mobile)){alert("10 digit mobile number enter karein.");return;}
+ if(!currentLatLng){alert("Pehle GPS location capture karein.");return;}
+
+ const record={
+  name,type,mobile,details,
+  photo:base64Image,
+  location:`${currentLatLng.lat},${currentLatLng.lng}`,
+  status:"Pending",timelineStep:1,
+  assignedSevak:"Rescue Team",
+  timestamp:Date.now()
+ };
+
+ btn.disabled=true;btn.textContent="Submitting...";
+ msg.classList.remove("hidden");msg.textContent="Saving request...";
+
+ try{
+  await db.ref("rescues").push(record);
+  playAlertSound();
+  msg.textContent="Request successfully submitted!";
+  msg.className="text-center text-xs text-green-600";
+  $("rescueForm").reset();
+  removeSelectedPhoto();
+  currentLatLng=null;
+  $("locationText").textContent="Location abhi set nahi hui";
+  $("locationMapPreviewBox").classList.add("hidden");
+  stopLiveLocation();
+  switchView("liveView");
+ }catch(error){
+  msg.textContent="Submit failed: "+error.message;
+  msg.className="text-center text-xs text-red-600";
+ }finally{
+  btn.disabled=false;btn.textContent="Submit Request";
+ }
+  }
+  function listenRescues(){
+ db.ref("rescues").on("value",snapshot=>{
+  const data=snapshot.val()||{};
+  allRescuesData=Object.entries(data).map(([id,item])=>({id,...item}))
+   .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+  updateDashboard();
+  renderLiveRequests(allRescuesData);
+  renderHistory(allRescuesData);
+  renderAdminControls(allRescuesData);
+  if(mapInstance)updateHeatmapAndMarkers(allRescuesData);
+ },error=>showMessage("Database read error: "+error.message,"error"));
+}
+
+function listenApprovedTeam(){
+ db.ref("approvedTeam").on("value",snapshot=>{
+  const data=snapshot.val()||{};
+  approvedTeamCache=Object.entries(data).map(([id,item])=>({id,...item}));
+  renderApprovedTeam();
+ });
+}
+
+function updateDashboard(){
+ const total=allRescuesData.length;
+ const completed=allRescuesData.filter(x=>x.status==="Completed").length;
+ const pending=total-completed;
+ $("totalCount").textContent=total;
+ $("pendingCount").textContent=pending;
+ $("completedCount").textContent=completed;
+ $("liveBadge").textContent=pending;
+}
+
+function renderLiveRequests(data){
+ const list=$("liveRequestsList");list.innerHTML="";
+ const active=data.filter(x=>x.status!=="Completed");
+ if(!active.length){list.innerHTML='<p class="text-center text-xs text-gray-400 p-5">No active requests.</p>';return;}
+
+ active.forEach(item=>{
+  const step=Number(item.timelineStep)||1;
+  const card=document.createElement("div");
+  card.className="bg-white dark:bg-gray-700 p-3 rounded-2xl border dark:border-gray-600 space-y-2";
+  const photo=item.photo?`<img src="${item.photo}" class="w-20 h-20 object-cover rounded-xl" alt="Animal">`:
+   '<div class="w-20 h-20 rounded-xl bg-gray-200 flex items-center justify-center text-xs">No Photo</div>';
+  card.innerHTML=`
+   <div class="flex justify-between">
+    <b class="text-primary">${escapeHtml(item.type)}</b>
+    <span class="text-xs">${escapeHtml(item.status)}</span>
+   </div>
+   <div class="flex gap-3">${photo}<div class="text-xs space-y-1">
+    <p><b>By:</b> ${escapeHtml(item.name)} (${escapeHtml(item.mobile)})</p>
+    <p><b>Assigned:</b> ${escapeHtml(item.assignedSevak)}</p>
+    <p><b>Details:</b> ${escapeHtml(item.details)}</p>
+    <p><a class="text-blue-600 underline" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(item.location||"")}">Open Map</a></p>
+   </div></div>
+   <p class="text-xs">Timeline: ${["Pending","Accepted","On the Way","Completed"][Math.max(0,Math.min(3,step-1))]}</p>
+   <button class="text-xs bg-indigo-600 text-white px-3 py-2 rounded-lg">Team Chat</button>`;
+  card.querySelector("button").onclick=()=>openInAppChat(item.id,item.type+" - "+item.name);
+  list.appendChild(card);
+ });
+}
+
+async function submitJoinRequest(event){
+ event.preventDefault();
+ const name=$("joinName").value.trim();
+ const mobile=$("joinMobile").value.trim();
+ const address=$("joinAddress").value.trim();
+ const btn=$("joinSubmitBtn");
+ if(!/^\d{10}$/.test(mobile)){alert("Enter valid 10 digit mobile.");return;}
+ btn.disabled=true;
+ try{
+  await db.ref("joinRequests").push({name,mobile,address,timestamp:Date.now()});
+  $("joinForm").reset();
+  $("joinStatusMsg").textContent="Join request submitted successfully.";
+  $("joinStatusMsg").classList.remove("hidden");
+ }catch(e){alert("Error: "+e.message);}
+ finally{btn.disabled=false;}
+}
+
+function renderApprovedTeam(){
+ const el=$("approvedTeamList"),admin=$("adminTeamManagementList");
+ el.innerHTML="";if(admin)admin.innerHTML="";
+ approvedTeamCache.forEach(member=>{
+  const card=document.createElement("div");
+  card.className="p-3 rounded-xl border dark:border-gray-600 flex justify-between items-center";
+  card.innerHTML=`<div><b>${escapeHtml(member.name)}</b><p class="text-xs text-gray-500">${escapeHtml(member.address)}</p></div>`;
+  el.appendChild(card);
+  if(admin){
+   const row=document.createElement("div");
+   row.className="p-2 border rounded-xl flex justify-between text-xs";
+   row.innerHTML=`<span>${escapeHtml(member.name)} · ${escapeHtml(member.mobile)}</span><button class="text-red-600 font-bold">Remove</button>`;
+   row.querySelector("button").onclick=()=>deleteTeamMember(member.id);
+   admin.appendChild(row);
+  }
+ });
+}
+  function openInAppChat(caseId,title){
+ if(!adminUser){alert("Admin login required for chat.");return;}
+ activeChatCaseId=caseId;
+ $("chatCaseTitle").textContent="Chat: "+title;
+ switchView("chatView");
+ loadChatMessages(caseId);
+}
+
+function loadChatMessages(caseId){
+ const list=$("chatMessagesList");
+ db.ref("chats/"+caseId).off();
+ db.ref("chats/"+caseId).on("value",snapshot=>{
+  const data=snapshot.val()||{};
+  list.innerHTML="";
+  Object.values(data).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0)).forEach(m=>{
+   const box=document.createElement("div");
+   box.className="bg-white dark:bg-gray-800 p-2 rounded-xl text-xs";
+   box.innerHTML=`<b>${escapeHtml(m.sender||"Team")}</b><p>${escapeHtml(m.text||"")}</p>`;
+   list.appendChild(box);
+  });
+  list.scrollTop=list.scrollHeight;
+ });
+}
+
+async function sendChatMessage(event){
+ event.preventDefault();
+ if(!adminUser||!activeChatCaseId){alert("Admin login required.");return;}
+ const text=$("chatInputMessage").value.trim();
+ if(!text)return;
+ try{
+  await db.ref("chats/"+activeChatCaseId).push({
+   sender:adminUser.email||"Admin",text,timestamp:Date.now()
+  });
+  $("chatInputMessage").value="";
+ }catch(e){alert(e.message);}
+}
+
+function initTrackingMap(){
+ setTimeout(()=>{
+  if(!mapInstance){
+   mapInstance=L.map("mapContainer").setView([23.1793,75.7849],13);
+   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(mapInstance);
+   markersLayer=L.layerGroup().addTo(mapInstance);
+  }
+  mapInstance.invalidateSize();
+  updateHeatmapAndMarkers(allRescuesData);
+ },250);
+}
+
+function updateHeatmapAndMarkers(data){
+ if(!mapInstance)return;
+ markersLayer.clearLayers();
+ const points=[];
+ data.forEach(item=>{
+  const parts=String(item.location||"").split(",").map(Number);
+  if(parts.length!==2||!parts.every(Number.isFinite))return;
+  points.push([parts[0],parts[1],1]);
+  L.marker([parts[0],parts[1]]).addTo(markersLayer)
+   .bindPopup(`<b>${escapeHtml(item.type)}</b><br>${escapeHtml(item.status)}<br>${escapeHtml(item.name)}`);
+ });
+ if(heatLayerInstance)mapInstance.removeLayer(heatLayerInstance);
+ if(points.length&&L.heatLayer){
+  heatLayerInstance=L.heatLayer(points,{radius:25,blur:15}).addTo(mapInstance);
+ }
+}
+
+function toggleMyGpsTracking(){
+ if(gpsWatchId!==null){
+  navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;
+  $("gpsStatus").textContent="GPS tracking stopped.";
+  $("myGpsButton").textContent="Start My GPS Tracking";return;
+ }
+ if(!navigator.geolocation){alert("GPS not supported.");return;}
+ gpsWatchId=navigator.geolocation.watchPosition(pos=>{
+  const {latitude:lat,longitude:lng}=pos.coords;
+  $("gpsStatus").textContent=`GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  if(mapInstance)mapInstance.setView([lat,lng],15);
+ },err=>$("gpsStatus").textContent="GPS error: "+err.message,
+ {enableHighAccuracy:true,maximumAge:3000,timeout:15000});
+ $("myGpsButton").textContent="Stop My GPS Tracking";
+}
+
+async function updateTimeline(id,step,status){
+ requireAdmin();
+ await db.ref("rescues/"+id).update({
+  timelineStep:step,status,updatedAt:Date.now()
+ });
+}
+
+async function deleteRescue(id){
+ requireAdmin();
+ if(!confirm("Permanently delete this rescue record?"))return;
+ await db.ref("rescues/"+id).remove();
+}
+
+async function deleteTeamMember(id){
+ requireAdmin();
+ if(!confirm("Remove this member?"))return;
+ await db.ref("approvedTeam/"+id).remove();
+}
+
+async function renderJoinRequests(){
+ requireAdmin();
+ const el=$("adminJoinRequestsList");
+ const snap=await db.ref("joinRequests").once("value");
+ const data=snap.val()||{};
+ el.innerHTML="";
+ Object.entries(data).forEach(([id,r])=>{
+  const row=document.createElement("div");
+  row.className="p-3 border rounded-xl text-xs space-y-2";
+  row.innerHTML=`<b>${escapeHtml(r.name)}</b><p>${escapeHtml(r.mobile)}</p><p>${escapeHtml(r.address)}</p>
+   <button class="bg-green-600 text-white p-2 rounded">Approve</button>
+   <button class="bg-red-600 text-white p-2 rounded">Reject</button>`;
+  const buttons=row.querySelectorAll("button");
+  buttons[0].onclick=()=>approveMember(id);
+  buttons[1].onclick=()=>rejectJoin(id);
+  el.appendChild(row);
+ });
+ if(!el.children.length)el.textContent="No pending requests.";
+}
+
+async function approveMember(id){
+ requireAdmin();
+ const snap=await db.ref("joinRequests/"+id).once("value");
+ const r=snap.val();if(!r)return;
+ await db.ref("approvedTeam").push({
+  name:r.name,mobile:r.mobile,address:r.address,approvedAt:Date.now()
+ });
+ await db.ref("joinRequests/"+id).remove();
+}
+
+async function rejectJoin(id){
+ requireAdmin();
+ await db.ref("joinRequests/"+id).remove();
+}
+
+function renderAdminControls(data){
+ const el=$("adminControlList");
+ if(!el||!adminUser)return;
+ el.innerHTML="";
+ data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="p-3 border rounded-xl space-y-2 text-xs";
+  row.innerHTML=`<b>${escapeHtml(item.type)} — ${escapeHtml(item.status)}</b>
+   <p>${escapeHtml(item.name)} · ${escapeHtml(item.mobile)}</p>
+   <div class="flex flex-wrap gap-1">
+    <button data-step="1" class="bg-gray-500 text-white p-2 rounded">Pending</button>
+    <button data-step="2" class="bg-blue-600 text-white p-2 rounded">Accept</button>
+    <button data-step="3" class="bg-yellow-600 text-white p-2 rounded">On Way</button>
+    <button data-step="4" class="bg-green-600 text-white p-2 rounded">Complete</button>
+    <button data-delete="1" class="bg-red-600 text-white p-2 rounded">Delete</button>
+   </div>`;
+  row.querySelectorAll("[data-step]").forEach(btn=>{
+   btn.onclick=()=>updateTimeline(item.id,Number(btn.dataset.step),
+    ["Pending","Accepted","On the Way","Completed"][Number(btn.dataset.step)-1]);
+  });
+  row.querySelector("[data-delete]").onclick=()=>deleteRescue(item.id);
+  el.appendChild(row);
+ });
+   }function renderHistory(data){
+ const done=data.filter(x=>x.status==="Completed");
+ renderHistoryList(done);
+}
+
+function renderHistoryList(data){
+ const el=$("historyList");el.innerHTML="";
+ if(!data.length){el.textContent="No completed rescue records.";return;}
+ data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="p-3 border rounded-xl text-xs";
+  row.innerHTML=`<b>${escapeHtml(item.type)} — ${escapeHtml(item.name)}</b>
+   <p>${escapeHtml(item.mobile)}</p>
+   <p>${new Date(item.timestamp||0).toLocaleString()}</p>
+   <span class="text-green-600 font-bold">Rescued</span>`;
+  el.appendChild(row);
+ });
+}
+
+function filterHistory(){
+ const q=$("searchHistory").value.trim().toLowerCase();
+ const done=allRescuesData.filter(item=>item.status==="Completed"&&
+  (`${item.name||""} ${item.mobile||""} ${item.type||""}`).toLowerCase().includes(q));
+ renderHistoryList(done);
+}
+
+function downloadPDFReport(){
+ try{
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const done=allRescuesData.filter(x=>x.status==="Completed");
+  const now=new Date();
+  doc.setFontSize(16);
+  doc.text("Ujjain Animal Rescue - Rescue Report",14,18);
+  doc.setFontSize(9);
+  doc.text("Generated: "+now.toLocaleString(),14,26);
+  let y=38;
+  if(!done.length)doc.text("No completed rescue records.",14,y);
+  done.forEach((item,index)=>{
+   if(y>275){doc.addPage();y=20;}
+   const line=`${index+1}. ${item.type||"Animal"} - ${item.name||""} (${item.mobile||""})`;
+   doc.text(line.substring(0,100),14,y);
+   y+=7;
+   doc.text(("Date: "+new Date(item.timestamp||0).toLocaleDateString()).substring(0,100),18,y);
+   y+=9;
+  });
+  doc.save("ujjain-animal-rescue-report.pdf");
+ }catch(e){
+  alert("PDF error: "+e.message);
+ }
+}
+
+/* Firebase auth state */
+auth.onAuthStateChanged(user=>{
+ adminUser=user||null;
+ if(!user&&$("adminView")&&!$("adminView").classList.contains("hidden")){
+  switchView("homeView");
+ }
+});
+
+/* Clean up GPS when page is closed */
+window.addEventListener("beforeunload",()=>{
+ stopLiveLocation();
+ if(gpsWatchId!==null)navigator.geolocation.clearWatch(gpsWatchId);
+});
+
+/* Do not expose a hardcoded admin password in this HTML. */
+</script>
+</body>
+</html>
+
+  
