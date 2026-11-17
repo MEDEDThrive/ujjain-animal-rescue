@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ujjain Animal Rescue - Bejuban ki Pukar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9b1c31',
+                        secondary: '#1d4ed8',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+    <style>
+        .splash-screen {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #9b1c31, #4a0e18);
+            z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
+
+    <!-- Splash -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="text-center p-6">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <i class="fa-solid fa-shield-dog text-5xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-wider mb-2">UJJAIN ANIMAL RESCUE</h1>
+            <p class="text-lg text-red-200 italic font-medium">"Bejuban ki Pukar"</p>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto min-h-screen bg-white dark:bg-gray-800 shadow-xl flex flex-col relative pb-16">
+
+        <!-- Header -->
+        <header class="bg-primary text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+            <div class="absolute top-4 right-4 flex items-center gap-2">
+                <button onclick="toggleDarkMode()" class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                    <i id="darkModeIcon" class="fa-solid fa-moon text-white"></i>
+                </button>
+            </div>
+            <div class="flex flex-col items-center text-center">
+                <div onclick="handleFounderClick()" class="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden shadow-md mb-3 cursor-pointer relative group">
+                    <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" 
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300';"
+                         alt="Founder Raj Malviya" class="w-full h-full object-cover">
+                </div>
+                <h2 class="text-xl font-bold tracking-wide">Raj Malviya</h2>
+                <p class="text-xs text-red-100 font-medium tracking-wider uppercase mt-0.5">Founder, Ujjain Animal Rescue</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 space-y-4">
+
+            <!-- HOME -->
+            <div id="homeView" class="space-y-4">
+                <div id="statusBar" class="hidden text-center text-[11px] py-1.5 rounded-lg font-medium"></div>
+
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-red-50 dark:bg-gray-700 p-3 rounded-xl border border-red-100 dark:border-gray-600">
+                        <span id="totalCount" class="block text-xl font-black text-primary dark:text-red-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Total Calls</span>
+                    </div>
+                    <div class="bg-yellow-50 dark:bg-gray-700 p-3 rounded-xl border border-yellow-100 dark:border-gray-600">
+                        <span id="pendingCount" class="block text-xl font-black text-yellow-600 dark:text-yellow-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Pending</span>
+                    </div>
+                    <div class="bg-green-50 dark:bg-gray-700 p-3 rounded-xl border border-green-100 dark:border-gray-600">
+                        <span id="completedCount" class="block text-xl font-black text-green-600 dark:text-green-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Rescued</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button onclick="switchView('requestView')" class="w-full bg-gradient-to-r from-red-600 to-primary text-white p-4 rounded-2xl shadow-md flex items-center justify-between hover:opacity-95 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-bullhorn text-lg"></i></div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">New Rescue Request</h3>
+                                <p class="text-[11px] text-red-100">Report an injured animal instantly</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
+
+                    <button onclick="switchView('liveView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 dark:bg-gray-600 text-primary dark:text-red-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-tower-broadcast text-lg animate-pulse"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Live Requests & Timeline</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Track cases & status updates</p>
+                            </div>
+                        </div>
+                        <span id="liveBadge" class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                    </button>
+
+                    <button onclick="switchView('trackingView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-100 dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-map-location-dot text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Rescue Location & Heatmap</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Rescue case locations & density map</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+
+                    <button onclick="switchView('donationView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-gray-600 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-hand-holding-heart text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                                                <h3 class="font-bold text-sm">Donation & Support</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Contribute for fodder & medicines</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
+
+                    <button onclick="switchView('historyView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Rescue History</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Past missions & Monthly PDF reports</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+
+                    <button onclick="switchView('teamView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 dark:bg-gray-600 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-users text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Our Team & Join Us</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Gau sevaks directory & registration</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+
+                    <button onclick="switchView('medicalView'); renderMedicalRecords()" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3"><div class="w-10 h-10 bg-rose-100 dark:bg-gray-600 text-rose-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-notes-medical text-lg"></i></div><div class="text-left"><h3 class="font-bold text-sm">Animal Medical Records</h3><p class="text-[11px] text-gray-500 dark:text-gray-400">Treatment, vaccination & follow-up</p></div></div><i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+                    <button onclick="switchView('lostFoundView'); renderLostFound()" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-xl shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3"><div class="w-10 h-10 bg-orange-100 dark:bg-gray-600 text-orange-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-paw text-lg"></i></div><div class="text-left"><h3 class="font-bold text-sm">Lost & Found Animals</h3><p class="text-[11px] text-gray-500 dark:text-gray-400">Community reports & reunification</p></div></div><i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- REQUEST FORM -->
+            <div id="requestView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">New Rescue Request</h3>
+                    <div></div>
+                </div>
+
+                <form id="rescueForm" onsubmit="submitRescue(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Aapka Naam*</label>
+                        <input type="text" id="reqName" required placeholder="Apna pura naam" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Pashu Ka Prakaar*</label>
+                        <select id="reqType" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                            <option value="Gay (Cow)">Gay (Cow)</option>
+                            <option value="Bachhada (Calf)">Bachhada (Calf)</option>
+                            <option value="Nandi (Bull)">Nandi (Bull)</option>
+                            <option value="Other Animal">Other Animal</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Photo (Camera / Gallery)</label>
+                        <div class="flex items-center gap-2 py-1">
+                            <label class="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary shrink-0 bg-gray-50 dark:bg-gray-700">
+                                <i class="fa-solid fa-camera text-primary dark:text-red-400 text-lg mb-1"></i>
+                                <span class="text-[10px] font-bold text-gray-600 dark:text-gray-300">Camera</span>
+                                <input type="file" accept="image/*" capture="environment" id="cameraInput" onchange="handleImageUpload(event)" class="hidden">
+                            </label>
+                            <label class="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary shrink-0 bg-gray-50 dark:bg-gray-700">
+                                <i class="fa-solid fa-image text-blue-500 text-lg mb-1"></i>
+                                <span class="text-[10px] font-bold text-gray-600 dark:text-gray-300">Gallery</span>
+                                <input type="file" accept="image/*" id="galleryInput" onchange="handleImageUpload(event)" class="hidden">
+                            </label>
+                        </div>
+                        <div id="imagePreviewBox" class="hidden relative mt-2 w-24 h-24 rounded-xl overflow-hidden border border-gray-300">
+                            <img id="previewImg" src="" class="w-full h-full object-cover">
+                            <button type="button" onclick="removeSelectedPhoto()" class="absolute top-1 right-1 bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div id="aiAnalysisBox" class="mt-2 p-2.5 bg-green-50 dark:bg-gray-700 border border-green-200 dark:border-gray-600 rounded-xl text-xs text-green-700 dark:text-green-300 hidden">
+                            <i class="fa-solid fa-robot mr-1"></i> <span id="aiAnalysisText">AI analysis pending...</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2">Location* (WhatsApp style)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="btnCurrentLoc" onclick="captureCurrentLocation()" class="py-3 px-2 bg-emerald-600 text-white rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-emerald-700 transition">
+                                <i class="fa-solid fa-location-crosshairs text-lg"></i>
+                                <span>Current Location</span>
+                            </button>
+                            <button type="button" id="btnLiveLoc" onclick="toggleLiveLocation()" class="py-3 px-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-blue-700 transition">
+                                <i class="fa-solid fa-satellite-dish text-lg"></i>
+                                <span id="liveLocText">Live Location</span>
+                            </button>
+                        </div>
+                        <p id="locationText" class="mt-2 text-[11px] text-center text-gray-500 dark:text-gray-400">Location abhi set nahi hui</p>
+
+                        <div id="locationMapPreviewBox" class="hidden mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-xl border border-gray-300 dark:border-gray-600">
+                            <p class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mb-1 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> <span id="locPreviewLabel">Location Captured!</span>
+                            </p>
+                            <div class="w-full h-32 rounded-lg overflow-hidden border">
+                                <iframe id="locationMapIframe" width="100%" height="100%" frameborder="0" style="border:0;" src=""></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Mobile Number*</label>
+                        <input type="tel" id="reqMobile" required pattern="[0-9]{10}" placeholder="10 Digits Mobile Number" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary">
+                    </div>
+
+                    <button type="submit" id="submitRescueBtn" class="w-full py-3.5 bg-primary text-white rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition">
+                        Submit Request & Auto Assign
+                    </button>
+                    <p id="submitStatusMsg" class="text-xs text-center hidden"></p>
+                </form>
+            </div>
+
+            <!-- LIVE VIEW -->
+            <div id="liveView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Live Calls & Timeline</h3>
+                    <div></div>
+                </div>
+                                <div class="bg-emerald-50 dark:bg-gray-700 p-3 rounded-2xl border border-emerald-200 dark:border-gray-600 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-xs text-emerald-800 dark:text-emerald-300">Broadcast to All Core Sevaks</h4>
+                        <p class="text-[10px] text-gray-600 dark:text-gray-300">Send emergency alert</p>
+                    </div>
+                    <button onclick="broadcastToAllWhatsApp()" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1 shrink-0">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Broadcast
+                    </button>
+                </div>
+                <div id="liveRequestsList" class="space-y-3"></div>
+            </div>
+
+            <!-- TRACKING -->
+            <div id="trackingView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Tracking & Heatmap</h3>
+                    <button onclick="toggleMyGpsTracking()" id="gpsTrackBtn" class="text-xs bg-indigo-600 text-white px-2.5 py-1.5 rounded-lg font-bold">Start GPS</button>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded-xl text-[11px] text-gray-600 dark:text-gray-300 text-center">
+                    🔵 Your current GPS location & 🔴 Rescue case density heatmap across Ujjain
+                </div>
+                <div id="mapContainer" class="w-full h-80 rounded-2xl border border-gray-300 dark:border-gray-600 shadow-inner z-0"></div>
+            </div>
+
+            <!-- DONATION -->
+            <div id="donationView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Donation & Support</h3>
+                    <div></div>
+                </div>
+                <div class="bg-amber-50 dark:bg-gray-700 p-4 rounded-2xl border border-amber-200 dark:border-gray-600 space-y-3 text-center">
+                    <div class="w-16 h-16 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto text-2xl shadow">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                    <h4 class="font-bold text-sm text-amber-900 dark:text-amber-200">Support Gau Seva in Ujjain</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300">Your contribution helps fodder, medicines & ambulance for injured cattle.</p>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-amber-100 dark:border-gray-600 text-left text-xs space-y-1">
+                        <p><strong>UPI ID:</strong> <span class="text-primary font-bold">6263895427@ptyes</span></p>
+                        <p><strong>Google Pay / PhonePe:</strong> <span class="font-bold">6263895427</span></p>
+                        <p><strong>Account Name:</strong> Raj Malviya (Ujjain Animal Rescue)</p>
+                    </div>
+                    <a href="upi://pay?pa=6263895427@ptyes&pn=RajMalviya&cu=INR" class="block w-full py-3 bg-amber-600 text-white rounded-xl font-bold text-xs shadow hover:bg-amber-700 transition text-center">
+                        Donate via UPI App
+                    </a>
+                </div>
+            </div>
+
+            <!-- CHAT -->
+            <div id="chatView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('liveView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 id="chatCaseTitle" class="font-bold text-sm">Secure Team Chat</h3>
+                    <div></div>
+                </div>
+                <div id="chatMessagesList" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-2xl h-72 overflow-y-auto space-y-2 border border-gray-200 dark:border-gray-600 text-xs"></div>
+                <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                    <input type="text" id="chatInputMessage" required placeholder="Type secure team message..." class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                    <button type="submit" class="px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow shrink-0">Send</button>
+                </form>
+            </div>
+
+            <!-- HISTORY -->
+            <div id="historyView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Rescue History</h3>
+                    <button onclick="downloadPDFReport()" class="text-xs bg-blue-600 text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-file-pdf"></i> Monthly PDF
+                    </button>
+                </div>
+                <div class="relative">
+                    <input type="text" id="searchHistory" oninput="filterHistory()" placeholder="Search by name or mobile..." class="w-full p-2.5 pl-9 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+                </div>
+                <div id="historyList" class="space-y-2.5"></div>
+            </div>
+
+            <!-- TEAM VIEW -->
+            <div id="teamView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="switchView('homeView')" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h3 class="font-bold text-base">Our Gau Sevak Team</h3>
+                    <div></div>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 text-primary dark:text-red-400 flex items-center justify-center font-bold">RM</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Raj Malviya</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Founder & Chief Coordinator</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/916263895427" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">AT</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Ankit Thakur</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Core Sevak</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/919977926920" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">AP</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Aashish Pal</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-300">Core Sevak</p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/918319229059" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                                    </div>
+
+                <div id="approvedTeamList" class="space-y-2.5"></div>
+
+                <div class="pt-2 border-t dark:border-gray-700">
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Join As Gau Sevak</h4>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2">Form bhar ke Submit karein. Request Admin ke paas jayegi.</p>
+                    <form id="joinForm" onsubmit="submitJoinRequest(event)" class="space-y-2.5">
+                        <input type="text" id="joinName" required placeholder="Full Name*" class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                        <input type="tel" id="joinMobile" required pattern="[0-9]{10}" placeholder="10 Digits Mobile Number*" class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                        <textarea id="joinAddress" required rows="2" placeholder="Full Address (Area, Landmark, Ujjain)*" class="w-full p-2.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl"></textarea>
+                        <button type="submit" id="joinSubmitBtn" class="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow hover:bg-indigo-700 transition">
+                            Submit Join Request
+                        </button>
+                    </form>
+                    <p id="joinStatusMsg" class="text-xs text-center mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <!-- MEDICAL RECORDS -->
+            <div id="medicalView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700"><button onclick="switchView('homeView')" class="text-sm font-bold text-primary"><i class="fa-solid fa-arrow-left"></i> Back</button><h3 class="font-bold text-base">Animal Medical Records</h3><span></span></div>
+                <div class="bg-rose-50 dark:bg-gray-700 p-3 rounded-xl border border-rose-100 dark:border-gray-600"><p class="text-xs text-gray-600 dark:text-gray-300">Har animal ke treatment, vaccination aur follow-up ka record. Records are securely synced through the rescue admin account.</p></div>
+                <form id="medicalForm" onsubmit="saveMedicalRecord(event)" class="space-y-2">
+                    <input id="medAnimalId" required placeholder="Rescue Case ID / Animal ID" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <input id="medAnimalName" required placeholder="Animal name / description" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <select id="medType" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl"><option>Treatment</option><option>Vaccination</option><option>Check-up</option><option>Medicine</option><option>Follow-up</option></select>
+                    <input id="medDate" type="date" required class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <textarea id="medNotes" required rows="3" placeholder="Vet / treatment / medicine / next follow-up details" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl"></textarea>
+                    <button class="w-full py-3 bg-primary text-white rounded-xl font-bold">Save Medical Record</button>
+                </form><div id="medicalList" class="space-y-2"></div>
+            </div>
+
+            <!-- LOST AND FOUND -->
+            <div id="lostFoundView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700"><button onclick="switchView('homeView')" class="text-sm font-bold text-primary"><i class="fa-solid fa-arrow-left"></i> Back</button><h3 class="font-bold text-base">Lost & Found Animals</h3><span></span></div>
+                <p class="text-xs text-gray-500 dark:text-gray-300">Community lost-and-found reports are shared with the rescue community.</p>
+                <form id="lostForm" onsubmit="saveLostFound(event)" class="space-y-2">
+                    <select id="lostStatus" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl"><option>Lost</option><option>Found</option><option>Reunited</option></select>
+                    <input id="lostAnimal" required placeholder="Animal type / description" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <input id="lostArea" required placeholder="Area / landmark" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <input id="lostContact" required inputmode="numeric" pattern="[0-9]{10}" placeholder="Contact mobile (10 digits)" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl">
+                    <textarea id="lostDetails" rows="2" placeholder="Distinctive marks / details" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border rounded-xl"></textarea>
+                    <button class="w-full py-3 bg-primary text-white rounded-xl font-bold">Publish Report</button>
+                </form><div id="lostFoundList" class="space-y-2"></div>
+            </div>
+
+            <!-- ADMIN -->
+            <div id="adminView" class="hidden space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <button onclick="logoutAdmin()" class="text-sm font-bold text-primary dark:text-red-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Exit Admin
+                    </button>
+                    <h3 class="font-bold text-base text-red-600">👑 Admin Control Panel</h3>
+                    <div></div>
+                </div>
+
+                <div class="bg-amber-50 dark:bg-gray-700 p-3.5 rounded-2xl border border-amber-200 dark:border-gray-600 space-y-1">
+                    <h4 class="font-bold text-xs text-amber-800 dark:text-amber-300 uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> AI Image Analysis
+                    </h4>
+                    <p class="text-[11px] text-gray-600 dark:text-gray-300">AI image analysis will be enabled only through a secure server connection. Private API keys are never stored in this browser.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Pending Member Requests</h4>
+                    <div id="adminJoinRequestsList" class="space-y-2">
+                        <p class="text-xs text-gray-400 italic">No pending requests.</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Manage Active Team Members</h4>
+                    <div id="adminTeamManagementList" class="space-y-2"></div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-gray-500 dark:text-gray-400 mb-2">Manage All Rescue Records</h4>
+                    <div id="adminControlList" class="space-y-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="p-4 text-center border-t dark:border-gray-700 mt-auto">
+            <p class="text-[11px] text-gray-400">Ujjain Animal Rescue © 2026 | Designed by Raj Malviya</p>
+        </footer>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl w-full max-w-xs shadow-2xl space-y-3">
+            <h3 class="font-bold text-sm text-center">🔐 Admin Authentication</h3>
+            <p class="text-xs text-center text-gray-500 dark:text-gray-300">Sign in with your admin account</p>
+            <input type="email" id="adminEmailInput" autocomplete="username" placeholder="Admin email" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+            <input type="password" id="adminPasswordInput" autocomplete="current-password" placeholder="Password" class="w-full p-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+            <div class="flex gap-2">
+                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-primary text-white rounded-xl text-xs font-bold">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== FIREBASE CONFIGURATION + AUTHENTICATED DATABASE ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUxCLd6j3wGlmfsqDjQeyH0zBTOQ4YCDI",
+            authDomain: "ujjainanimalrescue.firebaseapp.com",
+            databaseURL: "https://ujjainanimalrescue-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ujjainanimalrescue",
+            storageBucket: "ujjainanimalrescue.firebasestorage.app",
+            messagingSenderId: "686634974496",
+            appId: "1:686634974496:web:8b56642568a257e49fab45"
+        };
+        const ADMIN_UID = "tfLIzaamjcTHCtm6w8mBGV85jab2";
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => console.warn('Auth persistence:', err.message));
+
+        let adminAuthenticated = false;
+        let currentAdminUser = null;
+        let pendingAdminView = null;
+        let adminListenersAttached = false;
+        let allRescuesData = [];
+        let approvedTeamCache = [];
+        let medicalRecordsCache = [];
+        let lostFoundCache = [];
+        let activeChatCaseId = null;
+        let currentLatLng = null;
+        let base64Image = "";
+        let clickCount = 0;
+        let clickTimer = null;
+        let wrongAttempts = 0;
+        let lockoutUntil = 0;
+        let mapInstance = null;
+        let heatLayerInstance = null;
+        let markersLayer = null;
+        let myLocationMarker = null;
+        let gpsWatchId = null;
+        let liveLocWatchId = null;
+        let isLiveLocationActive = false;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function phoneDigits(value) {
+            return String(value || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+        }
+
+        function isAdminView(viewId) {
+            return ['liveView', 'trackingView', 'historyView', 'medicalView', 'chatView', 'adminView'].includes(viewId);
+        }
+
+        function attachAdminListeners() {
+            if (!adminAuthenticated || adminListenersAttached) return;
+            adminListenersAttached = true;
+            listenRescues();
+            listenJoinRequests();
+            listenMedicalRecords();
+            renderJoinRequests();
+            renderApprovedTeam();
+            renderAdminControls(allRescuesData);
+        }
+
+        function detachAdminListeners() {
+            db.ref('rescues').off();
+            db.ref('joinRequests').off();
+            db.ref('medicalRecords').off();
+            db.ref('chats').off();
+            adminListenersAttached = false;
+            allRescuesData = [];
+            medicalRecordsCache = [];
+            updateDashboard();
+            renderLiveRequests([]);
+            renderHistory([]);
+            renderAdminControls([]);
+            renderMedicalRecords();
+        }
+
+        // ========== FIREBASE LISTENERS ==========
+        function listenRescues() {
+            db.ref('rescues').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                allRescuesData = Object.keys(data).map(key => ({ id: key, ...data[key] }))
+                    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                updateDashboard();
+                renderLiveRequests(allRescuesData);
+                renderHistory(allRescuesData);
+                renderAdminControls(allRescuesData);
+                if (mapInstance) updateHeatmapAndMarkers(allRescuesData);
+            }, err => console.error('Rescue listener:', err.message));
+        }
+
+        function listenJoinRequests() {
+            db.ref('joinRequests').on('value', () => renderJoinRequests(), err => console.error('Join request listener:', err.message));
+        }
+
+        function listenApprovedTeam() {
+            // Only name + volunteer contact number are stored in this public-facing node.
+            db.ref('approvedTeam').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                approvedTeamCache = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                renderApprovedTeam();
+            }, err => console.error('Team listener:', err.message));
+        }
+
+        function listenLostFound() {
+            db.ref('lostFound').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                lostFoundCache = Object.keys(data).map(key => ({ id: key, ...data[key] }))
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderLostFound();
+            }, err => console.error('Lost & found listener:', err.message));
+        }
+
+        function listenMedicalRecords() {
+            db.ref('medicalRecords').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                medicalRecordsCache = Object.keys(data).map(key => ({ id: key, ...data[key] }))
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderMedicalRecords();
+            }, err => console.error('Medical records listener:', err.message));
+        }
+
+        // ========== INIT ==========
+        window.onload = function() {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.remove(), 500);
+                }
+            }, 1400);
+
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-white';
+            }
+            listenApprovedTeam();
+            listenLostFound();
+            auth.onAuthStateChanged(user => {
+                if (user && user.uid === ADMIN_UID) {
+                    adminAuthenticated = true;
+                    currentAdminUser = user;
+                    attachAdminListeners();
+                    if (pendingAdminView) {
+                        const target = pendingAdminView;
+                        pendingAdminView = null;
+                        switchView(target);
+                    }
+                } else {
+                    adminAuthenticated = false;
+                    currentAdminUser = null;
+                    detachAdminListeners();
+                    if (user) auth.signOut().catch(() => {});
+                    if (document.getElementById('adminView') && !document.getElementById('adminView').classList.contains('hidden')) {
+                        switchView('homeView');
+                    }
+                }
+            });
+            const md = document.getElementById('medDate');
+            if (md) md.value = new Date().toISOString().slice(0, 10);
+        };
+
+        function updateDashboard() {
+            const total = allRescuesData.length;
+            const pending = allRescuesData.filter(i => i.status !== 'Completed').length;
+            const completed = allRescuesData.filter(i => i.status === 'Completed').length;
+            document.getElementById('totalCount').innerText = total;
+            document.getElementById('pendingCount').innerText = pending;
+            document.getElementById('completedCount').innerText = completed;
+            document.getElementById('liveBadge').innerText = pending;
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('darkModeIcon').className = isDark ? 'fa-solid fa-sun text-white' : 'fa-solid fa-moon text-white';
+        }
+
+        function switchView(viewId) {
+            if (isAdminView(viewId) && !adminAuthenticated) {
+                pendingAdminView = viewId;
+                checkLockoutAndOpenModal();
+                return;
+            }
+            if (viewId !== 'requestView' && isLiveLocationActive) stopLiveLocation();
+            ['homeView','requestView','liveView','trackingView','donationView','chatView','historyView','teamView','medicalView','lostFoundView','adminView'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            if (viewId === 'trackingView') initTrackingMap();
+            if (viewId === 'medicalView') renderMedicalRecords();
+            if (viewId === 'lostFoundView') renderLostFound();
+        }
+
+        function handleFounderClick() {
+            clickCount++;
+            if (clickCount === 1) clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+            if (clickCount >= 5) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                if (adminAuthenticated) switchView('adminView');
+                else checkLockoutAndOpenModal();
+            }
+        }
+
+        function checkLockoutAndOpenModal() {
+            if (Date.now() < lockoutUntil) {
+                alert(`Locked for ${Math.ceil((lockoutUntil - Date.now())/1000)} seconds.`);
+                return;
+            }
+            document.getElementById('passwordModal').classList.remove('hidden');
+            document.getElementById('adminEmailInput').value = '';
+            document.getElementById('adminPasswordInput').value = '';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+        }
+
+        async function verifyAdminPassword() {
+            if (Date.now() < lockoutUntil) return;
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value;
+            if (!email || !password) { alert('Admin email aur password dono enter karein.'); return; }
+            const loginButton = document.querySelector('#passwordModal button[onclick="verifyAdminPassword()"]');
+            if (loginButton) { loginButton.disabled = true; loginButton.textContent = 'Checking...'; }
+            try {
+                const credential = await auth.signInWithEmailAndPassword(email, password);
+                if (credential.user.uid !== ADMIN_UID) {
+                    await auth.signOut();
+                    throw new Error('This account is not the configured website administrator.');
+                }
+                wrongAttempts = 0;
+                closePasswordModal();
+                adminAuthenticated = true;
+                currentAdminUser = credential.user;
+                attachAdminListeners();
+                const target = pendingAdminView || 'adminView';
+                pendingAdminView = null;
+                switchView(target);
+            } catch (err) {
+                wrongAttempts++;
+                if (wrongAttempts >= 3) {
+                    lockoutUntil = Date.now() + 30000;
+                    alert('3 failed attempts. Please wait 30 seconds.');
+                    closePasswordModal();
+                } else {
+                    alert('Login failed: ' + (err.message || 'Please check your email and password.'));
+                }
+            } finally {
+                if (loginButton) { loginButton.disabled = false; loginButton.textContent = 'Login'; }
+            }
+        }
+
+        function logoutAdmin() {
+            auth.signOut().then(() => {
+                adminAuthenticated = false;
+                currentAdminUser = null;
+                pendingAdminView = null;
+                switchView('homeView');
+            }).catch(err => alert('Sign out error: ' + err.message));
+        }
+
+        // ========== LOCATION ==========
+        function captureCurrentLocation() {
+            if (isLiveLocationActive) stopLiveLocation();
+            document.getElementById('locationText').innerText = "Current location fetch ho rahi hai...";
+            document.getElementById('btnCurrentLoc').classList.add('ring-2', 'ring-emerald-300');
+            document.getElementById('btnLiveLoc').classList.remove('ring-2', 'ring-blue-300');
+
+            if (!navigator.geolocation) {
+                useDefaultLocation("Browser GPS support nahi karta");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    currentLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    showLocationPreview(currentLatLng.lat, currentLatLng.lng, "Current Location ✓");
+                    document.getElementById('locationText').innerText = `Current: ${currentLatLng.lat.toFixed(5)}, ${currentLatLng.lng.toFixed(5)}`;
+                },
+                (err) => {
+                    useDefaultLocation("GPS permission / error: " + (err.message || "unknown"));
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        function toggleLiveLocation() {
+            if (isLiveLocationActive) {
+                stopLiveLocation();
+                return;
+            }
+            document.getElementById('btnLiveLoc').classList.add('ring-2', 'ring-blue-300');
+            document.getElementById('btnCurrentLoc').classList.remove('ring-2', 'ring-emerald-300');
+            document.getElementById('liveLocText').innerText = "Stop Live";
+            document.getElementById('locationText').innerText = "Live location start ho rahi hai...";
+
+            if (!navigator.geolocation) {
+                useDefaultLocation("Browser GPS support nahi karta");
+                return;
+            }
+
+            isLiveLocationActive = true;
+            liveLocWatchId = navigator.geolocation.watchPosition(
+                (pos) => {
+                    currentLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    showLocationPreview(currentLatLng.lat, currentLatLng.lng, "🔴 Live Location updating...");
+                    document.getElementById('locationText').innerText = `Live: ${currentLatLng.lat.toFixed(5)}, ${currentLatLng.lng.toFixed(5)} (updating)`;
+                },
+                (err) => {
+                    document.getElementById('locationText').innerText = "Live GPS error: " + (err.message || "");
+                    stopLiveLocation();
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 3000 }
+            );
+        }
+
+        function stopLiveLocation() {
+            if (liveLocWatchId) {
+                navigator.geolocation.clearWatch(liveLocWatchId);
+                liveLocWatchId = null;
+            }
+            isLiveLocationActive = false;
+            document.getElementById('liveLocText').innerText = "Live Location";
+            document.getElementById('btnLiveLoc').classList.remove('ring-2', 'ring-blue-300');
+            if (currentLatLng) {
+                document.getElementById('locationText').innerText = `Last Live: ${currentLatLng.lat.toFixed(5)}, ${currentLatLng.lng.toFixed(5)} (stopped)`;
+                showLocationPreview(currentLatLng.lat, currentLatLng.lng, "Live Location stopped ✓");
+            }
+        }
+
+        function useDefaultLocation(msg) {
+            currentLatLng = { lat: 23.1793, lng: 75.7849 };
+            showLocationPreview(currentLatLng.lat, currentLatLng.lng, "Default Ujjain (GPS fail)");
+            document.getElementById('locationText').innerText = msg + " → Default Ujjain set";
+        }
+
+        function showLocationPreview(lat, lng, label) {
+            document.getElementById('locPreviewLabel').innerText = label || "Location Captured!";
+            const box = document.getElementById('locationMapPreviewBox');
+            const iframe = document.getElementById('locationMapIframe');
+            iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+            box.classList.remove('hidden');
+        }
+
+        // ========== IMAGE ==========
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height;
+                    const maxDim = 420;
+                    if (w > h && w > maxDim) { h = h * maxDim / w; w = maxDim; }
+                    else if (h > maxDim) { w = w * maxDim / h; h = maxDim; }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    base64Image = canvas.toDataURL('image/jpeg', 0.55);
+
+                    if (base64Image.length > 180000) {
+                        canvas.width = Math.floor(w * 0.65);
+                        canvas.height = Math.floor(h * 0.65);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        base64Image = canvas.toDataURL('image/jpeg', 0.4);
+                    }
+
+                    document.getElementById('previewImg').src = base64Image;
+                    document.getElementById('imagePreviewBox').classList.remove('hidden');
+                    analyzeImageWithGemini(base64Image);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedPhoto() {
+            base64Image = "";
+            document.getElementById('previewImg').src = "";
+                        document.getElementById('imagePreviewBox').classList.add('hidden');
+            document.getElementById('aiAnalysisBox').classList.add('hidden');
+            document.getElementById('cameraInput').value = "";
+            document.getElementById('galleryInput').value = "";
+        }
+
+        async function analyzeImageWithGemini(imageBase64) {
+            const box = document.getElementById('aiAnalysisBox');
+            const textEl = document.getElementById('aiAnalysisText');
+            box.classList.remove('hidden');
+            textEl.innerText = 'AI image analysis is not connected yet. Your photo can still be submitted with the rescue request.';
+        }
+
+        function playAlertSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.35);
+            } catch (e) {}
+        }
+
+        // ========== SUBMIT RESCUE ==========
+        function submitRescue(e) {
+            e.preventDefault();
+            const name = document.getElementById('reqName').value.trim();
+            const type = document.getElementById('reqType').value;
+            const mobile = phoneDigits(document.getElementById('reqMobile').value.trim());
+            const btn = document.getElementById('submitRescueBtn');
+            const msg = document.getElementById('submitStatusMsg');
+
+            if (!name || phoneDigits(mobile).length !== 10) {
+                alert("Naam aur 10 digit mobile zaroori hai.");
+                return;
+            }
+            if (!currentLatLng) {
+                alert("Pehle Current Location ya Live Location capture karein.");
+                return;
+            }
+
+            if (isLiveLocationActive) stopLiveLocation();
+
+            let sevaks = ["Raj Malviya", "Ankit Thakur", "Aashish Pal"];
+            if (approvedTeamCache.length > 0) {
+                const names = approvedTeamCache.map(m => m.name).filter(Boolean);
+                if (names.length) sevaks = ["Raj Malviya", ...names];
+            }
+            const assigned = sevaks[Math.floor(Math.random() * sevaks.length)];
+
+            const record = {
+                name, type, mobile,
+                photo: base64Image || "",
+                location: `${currentLatLng.lat}, ${currentLatLng.lng}`,
+                status: "Pending",
+                timelineStep: 1,
+                assignedSevak: assigned,
+                timestamp: Date.now()
+            };
+
+            btn.innerText = "Submitting...";
+            btn.disabled = true;
+            msg.classList.remove('hidden');
+            msg.className = "text-xs text-center text-blue-600";
+            msg.innerText = "Submitting rescue request securely...";
+
+            db.ref('rescues').push(record)
+                .then(() => {
+                    playAlertSound();
+                    msg.className = "text-xs text-center text-green-600";
+                    msg.innerText = "✓ Successfully submitted!";
+                    alert(`Submitted!\nAssigned to: ${assigned}`);
+
+                    document.getElementById('rescueForm').reset();
+                    removeSelectedPhoto();
+                    currentLatLng = null;
+                    document.getElementById('locationText').innerText = "Location abhi set nahi hui";
+                    document.getElementById('locationMapPreviewBox').classList.add('hidden');
+                    document.getElementById('btnCurrentLoc').classList.remove('ring-2', 'ring-emerald-300');
+                    document.getElementById('btnLiveLoc').classList.remove('ring-2', 'ring-blue-300');
+                    btn.innerText = "Submit Request & Auto Assign";
+                    btn.disabled = false;
+                    setTimeout(() => msg.classList.add('hidden'), 2000);
+                    switchView('homeView');
+                })
+                .catch((err) => {
+                    msg.className = "text-xs text-center text-red-600";
+                    msg.innerText = "Error: " + err.message;
+                    btn.innerText = "Submit Request & Auto Assign";
+                    btn.disabled = false;
+                });
+        }
+
+        function broadcastToAllWhatsApp() {
+            const msg = encodeURIComponent("🚨 *UJJAIN ANIMAL RESCUE EMERGENCY* 🚨\nAll Gau Sevaks live dashboard check karein!");
+            window.open(`https://wa.me/?text=${msg}`, '_blank', 'noopener');
+        }
+
+        // ========== JOIN REQUEST ==========
+        function submitJoinRequest(e) {
+            e.preventDefault();
+            const name = document.getElementById('joinName').value.trim();
+            const mobile = phoneDigits(document.getElementById('joinMobile').value.trim());
+                        const address = document.getElementById('joinAddress').value.trim();
+            const btn = document.getElementById('joinSubmitBtn');
+            const statusMsg = document.getElementById('joinStatusMsg');
+
+            if (!name || phoneDigits(mobile).length !== 10 || !address) {
+                alert("Naam, 10 digit mobile aur address sab zaroori hai.");
+                return;
+            }
+
+            btn.innerText = "Submitting...";
+            btn.disabled = true;
+
+            const data = { name, mobile, address, timestamp: Date.now() };
+            db.ref('joinRequests').push(data)
+                .then(() => {
+                    statusMsg.classList.remove('hidden');
+                    statusMsg.className = "text-xs text-center mt-2 text-green-600";
+                    statusMsg.innerText = "✓ Request successfully bhej di gayi!";
+                    alert("Join request successfully submit ho gayi!");
+                    document.getElementById('joinForm').reset();
+                    btn.innerText = "Submit Join Request";
+                    btn.disabled = false;
+                    setTimeout(() => {
+                        statusMsg.classList.add('hidden');
+                        switchView('homeView');
+                    }, 1500);
+                })
+                .catch(err => {
+                    alert("Error: " + err.message);
+                    btn.innerText = "Submit Join Request";
+                    btn.disabled = false;
+                });
+        }
+
+        // ========== RENDER FUNCTIONS ==========
+        function renderLiveRequests(data) {
+            const list = document.getElementById('liveRequestsList');
+            if (!list) return;
+
+            const pending = (data || []).filter(i => i.status !== 'Completed');
+            list.innerHTML = '';
+            if (!pending.length) {
+                list.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No active emergency requests.</p>';
+                return;
+            }
+            pending.forEach(item => {
+                const step = item.timelineStep || 1;
+                const safeType = escapeHtml(item.type || 'Animal');
+                const safeName = escapeHtml(item.name || '');
+                const safeMobile = escapeHtml(item.mobile || '');
+                const safeAssigned = escapeHtml(item.assignedSevak || 'Raj Malviya');
+                const safeLoc = encodeURIComponent(item.location || '');
+                const photoHtml = item.photo
+                    ? `<img src="${item.photo}" class="w-16 h-16 rounded-xl object-cover shadow border" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center text-[10px] text-gray-400\\'>No Photo</div>';">`
+                    : '<div class="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center text-[10px] text-gray-400">No Photo</div>';
+
+                list.innerHTML += `
+                    <div class="bg-white dark:bg-gray-700 p-3 rounded-2xl border border-gray-200 dark:border-gray-600 shadow-sm space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-primary dark:text-red-400">${safeType}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-bold">${escapeHtml(item.status || 'Pending')}</span>
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            ${photoHtml}
+                            <div class="text-xs space-y-1 flex-1">
+                                <p><strong class="text-gray-500">By:</strong> ${safeName} (${safeMobile})</p>
+                                <p><strong class="text-gray-500">Assigned:</strong> ${safeAssigned}</p>
+                                <p><strong class="text-gray-500">Location:</strong> <a href="https://maps.google.com/?q=${safeLoc}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">Open Map</a></p>
+                            </div>
+                        </div>
+                        <div class="pt-1 border-t dark:border-gray-600 flex justify-between text-[10px] font-bold text-gray-500">
+                            <span class="${step >= 1 ? 'text-primary dark:text-red-400' : ''}">1. Pending</span>
+                            <span class="${step >= 2 ? 'text-primary dark:text-red-400' : ''}">2. Accepted</span>
+                            <span class="${step >= 3 ? 'text-primary dark:text-red-400' : ''}">3. On Way</span>
+                            <span class="${step >= 4 ? 'text-green-600' : ''}">4. Completed</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded text-[10px] font-bold">Accept</button>
+                            <button onclick="updateTimeline('${item.id}',3,'On the Way')" class="px-2 py-1 bg-yellow-500 text-white rounded text-[10px] font-bold">On Way</button>
+                            <button onclick="updateTimeline('${item.id}',4,'Completed')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Complete</button>
+                            <button onclick="openInAppChat('${item.id}','${safeType} - ${safeName}')" class="px-2 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold"><i class="fa-solid fa-comments"></i> Chat</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openInAppChat(caseId, title) {
+            if (!adminAuthenticated) {
+                pendingAdminView = 'chatView';
+                checkLockoutAndOpenModal();
+                return;
+            }
+            activeChatCaseId = caseId;
+            document.getElementById('chatCaseTitle').innerText = "Chat: " + title;
+            switchView('chatView');
+            loadChatMessages(caseId);
+        }
+
+        function loadChatMessages(caseId) {
+            const list = document.getElementById('chatMessagesList');
+            if (!list) return;
+            list.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4">Loading...</p>';
+
+            db.ref('chats/' + caseId).off();
+            db.ref('chats/' + caseId).on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const messages = Object.keys(data).map(k => data[k]).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                list.innerHTML = '';
+                if (messages.length) {
+                    messages.forEach(m => {
+                        list.innerHTML += `<div class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm"><p class="font-bold text-[10px] text-primary">${escapeHtml(m.sender || 'Sevak')}</p><p class="text-xs">${escapeHtml(m.text || '')}</p></div>`;
+                    });
+                    list.scrollTop = list.scrollHeight;
+                } else {
+                    list.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4">No messages yet.</p>';
+                }
+            });
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const text = document.getElementById('chatInputMessage').value.trim();
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (text && activeChatCaseId) {
+                db.ref('chats/' + activeChatCaseId).push({
+                    sender: "Verified Gau Sevak",
+                    text,
+                    timestamp: Date.now()
+                });
+                document.getElementById('chatInputMessage').value = '';
+            }
+        }
+
+        // ========== MAP ==========
+        function initTrackingMap() {
+            setTimeout(() => {
+                if (!mapInstance) {
+                    mapInstance = L.map('mapContainer').setView([23.1793, 75.7849], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
+                                        markersLayer = L.layerGroup().addTo(mapInstance);
+                }
+                mapInstance.invalidateSize();
+                updateHeatmapAndMarkers(allRescuesData);
+            }, 280);
+        }
+
+        function updateHeatmapAndMarkers(data) {
+            if (!mapInstance) return;
+            if (markersLayer) markersLayer.clearLayers();
+            const heatPoints = [];
+            (data || []).forEach(item => {
+                if (item.location && item.location.includes(',')) {
+                    const [lat, lng] = item.location.split(',').map(Number);
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        heatPoints.push([lat, lng, 1]);
+                        if (markersLayer) {
+                            markersLayer.addLayer(L.marker([lat, lng]).bindPopup(`<b>${escapeHtml(item.type || '')}</b><br>${escapeHtml(item.name || '')}<br>${escapeHtml(item.status || '')}`));
+                        }
+                    }
+                }
+            });
+            if (heatLayerInstance) { mapInstance.removeLayer(heatLayerInstance); heatLayerInstance = null; }
+            if (L.heatLayer && heatPoints.length) {
+                heatLayerInstance = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 }).addTo(mapInstance);
+            }
+        }
+
+        function toggleMyGpsTracking() {
+            if (!navigator.geolocation) { alert("GPS not supported"); return; }
+            if (gpsWatchId) {
+                navigator.geolocation.clearWatch(gpsWatchId);
+                gpsWatchId = null;
+                if (myLocationMarker && mapInstance) { mapInstance.removeLayer(myLocationMarker); myLocationMarker = null; }
+                document.getElementById('gpsTrackBtn').innerText = "Start GPS";
+                alert("GPS stopped");
+            } else {
+                gpsWatchId = navigator.geolocation.watchPosition(pos => {
+                    const lat = pos.coords.latitude, lng = pos.coords.longitude;
+                    if (mapInstance) {
+                        mapInstance.setView([lat, lng], 15);
+                        if (myLocationMarker) myLocationMarker.setLatLng([lat, lng]);
+                        else {
+                            myLocationMarker = L.marker([lat, lng], {
+                                icon: L.divIcon({
+                                    className: '',
+                                    html: '<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(37,99,235,0.7);"></div>',
+                                    iconSize: [16, 16], iconAnchor: [8, 8]
+                                })
+                            }).addTo(mapInstance).bindPopup("<b>You are here</b>");
+                        }
+                    }
+                }, err => alert("GPS error: " + (err.message || "")), { enableHighAccuracy: true });
+                document.getElementById('gpsTrackBtn').innerText = "Stop GPS";
+                alert("Live GPS started");
+            }
+        }
+
+        // ========== HISTORY ==========
+        function renderHistory(data) {
+            const list = document.getElementById('historyList');
+            if (!list) return;
+            const done = (data || []).filter(i => i.status === 'Completed');
+            list.innerHTML = '';
+            if (!done.length) {
+                list.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No completed history yet.</p>';
+                return;
+            }
+            done.forEach(item => {
+                list.innerHTML += `
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
+                        <div>
+                            <p class="font-bold">${escapeHtml(item.type || '')} - ${escapeHtml(item.name || '')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp || 0).toLocaleDateString()} | ${escapeHtml(item.mobile || '')}</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
+                    </div>`;
+            });
+        }
+
+        function filterHistory() {
+            const q = (document.getElementById('searchHistory').value || '').toLowerCase();
+            const done = allRescuesData.filter(i => i.status === 'Completed' && ((i.name || '').toLowerCase().includes(q) || (i.mobile || '').includes(q)));
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            if (!done.length) { list.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">No match.</p>'; return; }
+            done.forEach(item => {
+                list.innerHTML += `
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border flex items-center justify-between text-xs">
+                        <div>
+                            <p class="font-bold">${escapeHtml(item.type || '')} - ${escapeHtml(item.name || '')}</p>
+                            <p class="text-[10px] text-gray-400">${new Date(item.timestamp || 0).toLocaleDateString()} | ${escapeHtml(item.mobile || '')}</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold">Rescued</span>
+                    </div>`;
+            });
+        }
+
+        // ========== ADMIN ==========
+        function renderAdminControls(data) {
+            const list = document.getElementById('adminControlList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!data || !data.length) {
+                list.innerHTML = '<p class="text-xs text-gray-400 italic">No records.</p>';
+                return;
+            }
+            data.forEach(item => {
+                list.innerHTML += `
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border space-y-2 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-primary">${escapeHtml(item.type || '')} (${escapeHtml(item.status || '')})</span>
+                            <button onclick="deleteRescue('${item.id}')" class="text-red-600 font-bold"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <p><strong>By:</strong> ${escapeHtml(item.name || '')} | ${escapeHtml(item.mobile || '')}</p>
+                        <p><strong>Assigned:</strong> ${escapeHtml(item.assignedSevak || '')}</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button onclick="updateTimeline('${item.id}',1,'Pending')" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded font-bold">Pending</button>
+                            <button onclick="updateTimeline('${item.id}',2,'Accepted')" class="px-2 py-1 bg-blue-500 text-white rounded font-bold">Accept</button>
+                            <button onclick="updateTimeline('${item.id}',3,'On the Way')" class="px-2 py-1 bg-yellow-500 text-white rounded font-bold">On Way</button>
+                            <button onclick="updateTimeline('${item.id}',4,'Completed')" class="px-2 py-1 bg-green-600 text-white rounded font-bold">Complete</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function updateTimeline(id, step, status) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            const updates = { timelineStep: step, status: status };
+            if (status === 'Completed') updates.photo = "";
+            db.ref('rescues/' + id).update(updates)
+                .then(() => alert(status === 'Completed' ? "Completed + photo cleared" : "Updated: " + status))
+                .catch(err => alert("Error: " + err.message));
+        }
+
+        function deleteRescue(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (confirm("Delete this record?")) {
+              db.ref('rescues/' + id).remove()
+                    .then(() => alert("Deleted"))
+                    .catch(err => alert("Error: " + err.message));
+            }
+        }
+
+        function renderJoinRequests() {
+            const el = document.getElementById('adminJoinRequestsList');
+            if (!el || !adminAuthenticated) return;
+            db.ref('joinRequests').once('value').then(snapshot => {
+                const data = snapshot.val() || {};
+                const list = Object.keys(data).map(key => ({ id: key, ...data[key] }))
+                    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                el.innerHTML = '';
+                if (list.length) {
+                    list.forEach(r => {
+                        const digits = phoneDigits(r.mobile);
+                        const phoneHtml = digits.length === 10
+                            ? `<a class="text-green-700 dark:text-green-400 underline font-bold" href="https://wa.me/91${digits}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.mobile || '')} <i class="fa-brands fa-whatsapp"></i></a>`
+                            : `<span>${escapeHtml(r.mobile || '')}</span>`;
+                        el.innerHTML += `
+                            <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-600 space-y-1 text-xs">
+                                <p><strong>Name:</strong> ${escapeHtml(r.name || '')}</p>
+                                <p><strong>Mobile:</strong> ${phoneHtml}</p>
+                                <p><strong>Address:</strong> ${escapeHtml(r.address || 'N/A')}</p>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="approveMember('${r.id}')" class="px-3 py-1 bg-green-600 text-white rounded-lg font-bold">Accept</button>
+                                    <button onclick="rejectJoin('${r.id}')" class="px-3 py-1 bg-red-600 text-white rounded-lg font-bold">Reject</button>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    el.innerHTML = '<p class="text-xs text-gray-400 italic">No pending requests.</p>';
+                }
+            }).catch(err => { el.innerHTML = `<p class="text-xs text-red-500">Could not load requests: ${escapeHtml(err.message)}</p>`; });
+        }
+
+        async function approveMember(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            try {
+                const snapshot = await db.ref('joinRequests/' + id).once('value');
+                const req = snapshot.val();
+                if (!req) { alert('Request not found.'); return; }
+                const teamRef = db.ref('approvedTeam').push();
+                const updates = {};
+                updates['approvedTeam/' + teamRef.key] = {
+                    name: req.name || '',
+                    mobile: phoneDigits(req.mobile),
+                    approvedAt: Date.now()
+                };
+                updates['teamPrivate/' + teamRef.key] = {
+                    name: req.name || '',
+                    mobile: phoneDigits(req.mobile),
+                    address: req.address || '',
+                    approvedAt: Date.now()
+                };
+                updates['joinRequests/' + id] = null;
+                await db.ref().update(updates);
+                alert((req.name || 'Member') + ' team mein add ho gaya!');
+            } catch (err) { alert('Approval error: ' + err.message); }
+        }
+
+        function rejectJoin(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (!confirm('Reject this volunteer request?')) return;
+            db.ref('joinRequests/' + id).remove().then(() => alert('Rejected')).catch(err => alert('Error: ' + err.message));
+        }
+
+        function renderApprovedTeam() {
+            const teamEl = document.getElementById('approvedTeamList');
+            const adminEl = document.getElementById('adminTeamManagementList');
+            if (teamEl) teamEl.innerHTML = '';
+            if (adminEl) adminEl.innerHTML = '';
+            approvedTeamCache.forEach(m => {
+                const safeName = escapeHtml(m.name || 'Gau Sevak');
+                const safeMobile = phoneDigits(m.mobile);
+                if (teamEl) {
+                    teamEl.innerHTML += `
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">${safeName.substring(0, 2).toUpperCase()}</div>
+                                <div><h4 class="font-bold text-sm">${safeName}</h4><p class="text-[11px] text-gray-500">Approved Gau Sevak</p></div>
+                            </div>
+                            ${safeMobile.length === 10 ? `<a href="https://wa.me/91${safeMobile}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm shadow"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
+                        </div>`;
+                }
+                if (adminEl && adminAuthenticated) {
+                    adminEl.innerHTML += `
+                        <div class="bg-white dark:bg-gray-800 p-2.5 rounded-xl border flex items-center justify-between text-xs">
+                            <div><p class="font-bold">${safeName} (${escapeHtml(m.mobile || '')})</p></div>
+                            <button onclick="deleteTeamMember('${m.id}')" class="px-2.5 py-1 bg-red-600 text-white rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
+                }
+            });
+            if (adminEl && !approvedTeamCache.length) adminEl.innerHTML = '<p class="text-xs text-gray-400 italic">No custom members.</p>';
+        }
+
+        function deleteTeamMember(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (confirm('Remove member?')) {
+                const updates = {};
+                updates['approvedTeam/' + id] = null;
+                updates['teamPrivate/' + id] = null;
+                db.ref().update(updates).then(() => alert('Removed')).catch(err => alert('Error: ' + err.message));
+            }
+        }
+
+        function downloadPDFReport() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.text("Ujjain Animal Rescue - Monthly Report", 14, 20);
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.text("Generated: " + new Date().toLocaleString(), 14, 28);
+                let y = 40;
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
+                const done = allRescuesData.filter(i => i.status === 'Completed' && (i.timestamp || 0) >= monthStart && (i.timestamp || 0) < nextMonthStart);
+                if (!done.length) doc.text("No completed records.", 14, y);
+                else {
+                    done.forEach((item, idx) => {
+                        if (y > 270) { doc.addPage(); y = 20; }
+                        doc.text(`${idx + 1}. ${item.type || ''} - ${item.name || ''} (${item.mobile || ''})`, 14, y);
+                        doc.text(`   Loc: ${item.location || ''} | ${new Date(item.timestamp || 0).toLocaleDateString()}`, 14, y + 6);
+                        y += 14;
+                    });
+                }
+                doc.save("ujjain-animal-rescue-report.pdf");
+            } catch (e) { alert("PDF error"); }
+        }
+
+        // ========== MEDICAL RECORDS + LOST & FOUND + DATA BACKUP ==========
+        async function saveMedicalRecord(e) {
+            e.preventDefault();
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            const record = {
+                caseId: document.getElementById('medAnimalId').value.trim(),
+                animal: document.getElementById('medAnimalName').value.trim(),
+                type: document.getElementById('medType').value,
+                date: document.getElementById('medDate').value,
+                notes: document.getElementById('medNotes').value.trim(),
+                createdAt: Date.now()
+            };
+            try {
+                await db.ref('medicalRecords').push(record);
+                e.target.reset();
+                document.getElementById('medDate').value = new Date().toISOString().slice(0, 10);
+                alert('Medical record saved and synced.');
+            } catch (err) { alert('Save error: ' + err.message); }
+        }
+
+        function renderMedicalRecords() {
+            const el = document.getElementById('medicalList');
+            if (!el) return;
+            if (!adminAuthenticated) { el.innerHTML = '<p class="text-xs text-gray-400">Admin login required to view medical records.</p>'; return; }
+            const rows = medicalRecordsCache;
+            el.innerHTML = rows.length ? rows.map(r => `
+                <article class="p-3 rounded-xl border bg-white dark:bg-gray-700 dark:border-gray-600">
+                    <div class="flex justify-between gap-2"><b class="text-sm">${escapeHtml(r.animal)}</b><span class="text-[10px] font-bold text-primary">${escapeHtml(r.type)}</span></div>
+                    <p class="text-xs text-gray-500">${escapeHtml(r.caseId)} · ${escapeHtml(r.date)}</p>
+                    <p class="text-xs mt-2">${escapeHtml(r.notes)}</p>
+                    <button onclick="deleteMedicalRecord('${r.id}')" class="text-xs text-red-600 mt-2">Delete</button>
+                </article>`).join('') : '<p class="text-xs text-gray-400">No medical records added yet.</p>';
+        }
+
+        function deleteMedicalRecord(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (!confirm('Delete this medical record?')) return;
+            db.ref('medicalRecords/' + id).remove().catch(err => alert('Delete error: ' + err.message));
+        }
+
+        async function saveLostFound(e) {
+            e.preventDefault();
+            const record = {
+                status: document.getElementById('lostStatus').value,
+                animal: document.getElementById('lostAnimal').value.trim(),
+                area: document.getElementById('lostArea').value.trim(),
+                contact: phoneDigits(document.getElementById('lostContact').value.trim()),
+                details: document.getElementById('lostDetails').value.trim(),
+                createdAt: Date.now()
+            };
+            if (!record.animal || !record.area || record.contact.length !== 10) { alert('Animal, area aur valid 10-digit mobile number enter karein.'); return; }
+            try {
+                await db.ref('lostFound').push(record);
+                e.target.reset();
+                alert('Lost & found report successfully published.');
+            } catch (err) { alert('Report save error: ' + err.message); }
+        }
+
+        function renderLostFound() {
+            const el = document.getElementById('lostFoundList');
+            if (!el) return;
+            const rows = lostFoundCache;
+            el.innerHTML = rows.length ? rows.map(r => `
+                <article class="p-3 rounded-xl border bg-white dark:bg-gray-700 dark:border-gray-600">
+                    <div class="flex justify-between"><b class="text-sm">${escapeHtml(r.animal)}</b><span class="text-[10px] font-bold text-primary">${escapeHtml(r.status)}</span></div>
+                    <p class="text-xs text-gray-500">${escapeHtml(r.area)} · ${escapeHtml(r.contact)}</p>
+                    <p class="text-xs mt-1">${escapeHtml(r.details || 'No extra details')}</p>
+                    <a class="text-xs text-green-600 font-bold" href="https://wa.me/91${phoneDigits(r.contact)}" target="_blank" rel="noopener noreferrer">Contact reporter</a>
+                    ${adminAuthenticated ? `<button onclick="deleteLostFound('${r.id}')" class="text-xs text-red-600 ml-3">Delete</button>` : ''}
+                </article>`).join('') : '<p class="text-xs text-gray-400">No lost/found reports yet.</p>';
+        }
+
+        function deleteLostFound(id) {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            if (!confirm('Delete this report?')) return;
+            db.ref('lostFound/' + id).remove().catch(err => alert('Delete error: ' + err.message));
+        }
+
+        async function exportFullBackup() {
+            if (!adminAuthenticated) { alert('Admin login required.'); return; }
+            try {
+                const paths = ['rescues', 'joinRequests', 'approvedTeam', 'teamPrivate', 'chats', 'medicalRecords', 'lostFound'];
+                const snapshots = await Promise.all(paths.map(path => db.ref(path).once('value')));
+                const data = { exportedAt: new Date().toISOString() };
+                paths.forEach((path, index) => { data[path] = snapshots[index].val() || {}; });
+                const blobUrl = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = 'ujjain-animal-rescue-full-backup.json';
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            } catch (err) { alert('Backup error: ' + err.message); }
+        }
+
+        // Expose a backup action from the admin panel without changing its original appearance.
+        document.addEventListener('DOMContentLoaded', () => {
+            const admin = document.getElementById('adminView');
+            if (admin && !document.getElementById('fullBackupBtn')) {
+                const b = document.createElement('button');
+                b.id = 'fullBackupBtn';
+                b.type = 'button';
+                b.className = 'w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold';
+                b.textContent = 'Download Full Data Backup (JSON)';
+                b.onclick = exportFullBackup;
+                admin.appendChild(b);
+            }
+            const md = document.getElementById('medDate');
+            if (md) md.value = new Date().toISOString().slice(0, 10);
+        });
+    </script>
+</body>
+</html>
