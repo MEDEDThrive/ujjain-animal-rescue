@@ -1,288 +1,135 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080d19">
-<title>Ujjain Animal Rescue | V20</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ujjain Animal Rescue - Bejuban ki Pukar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9b1c31',
+                        secondary: '#1d4ed8',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style>
-:root{
- --bg:#080d19;
- --panel:#101a2b;
- --panel2:#142137;
- --panel3:#1a2942;
- --text:#f3f6fc;
- --muted:#91a0b8;
- --line:rgba(255,255,255,.075);
- --red:#ff4d68;
- --orange:#ff9854;
- --green:#37d6a0;
- --blue:#5b9dff;
- --purple:#a78bfa;
- --gold:#f5c66b;
- --radius:22px;
- --shadow:0 18px 60px rgba(0,0,0,.28);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
- background:var(--bg);color:var(--text);
- font-family:Inter,Arial,sans-serif;min-height:100vh;
- overflow-x:hidden;
-}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible{
- outline:2px solid var(--blue);outline-offset:3px
-}
-::selection{background:#ff4d6860;color:white}
-body:before{
- content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
- background:
- radial-gradient(ellipse at 12% 10%,#173d6340,transparent 38%),
- radial-gradient(ellipse at 88% 75%,#69264b26,transparent 35%),
- radial-gradient(ellipse at 50% 50%,#15243b30,transparent 60%);
-}
-.ambient{
- position:fixed;width:360px;height:360px;border-radius:50%;
- filter:blur(100px);opacity:.13;pointer-events:none;z-index:-1;
- animation:ambientMove 16s ease-in-out infinite alternate;
-}
-.ambient.one{background:#ff365e;top:-180px;left:-150px}
-.ambient.two{background:#387eff;right:-180px;bottom:-150px;animation-delay:-6s}
-@keyframes ambientMove{to{transform:translate(100px,80px) scale(1.3)}}
-
-/* SPLASH SCREEN */
-#splash{
- position:fixed;inset:0;z-index:99999;
- background:#070b14;
- display:flex;align-items:center;justify-content:center;
- overflow:hidden;transition:opacity .9s ease,visibility .9s ease;
-}
-#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-.splash-grid{
- position:absolute;inset:0;opacity:.18;
- background-image:linear-gradient(#52749a22 1px,transparent 1px),
- linear-gradient(90deg,#52749a22 1px,transparent 1px);
- background-size:48px 48px;
- mask-image:radial-gradient(ellipse,black,transparent 75%);
-}
-.splash-orb{
- position:absolute;width:420px;height:420px;border-radius:50%;
- border:1px solid #ff557c24;
- box-shadow:0 0 100px #ff315b16,inset 0 0 80px #ff315b12;
- animation:orbPulse 4s ease-in-out infinite;
-}
-.splash-orb:before,.splash-orb:after{
- content:"";position:absolute;inset:28px;border:1px solid #70a8ff22;
- border-radius:50%;animation:spin 18s linear infinite;
-}
-.splash-orb:after{inset:65px;border-style:dashed;animation-direction:reverse}
-@keyframes orbPulse{50%{transform:scale(1.08);opacity:.5}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.splash-content{position:relative;text-align:center;padding:24px;z-index:2}
-.splash-logo{
- width:116px;height:116px;margin:0 auto 25px;
- display:grid;place-items:center;border-radius:34px;
- background:linear-gradient(145deg,#ff526d,#b71943);
- box-shadow:0 0 45px #ff426d66,0 20px 50px #0008;
- font-size:48px;color:white;position:relative;
- animation:logoEnter 1.2s cubic-bezier(.2,.9,.2,1) both,logoFloat 3s 1.2s ease-in-out infinite;
-}
-.splash-logo:after{
- content:"";position:absolute;inset:-9px;border-radius:40px;
- border:1px solid #ff668866;animation:ring 2.2s infinite;
-}
-@keyframes logoEnter{from{opacity:0;transform:translateY(40px) scale(.6) rotate(-20deg)}to{opacity:1;transform:none}}
-@keyframes logoFloat{50%{translate:0 -9px}}
-@keyframes ring{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.35);opacity:0}}
-.splash-title{
- font-family:Outfit,sans-serif;font-size:clamp(25px,6vw,42px);
- font-weight:900;letter-spacing:2px;
- background:linear-gradient(90deg,#fff,#ff8da4,#fff);
- background-size:200%;color:transparent;background-clip:text;
- animation:titleShine 4s linear infinite;
-}
-@keyframes titleShine{to{background-position:200%}}
-.splash-sub{color:#9aaac1;letter-spacing:5px;font-size:10px;margin-top:9px}
-.splash-tag{color:#ff8098;font-size:12px;margin-top:17px;font-weight:700}
-.loader-track{
- width:220px;height:4px;border-radius:10px;background:#ffffff17;
- margin:30px auto 12px;overflow:hidden;
-}
-.loader-fill{
- height:100%;width:0;background:linear-gradient(90deg,#ff4769,#ffb16e);
- border-radius:10px;animation:loading 2.6s ease forwards;
-}
-@keyframes loading{to{width:100%}}
-.splash-loading{font-size:10px;color:#73839c;letter-spacing:2px}
-
-/* APP LAYOUT */
-.app{display:flex;min-height:100vh}
-.sidebar{
- width:265px;position:fixed;inset:0 auto 0 0;z-index:100;
- background:rgba(12,20,34,.94);backdrop-filter:blur(22px);
- border-right:1px solid var(--line);padding:24px 16px;
- display:flex;flex-direction:column;transition:.35s;
-}
-.brand{display:flex;align-items:center;gap:12px;padding:2px 9px 27px}
-.brand-icon{
- width:43px;height:43px;border-radius:14px;
- display:grid;place-items:center;color:white;font-size:19px;
- background:linear-gradient(140deg,#ff5b70,#b91f48);
- box-shadow:0 7px 25px #ff426d35;
-}
-.brand-name{font:800 16px Outfit;letter-spacing:.3px}
-.brand-sub{font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:3px}
-.nav-label{font-size:9px;letter-spacing:2px;color:#64738b;font-weight:800;padding:13px 12px 9px}
-.nav-btn{
- width:100%;border:0;background:transparent;color:#9cabc1;
- display:flex;align-items:center;gap:13px;padding:12px 13px;
- border-radius:13px;text-align:left;margin:3px 0;
- font-size:12px;font-weight:650;transition:.25s;
-}
-.nav-btn i{width:18px;text-align:center;font-size:15px}
-.nav-btn:hover{background:#ffffff0b;color:white;transform:translateX(3px)}
-.nav-btn.active{
- background:linear-gradient(100deg,#ff496c28,#ff496c08);
- color:#ff718b;border:1px solid #ff567c28;
- box-shadow:inset 3px 0 #ff5576;
-}
-.nav-count{margin-left:auto;background:#ff496c;color:white;padding:3px 7px;border-radius:20px;font-size:9px}
-.sidebar-bottom{margin-top:auto}
-.volunteer-card{
- padding:15px;border-radius:17px;
- background:linear-gradient(145deg,#1a3450,#192337);
- border:1px solid #ffffff12;margin-bottom:15px;
-}
-.volunteer-card strong{font-size:12px}
-.volunteer-card p{font-size:10px;color:#9eafc4;line-height:1.6;margin:7px 0 11px}
-.volunteer-card button{
- border:0;border-radius:9px;padding:9px 12px;
- color:white;background:#ff526f;font-size:10px;font-weight:800;width:100%;
-}
-.profile-mini{display:flex;align-items:center;gap:10px;padding:12px 7px 0;border-top:1px solid var(--line)}
-.avatar{
- width:35px;height:35px;border-radius:12px;display:grid;place-items:center;
- background:linear-gradient(135deg,#355b83,#a33d60);font-weight:800;font-size:12px;
-}
-.profile-mini strong{font-size:11px;display:block}
-.profile-mini small{font-size:9px;color:var(--muted)}
-.main{margin-left:265px;width:calc(100% - 265px);min-width:0;padding:0 32px 50px}
-.topbar{
- height:82px;display:flex;align-items:center;justify-content:space-between;
- border-bottom:1px solid var(--line);gap:15px;
-}
-.top-left{display:flex;align-items:center;gap:13px}
-.page-kicker{font-size:9px;color:#8191a9;letter-spacing:2px;font-weight:800}
-.page-heading{font:750 19px Outfit;margin-top:4px}
-.top-actions{display:flex;align-items:center;gap:9px}
-.icon-btn{
- width:39px;height:39px;border:1px solid var(--line);border-radius:12px;
- background:#ffffff08;color:#bdc9da;position:relative;transition:.2s;
-}
-.icon-btn:hover{background:#ffffff16;color:white;transform:translateY(-2px)}
-.notify-dot{position:absolute;width:7px;height:7px;background:#ff4d68;border-radius:50%;right:8px;top:8px}
-.online-pill{
- display:flex;align-items:center;gap:7px;padding:9px 12px;
- border:1px solid #37d6a033;border-radius:30px;color:#63e4b5;
- font-size:10px;font-weight:700;
-}
-.online-dot{width:7px;height:7px;border-radius:50%;background:#37d6a0;box-shadow:0 0 10px #37d6a0}
-.mobile-menu{display:none}
-.page{display:none;padding-top:27px;animation:pageIn .4s ease}
-.page.active{display:block}
-@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.welcome{
- display:flex;justify-content:space-between;align-items:center;gap:20px;
- margin-bottom:24px;
-}
-.welcome h1{font:800 clamp(22px,3vw,30px) Outfit;letter-spacing:-.7px}
-.welcome p{font-size:11px;color:var(--muted);margin-top:7px}
-.welcome-date{font-size:10px;color:#a8b7cb;background:#ffffff08;border:1px solid var(--line);padding:10px 13px;border-radius:11px}
-</style>
+    <style>
+        .splash-screen {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #9b1c31, #4a0e18);
+            z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white;
+            transition: opacity 0.5s ease;
+        }
+    </style>
 </head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
 
-<body>
-<div class="ambient one"></div>
-<div class="ambient two"></div>
+    <!-- Splash -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="text-center p-6">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <i class="fa-solid fa-shield-dog text-5xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-wider mb-2">UJJAIN ANIMAL RESCUE</h1>
+            <p class="text-lg text-red-200 italic font-medium">"Bejuban ki Pukar"</p>
+        </div>
+    </div>
 
-<!-- CINEMATIC SPLASH -->
-<div id="splash">
- <div class="splash-grid"></div>
- <div class="splash-orb"></div>
- <div class="splash-content">
-  <div class="splash-logo"><i class="fa-solid fa-paw"></i></div>
-  <div class="splash-title">UJJAIN ANIMAL RESCUE</div>
-  <div class="splash-sub">BE THE VOICE OF THE VOICELESS</div>
-  <div class="splash-tag">“BEJUBAAN KI PUKAAR”</div>
-  <div class="loader-track"><div class="loader-fill"></div></div>
-  <div class="splash-loading">INITIALIZING RESCUE SYSTEM</div>
- </div>
-</div>
+    <div class="max-w-md mx-auto min-h-screen bg-white dark:bg-gray-800 shadow-xl flex flex-col relative pb-16">
 
-<div class="app">
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
- <div class="brand">
-  <div class="brand-icon"><i class="fa-solid fa-paw"></i></div>
-  <div><div class="brand-name">UJJAIN RESCUE</div><div class="brand-sub">MISSION V20.0</div></div>
- </div>
+        <!-- Header -->
+        <header class="bg-primary text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+            <div class="absolute top-4 right-4 flex items-center gap-2">
+                <button onclick="toggleDarkMode()" class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                    <i id="darkModeIcon" class="fa-solid fa-moon text-white"></i>
+                </button>
+            </div>
+            <div class="flex flex-col items-center text-center">
+                <div onclick="handleFounderClick()" class="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden shadow-md mb-3 cursor-pointer relative group">
+                    <img src="Screenshot_2026-07-19-19-13-38-60_1c337646f29875672b5a61192b9010f9.jpg" 
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300';"
+                         alt="Founder Raj Malviya" class="w-full h-full object-cover">
+                </div>
+                <h2 class="text-xl font-bold tracking-wide">Raj Malviya</h2>
+                <p class="text-xs text-red-100 font-medium tracking-wider uppercase mt-0.5">Founder, Ujjain Animal Rescue</p>
+            </div>
+        </header>
 
- <div class="nav-label">MAIN MENU</div>
- <button class="nav-btn active" data-page="dashboard"><i class="fa-solid fa-grid-2"></i> Overview</button>
- <button class="nav-btn" data-page="report"><i class="fa-solid fa-triangle-exclamation"></i> Report Emergency <span class="nav-count">SOS</span></button>
- <button class="nav-btn" data-page="cases"><i class="fa-solid fa-clipboard-list"></i> Rescue Operations</button>
- <button class="nav-btn" data-page="map"><i class="fa-solid fa-map-location-dot"></i> Live Rescue Map</button>
+        <main class="flex-1 p-4 space-y-4">
 
- <div class="nav-label">MANAGEMENT</div>
- <button class="nav-btn" data-page="animals"><i class="fa-solid fa-heart"></i> Animal Profiles</button>
- <button class="nav-btn" data-page="team"><i class="fa-solid fa-people-group"></i> Rescue Team</button>
- <button class="nav-btn" data-page="donations"><i class="fa-solid fa-hand-holding-heart"></i> Donations</button>
- <button class="nav-btn" data-page="reports"><i class="fa-solid fa-chart-pie"></i> Analytics & Reports</button>
+            <!-- HOME -->
+            <div id="homeView" class="space-y-4">
+                <div id="statusBar" class="hidden text-center text-[11px] py-1.5 rounded-lg font-medium"></div>
 
- <div class="nav-label">SYSTEM</div>
- <button class="nav-btn" data-page="notifications"><i class="fa-regular fa-bell"></i> Notifications</button>
- <button class="nav-btn" data-page="settings"><i class="fa-solid fa-sliders"></i> Settings</button>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-red-50 dark:bg-gray-700 p-3 rounded-xl border border-red-100 dark:border-gray-600">
+                        <span id="totalCount" class="block text-xl font-black text-primary dark:text-red-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Total Calls</span>
+                    </div>
+                    <div class="bg-yellow-50 dark:bg-gray-700 p-3 rounded-xl border border-yellow-100 dark:border-gray-600">
+                        <span id="pendingCount" class="block text-xl font-black text-yellow-600 dark:text-yellow-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Pending</span>
+                    </div>
+                    <div class="bg-green-50 dark:bg-gray-700 p-3 rounded-xl border border-green-100 dark:border-gray-600">
+                        <span id="completedCount" class="block text-xl font-black text-green-600 dark:text-green-400">0</span>
+                        <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-300">Rescued</span>
+                    </div>
+                </div>
 
- <div class="sidebar-bottom">
-  <div class="volunteer-card">
-   <strong><i class="fa-solid fa-hands-holding-circle"></i> Join Our Mission</strong>
-   <p>Ek jaan bachana, poori duniya badal sakta hai. Rescue team ka hissa baniye.</p>
-   <button onclick="showPage('team')">BECOME A VOLUNTEER <i class="fa-solid fa-arrow-right"></i></button>
-  </div>
-  <div class="profile-mini">
-   <div class="avatar">RM</div>
-   <div><strong>Raj Malviya</strong><small>Project Founder</small></div>
-  </div>
- </div>
-</aside>
+                <div class="space-y-3 pt-2">
+                    <button onclick="switchView('requestView')" class="w-full bg-gradient-to-r from-red-600 to-primary text-white p-4 rounded-2xl shadow-md flex items-center justify-between hover:opacity-95 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-bullhorn text-lg"></i></div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">New Rescue Request</h3>
+                                <p class="text-[11px] text-red-100">Report an injured animal instantly</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
 
-<!-- MAIN CONTENT -->
-<main class="main">
- <header class="topbar">
-  <div class="top-left">
-   <button class="icon-btn mobile-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-   <div><div class="page-kicker">ANIMAL RESCUE COMMAND CENTER</div><div class="page-heading" id="topTitle">Overview Dashboard</div></div>
-  </div>
-  <div class="top-actions">
-   <div class="online-pill"><span class="online-dot"></span> SYSTEM ONLINE</div>
-   <button class="icon-btn" onclick="showPage('notifications')" title="Notifications"><i class="fa-regular fa-bell"></i><span class="notify-dot"></span></button>
-   <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
-  </div>
- </header>
-</main>
-</div>
-</body>
-</html>
+                    <button onclick="switchView('liveView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 dark:bg-gray-600 text-primary dark:text-red-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-tower-broadcast text-lg animate-pulse"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Live Requests & Timeline</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Track cases & status updates</p>
+                            </div>
+                        </div>
+                        <span id="liveBadge" class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                    </button>
+
+                    <button onclick="switchView('trackingView'); initTrackingMap();" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-100 dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-map-location-dot text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="font-bold text-sm">Live Team Tracking & Heatmap</h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">GPS sevaks & case density map</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+                    </button>
+
+                    <button onclick="switchView('donationView')" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-gray-600 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-hand-holding-heart text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                             
